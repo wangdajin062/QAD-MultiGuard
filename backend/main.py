@@ -25,6 +25,14 @@ _scheduler_task = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _scheduler_task
+    # ✅ 启动时检查配置
+    if settings.APP_ENV == "production":
+        if not settings.SECRET_KEY or len(settings.SECRET_KEY) < 32:
+            raise RuntimeError(
+                "❌ 生产环境必须设置 SECRET_KEY (>= 32 字符)"
+            )
+    logger.info(f"App environment: {settings.APP_ENV}")
+    
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await get_redis()

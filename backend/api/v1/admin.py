@@ -25,17 +25,21 @@ router = APIRouter()
 # ── 管理员鉴权 ────────────────────────────────────────────
 async def require_admin(current_user: User = Depends(get_current_user)) -> User:
     """
-    简单管理员标识：phone_hash 在预设白名单中
-    生产环境建议在 users 表添加 role 字段
+    ✅ v4.1 修复：只使用数据库 role 字段，不再用 protection_score
+    
+    users 表中 role 字段：
+      - 'user': 普通用户
+      - 'admin': 管理员
     """
-    # 生产环境：在 users 表添加 role ENUM('user','admin') 字段后改为:
-    # if current_user.role != "admin":
-    # 当前以 protection_score == 99 作为管理员标识（仅开发/演示用）
-    # 检查管理员权限（role 字段需在 users 表中设置）
-    is_admin = (getattr(current_user, "role", None) == "admin" or 
-                current_user.protection_score == 99)  # 兼容旧测试逻辑
-    if not is_admin:
-        raise HTTPException(status_code=403, detail="需要管理员权限")
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=403, 
+            detail="需要管理员权限"
+        )
+    
+    # 可选：添加审计日志
+    logger.info(f"Admin access by user_id={current_user.id}")
+    
     return current_user
 
 
