@@ -1,64 +1,75 @@
-# 🛡️ 校园安全 APP v3
+# QAD-MultiGuard v4.1
 ## 软硬协同多模态电信欺诈检测系统
 
-> **推测解码 (Speculative Decoding) × 量化感知蒸馏 (QAD-4bit) × 多模态融合**
-> 安全审查: 37/39 项通过 | 99分
+> **推测解码 (Speculative Decoding) × 量化感知蒸馏 (QAD-4bit) × 多模态 L-BFGS 融合**
+> 98 项测试通过 | DP 隐私保护 (ε≈9.69) | PIPL §23 合规
 
 ---
 
-## 📁 目录结构
+## 目录结构
 
 ```
 campus_safety_v3/
-├── backend/                        # Python FastAPI 后端 v3
-│   ├── main.py                     # 应用入口（v3 多模态架构）
+├── backend/                         # Python FastAPI 后端 v4.1
+│   ├── main.py                      # 应用入口（v4.1 多模态架构）
 │   ├── requirements.txt
+│   ├── Dockerfile                   # 多阶段构建 (builder+runtime)
 │   ├── api/v1/
-│   │   ├── inference.py            # ★ 推理引擎 API（6个新端点）
+│   │   ├── inference.py             # ★ 推理引擎 API（8个端点）
 │   │   ├── auth.py / calls.py / sms.py
 │   │   ├── cases.py / alerts.py / reports.py / users.py
 │   │   └── admin.py
-│   ├── ml/                         # ★ 核心 ML 引擎
-│   │   ├── speculative_decoder.py  # 推测解码 (DraftModel + VerifyModel)
-│   │   ├── qad_pipeline.py         # 量化感知蒸馏 (INT4 + ov-freeze)
-│   │   ├── multimodal_detector.py  # 多模态融合检测器
-│   │   └── fraud_detector.py       # 集成规则引擎 + GBM
-│   ├── core/                       # 配置 / 数据库 / Redis / JWT
-│   ├── models/                     # SQLAlchemy ORM (13张表)
-│   ├── schemas/                    # Pydantic 请求/响应校验
-│   ├── services/                   # 短信 / FCM / 调度器
-│   └── tests/                      # 61 测试（API + 扩展 + 安全回归）
-├── android/                        # Java Android 前端
+│   ├── ml/
+│   │   ├── speculative_decoder.py   # 推测解码 (DraftModel + VerifyModel)
+│   │   ├── qad_pipeline.py          # 量化感知蒸馏 (INT4 + ov-freeze)
+│   │   ├── multimodal_detector.py   # 多模态融合检测器 (L-BFGS)
+│   │   ├── acoustic_embedding.py    # ★ 声学嵌入提取 + 韵律分解 + DP
+│   │   ├── fraud_detector.py        # 集成规则引擎 + GBM
+│   │   └── data_loader.py           # 训练数据加载
+│   ├── core/                        # 配置 / 数据库 / Redis / 安全
+│   ├── models/                      # SQLAlchemy ORM (13张表)
+│   ├── schemas/                     # Pydantic 请求/响应校验
+│   ├── services/                    # 短信 / FCM / 调度器
+│   └── tests/                       # 98 测试（3 套件）
+│       ├── test_v41_features.py     # v4.1 新功能测试 (25)
+│       ├── test_security.py         # 安全回归测试 (9)
+│       └── test_api_contract.py     # 前后端契约测试 (12)
+├── android/                         # Java Android 前端
+│   ├── app/build.gradle             # v4.1 (versionCode 41)
 │   └── src/main/java/com/campus/safety/
-│       ├── engine/OnDeviceLLMEngine.java    # ★ 端侧 llama.cpp 推理
-│       ├── ml/SpeculativeDecoder.java       # ★ 两阶段推测解码协调器
-│       ├── service/RealTimeCallAnalyzer.java # ★ 实时通话 SSE 分析
-│       ├── model/MultimodalFeatures.java    # 多模态特征容器
-│       └── util/TokenManager.java           # AES-256-GCM Token存储
+│       ├── engine/OnDeviceLLMEngine.java
+│       ├── ml/SpeculativeDecoder.java
+│       ├── ml/SmsFeatureExtractor.java  # ★ 6维URL特征
+│       ├── service/RealTimeCallAnalyzer.java
+│       ├── model/MultimodalFeatures.java
+│       └── util/TokenManager.java
 ├── database/
-│   ├── schema_postgresql.sql       # 完整建表 (13表/41索引/5触发器)
-│   └── migrations/001_init.py
-├── nginx/nginx.conf                # HTTPS + 速率限制
+│   ├── schema_postgresql.sql
+│   └── migrations/
 ├── scripts/
-│   └── verify_deployment.py       # 部署验证脚本
-├── docker-compose.yml             # 一键部署
-├── .env.example                   # 环境变量模板
-├── deploy.sh                      # 一键部署脚本
+│   ├── verify_deployment.py
+│   ├── prepare_models.py
+│   ├── download_audio.py
+│   └── download_teleantifraud.py
+├── nginx/nginx.conf
+├── .github/workflows/ci.yml        # CI/CD 流水线
+├── docker-compose.yml
+├── .env.example
+├── .gitignore
+├── deploy.sh
 └── README.md
 ```
 
 ---
 
-## 🚀 一键部署
+## 一键部署
 
 ### 方式一：自动化脚本
 
 ```bash
 # 1. 配置环境变量
 cp .env.example .env
-# 编辑 .env，填入: DB_PASSWORD, SECRET_KEY（建议用命令生成）
-SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-sed -i "s/change_me_256bit_secret_key_here_minimum_32_chars/$SECRET_KEY/" .env
+# 编辑 .env，填入: DB_PASSWORD, SECRET_KEY
 
 # 2. 一键部署
 chmod +x deploy.sh && ./deploy.sh
@@ -67,59 +78,50 @@ chmod +x deploy.sh && ./deploy.sh
 python3 scripts/verify_deployment.py --url http://localhost:8000
 ```
 
-### 方式二：手动 Docker Compose
+### 方式二：Docker Compose
 
 ```bash
-cp .env.example .env && vim .env        # 配置密钥
-docker-compose up -d                    # 启动基础服务（CPU 模式）
-docker-compose --profile gpu up -d     # 启用 GPU + LLM 推理（可选）
-
-# 查看日志
-docker-compose logs -f api
+cp .env.example .env && vim .env
+docker-compose up -d
+docker-compose --profile gpu up -d   # 启用 GPU（可选）
 ```
 
 ### 方式三：本地开发
 
 ```bash
-# 后端
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env && vim .env
 uvicorn main:app --reload --port 8000
-
-# 数据库（需本地 PostgreSQL 15）
-psql -U postgres -c "CREATE DATABASE campus_safety;"
-psql -U postgres -d campus_safety -f ../database/schema_postgresql.sql
 ```
 
 ---
 
-## 🤖 核心技术架构
+## 核心技术架构
 
-### 软硬协同推测解码流水线
+### 流水线时序
 
 ```
 T=0ms    ┌─ Android 来电/短信 ─────────────────────────────────
 T<5ms    │  OnDeviceLLMEngine.quickRisk()  [端侧 Java，零网络]
-         │  草稿模型 draft_tokens(γ=5)     [GGUF Q4_K_M, NNAPI]
-         │  → 立即更新 UI（预警指示）
-T<40ms   │  POST /v1/infer/fast           [服务端 规则+GBM]
-         │  → 推送高危通知（不等CoT）
-T<300ms  │  POST /v1/infer/stream  (SSE) [推测解码 CoT 推理链]
-         │  → event: fast_detection      → 多模态风险分
-         │  → event: spec_draft          → 接受率/加速比
-         │  → event: cot_stream          → CoT 推理 token 流
-         │  → event: final_result        → 融合最终结论
+         │   draft_tokens(γ=5)  → 立即更新 UI
+T<40ms   │  POST /v1/infer/fast            [规则+GBM+URL]
+         │  → 推送高危通知
+T<300ms  │  POST /v1/infer/stream  (SSE)   [推测解码 CoT]
+         │  → event: fast_detection       → 多模态风险分
+         │  → event: spec_draft           → 接受率/加速比
+         │  → event: cot_stream           → CoT 推理 token 流
+         │  → event: final_result         → L-BFGS 融合结论
 ```
 
-### 推测解码加速原理
+### 推测解码加速
 
 ```
 草稿模型生成 γ=5 个候选 token （端侧 <5ms）
 主模型并行验证所有草稿 token  （服务端 <15ms）
-接受准则：min(1, P_main/P_draft) >= α=0.85
-理论加速比：1/(1 - α·γ/(1+γ)) ≈ 3.1×
+接受准则：min(1, P_main/P_draft) >= α=0.86
+理论加速比：1/(1 - α·γ/(1+γ)) ≈ 3.5×
 ```
 
 ### QAD 量化感知蒸馏
@@ -132,112 +134,105 @@ ov-freeze: 冻结 {o_proj, v_proj, q_proj, k_proj} 敏感层
 压缩比:   960MB(FP16) → 240MB(INT4)，4× 内存压缩
 ```
 
-### 多模态特征向量（隐私保护）
+### 多模态融合权重
 
-| 模态 | 维度 | 提取位置 | 隐私保证 |
-|------|------|---------|---------|
-| SMS 语义 | F₀-F₁₁ (12维) | Android Java | 原文不离设备 |
-| 通话行为 | 12维 | Android Java | 无通话内容 |
-| URL 结构 | 6维 | Android Java | 无URL原文 |
-| 语音声学 | 64维 MFCC | Android Java | 无语音原文 |
+| 模态 | 权重 | 维度 | 提取位置 | 隐私保证 |
+|------|------|------|---------|---------|
+| SMS 语义 | 0.40 | 12维 | Android Java | 原文不离设备 |
+| 语音声学 | 0.30 | 128维 (MFCC+Proj) | Android Java | 无语音原文 |
+| URL 结构 | 0.20 | 6维 | Android Java | 无URL原文 |
+| 元数据 | 0.10 | 12维 | Android Java | 无通话内容 |
+
+融合策略: L-BFGS 优化 + σ(5·logit) 非线性映射
+
+### 差分隐私 (DP) 声学保护
+
+```
+高斯机制: ε = Δ₂ · √(2 · ln(1.25/δ)) / σ
+默认: σ=1.0, Δ₂=2.0, δ=1e-5 → ε≈9.69
+4路韵律分解: energy_var / tone_proxy / urgency_proxy / pitch_range
+voice_risk_score: [0, 100] = 35·E + 28·T + 25·U + 12·P
+```
 
 ---
 
-## 🔌 API 端点完整列表
+## API 端点
 
-### 推理引擎（v3 新增）
+### 推理引擎
 
-| 方法 | 路径 | 说明 | 延迟目标 |
-|------|------|------|--------|
+| 方法 | 路径 | 说明 | 延迟 |
+|------|------|------|------|
 | POST | `/v1/infer/stream` | SSE 流式多模态推理 | <300ms |
-| POST | `/v1/infer/fast` | 快速同步检测 | <40ms |
-| POST | `/v1/infer/voice` | 语音声学特征分析 | <30ms |
-| POST | `/v1/infer/feedback` | 在线反馈标注 | <20ms |
-| GET  | `/v1/infer/model-status` | 模型推理统计 | <10ms |
-| POST | `/v1/infer/retrain` | QAD增量重训（管理员）| 后台异步 |
+| POST | `/v1/infer/fast` | 快速同步检测（含URL评分） | <40ms |
+| POST | `/v1/infer/voice` | 语音声学特征分析 + DP | <30ms |
+| POST | `/v1/infer/feedback` | 在线反馈标注（并发安全） | <20ms |
+| GET | `/v1/infer/model-status` | 模型推理统计 | <10ms |
+| POST | `/v1/infer/retrain` | QAD 增量重训（限流去重） | 后台 |
+| POST | `/v1/infer/acoustic-test` | 声学不可逆性验证 | <20ms |
+| POST | `/v1/infer/evaluate` | 批量评估 | 异步 |
+| POST | `/v1/infer/train-from-data` | 热启动训练 | 异步 |
 
-### 原有端点（v1/v2 兼容）
+### 原有端点
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/v1/auth/send-code` | 发送OTP（secrets模块） |
-| POST | `/v1/auth/login` | 登录（JWT HS256） |
-| GET  | `/v1/calls/check` | 来电风险查询 |
-| POST | `/v1/sms/analyze` | 短信关键词分析 |
-| GET  | `/v1/cases` | 案例库（分类/分页） |
-| GET  | `/v1/alerts` | 电诈预警列表 |
-| POST | `/v1/reports` | 用户举报 |
-| GET  | `/v1/user/stats` | 防护统计 |
-| `*`  | `/v1/admin/*` | 管理后台（16个接口）|
+| POST | `/v1/auth/send-code` | 发送 OTP |
+| POST | `/v1/auth/login` | 登录 (JWT HS256) |
+| GET | `/v1/calls/check` | 来电风险查询 |
+| POST | `/v1/sms/analyze` | 短信分析 |
+| GET | `/v1/cases` | 案例库 |
+| GET | `/v1/alerts` | 预警列表 |
+| POST | `/v1/reports` | 举报 |
+| GET | `/v1/user/stats` | 防护统计 |
+| `*` | `/v1/admin/*` | 管理后台 |
 
 ---
 
-## 🧪 测试指南
-
-### 后端测试
+## 测试指南
 
 ```bash
 cd backend
 pip install -r requirements.txt
 SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
-# 预期结果：61 passed / 0 failed
+# 预期结果：98 passed / 0 failed
 ```
 
 | 测试套件 | 数量 | 覆盖内容 |
 |---------|------|---------|
 | `test_api.py` | 22 | 认证/通话/短信/案例/举报/警报/推理端点 |
-| `test_extended.py` | 30 | 缓存/短信服务/推送/调度器/管理后台 |
-| `test_security.py` | 9 | C1/H1-H6/M3/M5 安全回归 |
+| `test_extended.py` | 30 | 缓存/短信/推送/调度器/管理后台 |
+| `test_v41_features.py` | 25 | 声学评分/URL评分/韵律分解/DP ε/嵌入重建 |
+| `test_security.py` | 9 | 死代码/并发/H2-H6/M3/M5 安全回归 |
+| `test_api_contract.py` | 12 | Java↔Python 字段对齐/Schema/维度 |
 
-### Android 端测试（蒸馏模型 + 特征提取）
-
-```bash
-cd android
-# 确保 Android SDK 已配置（ANDROID_HOME）
-
-# 运行全部单元测试
-./gradlew test
-
-# 运行特定蒸馏模型测试
-./gradlew test --tests "com.campus.safety.ml.SpeculativeDecoderTest"
-```
-
-| 测试类 | 数量 | 覆盖内容 |
-|--------|------|---------|
-| `SpeculativeDecoderTest` | 13 | 加速比公式(6)、α接受率、诈骗类别检测、草稿生成、验证逻辑 |
-| `OnDeviceLLMEngineTest` | 16 | quickRisk关键词评分、URL加分、风险等级判定 |
-| `SmsFeatureExtractorTest` | 20 | 12维SMS向量、6维URL特征、12维来电特征、buildRequest |
-
-### 模拟器运行
-
-1. **创建模拟器**：Android Studio → Tools → AVD Manager → Create Virtual Device（推荐 Pixel 6 + API 34）
-2. **启动后端**：参照"本地开发"方式启动 `uvicorn main:app --reload --port 8888`
-3. **运行 App**：选择模拟器后点击 Run，App 自动连接 `10.0.2.2:8888`（宿主机后端）
-4. **验证流程**：
-   - 注册/登录 → 接收短信 → 端侧 quickRisk 预警 → 后端多模态分析 → CoT 推理结果
-
----
-
-## 🔐 安全特性（审查通过 37/39 项）
+## 安全特性
 
 | 类别 | 实现 |
 |------|------|
-| Token 存储 | Android `EncryptedSharedPreferences` (AES-256-GCM, Android Keystore) |
-| 验证码生成 | Python `secrets.randbelow()` 密码学安全 |
-| 验证码比对 | `hmac.compare_digest()` 防时序攻击 |
-| JWT 签名 | HS256, 30天过期, 算法白名单 |
-| SQL 安全 | 全程 SQLAlchemy ORM 参数化 |
-| 手机号隐私 | SHA-256 哈希存储，不保留明文 |
-| 通话/短信隐私 | 特征向量端侧提取，原文不离设备 |
-| 输入校验 | Pydantic + 长度截断 + 范围约束 |
-| CORS | 白名单配置，非通配符 |
-| 速率限制 | Redis: 全局100/min, 发码5/min |
-| 传输安全 | HTTPS/TLS 1.3, HSTS |
-| 日志脱敏 | FCM Token/密码字段不写入日志 |
+| Token 存储 | AES-256-GCM (Android Keystore) |
+| JWT | HS256 + jti + Refresh Token Rotation + 黑名单 |
+| 手机号隐私 | PBKDF2-SHA256 (非明文 SHA256) |
+| 声学隐私 | 差分隐私高斯机制 (ε≈9.69) |
+| SQL 安全 | SQLAlchemy ORM 参数化 |
+| 输入校验 | Pydantic v2 + 白名单 |
+| 速率限制 | Redis (全局 100/min, 发码 5/min) |
+| feedback 并发 | asyncio.Lock + 独占写入 |
+| retrain 去重 | `_retrain_in_progress` 标志位 |
+| CORS | 白名单配置 |
+| 日志脱敏 | 敏感字段不写入日志 |
 
----
+## CI/CD
 
-## 📊 性能指标
+```yaml
+# .github/workflows/ci.yml
+# 触发: push/PR → 自动运行
+- Python 测试 (pytest 98 tests)
+- 语法检查 (ruff + pyright)
+- Docker 构建验证
+- Android 语法检查
+```
+
+## 性能指标
 
 | 指标 | 目标值 | 实测值 |
 |------|--------|--------|
@@ -249,22 +244,17 @@ cd android
 | F1-Score | >93% | 93.5% |
 | 在线学习@600样本 | >95% | 95.4% |
 
----
+## 环境要求
 
-## ⚙️ 环境要求
-
-### 最低配置（CPU 模式）
-- **CPU**: 4核 2.0GHz+
-- **内存**: 8GB
-- **存储**: 20GB SSD
+### 最低配置（CPU）
+- **CPU**: 4核 2.0GHz+ | **内存**: 8GB | **存储**: 20GB SSD
 - **系统**: Ubuntu 22.04+ / Debian 12+
 
-### 推荐配置（GPU 模式）
+### 推荐配置（GPU）
 - **GPU**: NVIDIA A10G / RTX 4090 (16GB VRAM)
-- **内存**: 32GB
-- **存储**: 100GB NVMe
+- **内存**: 32GB | **存储**: 100GB NVMe
 
-### Android 前端
-- **Android SDK**: 24-34 (Android 7.0-14)
-- **推荐**: Snapdragon 8 Gen 2+ (NNAPI 加速)
+### Android
+- **SDK**: 24-34 (Android 7.0-14)
+- **推荐**: Snapdragon 8 Gen 2+ (NNAPI)
 - **内存**: 6GB+ RAM
