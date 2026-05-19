@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.campus.safety.ml.AcousticEmbeddingExtractor;
+import com.campus.safety.ml.OnDeviceMultimodalDetector;
 import com.campus.safety.ml.SmsFeatureExtractor;
 import com.campus.safety.ml.SpeculativeDecoder;
+import com.campus.safety.model.OnDeviceDetectionResult;
 
 /**
  * 端侧 LLM 推理引擎 — QAD-MultiGuard v4
@@ -243,6 +245,111 @@ public class OnDeviceLLMEngine {
             }
             return sb.append("]").toString();
         }
+    }
+
+    // ── 端侧多模态检测（编排入口）───────────────────────────
+
+    /**
+     * 端侧多模态欺诈检测（完全本地，无网络）。
+     * 编排 SmsFeatureExtractor → AcousticEmbeddingExtractor → OnDeviceMultimodalDetector。
+     *
+     * @param smsContent  短信原文（用于特征提取）
+     * @param sender      发件人
+     * @param urls        URL 字符串列表（可 null）
+     * @param pcm         PCM 音频数据 (float[], 16kHz, 可 null)
+     * @param callReportCount    举报次数
+     * @param callConfirmedCount  确认诈骗次数
+     * @param callSource          数据源 ("user_report", "system", "police")
+     * @return OnDeviceDetectionResult
+     */
+    public OnDeviceDetectionResult detect(
+            String smsContent,
+            String sender,
+            java.util.List<String> urls,
+            float[] pcm,
+            int callReportCount,
+            int callConfirmedCount,
+            String callSource) {
+
+        long t0 = System.nanoTime();
+
+        // 1) SMS 特征提取
+        SmsFeatureExtractor.Features smsFeat = null;
+        java.util.List<Float> smsFeatureVector = null;
+        if (smsContent != null && !smsContent.isEmpty()) {
+            smsFeat = SmsFeatureExtractor.extract(smsContent, sender);
+            SmsFeatureExtractor ext = new SmsFeatureExtractor();
+            smsFeatureVector = ext.buildSmsFeatures(smsContent, sender);
+            // 同时提取 URL 结构特征（如果有 URL 字符串但没有传入）
+            if ((urls == null || urls.isEmpty()) && smsFeat.hasUrl) {
+                java.util.List<String> extractedUrls = new java.util.ArrayList<>();
+                java.util.regex.Matcher m = SmsFeatureExtractor.URL_PATTERN.matcher(smsContent);
+                while (m.find()) extractedUrls.add(m.group());
+                if (!extractedUrls.isEmpty()) urls = extractedUrls;
+            }
+        }
+
+        // 2) 声学嵌入提取
+        float[] audioEmbedding = null;
+        if (pcm != null && pcm.length >= 256) {
+            audioEmbedding = AcousticEmbeddingExtractor.extract(pcm);
+        }
+
+        // 3) 通话特征向量
+        float[] callFeatures = null;
+        if (callReportCount > 0 || callConfirmedCount > 0) {
+            SmsFeatureExtractor ext = new SmsFeatureExtractor();
+            java.util.List<Float> cf = ext.buildCallFeatures(
+                    callReportCount, callConfirmedCount, 0, 0f,
+                    sourceToScore(callSource));
+            callFeatures = new float[cf.size()];
+            for (int i = 0; i < cf.size(); i++) callFeatures[i] = cf.get(i);
+        }
+
+        // 4) URL 结构特征
+        java.util.List<Float> urlFeatures = null;
+        if (urls != null && !urls.isEmpty()) {
+            SmsFeatureExtractor ext = new SmsFeatureExtractor();
+            urlFeatures = ext.buildUrlFeatures(urls);
+        }
+
+        // 5) 融合检测
+        OnDeviceDetectionResult result = OnDeviceMultimodalDetector.detect(
+                smsFeat != null ? smsFeat.hitKeywords : null,
+                smsFeatureVector != null ? toPrimitive(smsFeatureVector) : null,
+                smsFeat != null && smsFeat.hasUrl,
+                smsFeat != null ? smsFeat.urlCount : 0,
+                smsFeat != null ? smsFeat.urgencyScore : 0f,
+                smsFeat != null && smsFeat.moneyMentioned,
+                smsFeat != null && smsFeat.impersonation,
+                urlFeatures,
+                urls,
+                callFeatures,
+                callReportCount, callConfirmedCount, callSource,
+                audioEmbedding);
+
+        long elapsed_us = (System.nanoTime() - t0) / 1000;
+        Log.i(TAG, "OnDevice detect() → " + result.toSummary() + " in " + elapsed_us + "μs");
+        return result;
+    }
+
+    /** 便捷重载：仅 SMS 检测 */
+    public OnDeviceDetectionResult detectSms(String smsContent, String sender) {
+        return detect(smsContent, sender, null, null, 0, 0, null);
+    }
+
+    // ── 辅助方法 ────────────────────────────────────────────
+
+    private float sourceToScore(String source) {
+        if ("police".equals(source)) return 1.0f;
+        if ("system".equals(source)) return 0.6f;
+        return 0.3f; // user_report
+    }
+
+    private float[] toPrimitive(java.util.List<Float> list) {
+        float[] arr = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) arr[i] = list.get(i);
+        return arr;
     }
 
     // ── 状态查询 ────────────────────────────────────────────

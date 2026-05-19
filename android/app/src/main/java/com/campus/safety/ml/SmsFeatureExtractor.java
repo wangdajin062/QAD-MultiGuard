@@ -47,7 +47,7 @@ public class SmsFeatureExtractor {
     };
 
     // URL 正则
-    private static final Pattern URL_PATTERN =
+    static final Pattern URL_PATTERN =
         Pattern.compile("(https?://|www\\.|bit\\.ly|t\\.cn)[^\\s]+",
                         Pattern.CASE_INSENSITIVE);
 

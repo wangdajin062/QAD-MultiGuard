@@ -46,6 +46,84 @@ public class AcousticEmbeddingExtractor {
     // ── 主提取方法 ──────────────────────────────────────────
 
     /**
+     * 韵律特征容器 — 4 路粗粒度韵律分解
+     * 用于 OnDeviceMultimodalDetector.scoreVoiceRisk()
+     */
+    public static class ProsodyFeatures {
+        public final float energyVar;
+        public final float toneProxy;
+        public final float urgencyProxy;
+        public final float pitchRange;
+
+        public ProsodyFeatures(float energyVar, float toneProxy,
+                               float urgencyProxy, float pitchRange) {
+            this.energyVar    = energyVar;
+            this.toneProxy    = toneProxy;
+            this.urgencyProxy = urgencyProxy;
+            this.pitchRange   = pitchRange;
+        }
+    }
+
+    /**
+     * 从 128-d F_v 嵌入估算韵律指标。
+     * 与 Python AcousticEmbeddingExtractor.extract_from_embedding_list() 对齐：
+     *   energy_var    = var(f_mfcc[0..15])
+     *   tone_proxy    = mean(|f_mfcc[16..31]|)
+     *   urgency_proxy = max(|f_proj[0..15]|)
+     *   pitch_range   = ptp(f_mfcc[0..7])
+     */
+    public static ProsodyFeatures extractProsody(float[] embedding) {
+        if (embedding == null || embedding.length < 128) {
+            return new ProsodyFeatures(0, 0, 0, 0);
+        }
+        // f_mfcc = embedding[0..63], f_proj = embedding[64..127]
+        float energyVar    = variance(embedding, 0, 16);
+        float toneProxy    = meanAbs(embedding, 16, 32);
+        float urgencyProxy = maxAbs(embedding, 64, 80);
+        float pitchRange   = ptp(embedding, 0, 8);
+        return new ProsodyFeatures(energyVar, toneProxy, urgencyProxy, pitchRange);
+    }
+
+    // ── 统计辅助（与 OnDeviceMultimodalDetector 共享实现）─────
+    private static float variance(float[] arr, int start, int end) {
+        double sum = 0, sumSq = 0;
+        int n = Math.min(end, arr.length) - start;
+        if (n <= 1) return 0;
+        for (int i = start; i < start + n; i++) {
+            sum += arr[i];
+            sumSq += arr[i] * arr[i];
+        }
+        double mean = sum / n;
+        return (float) ((sumSq / n) - (mean * mean));
+    }
+
+    private static float meanAbs(float[] arr, int start, int end) {
+        double sum = 0;
+        int n = Math.min(end, arr.length) - start;
+        if (n <= 0) return 0;
+        for (int i = start; i < start + n; i++) sum += Math.abs(arr[i]);
+        return (float) (sum / n);
+    }
+
+    private static float maxAbs(float[] arr, int start, int end) {
+        float max = 0;
+        int n = Math.min(end, arr.length);
+        for (int i = start; i < n; i++) max = Math.max(max, Math.abs(arr[i]));
+        return max;
+    }
+
+    private static float ptp(float[] arr, int start, int end) {
+        int n = Math.min(end, arr.length);
+        if (n <= start) return 0;
+        float min = arr[start], max = arr[start];
+        for (int i = start + 1; i < n; i++) {
+            if (arr[i] < min) min = arr[i];
+            if (arr[i] > max) max = arr[i];
+        }
+        return max - min;
+    }
+
+    /**
      * 从 PCM 音频提取 128 维隐私保护声学嵌入
      *
      * @param pcm  float[] PCM 数据，范围 [-1, 1]，采样率 16kHz
