@@ -1,8 +1,8 @@
 # QAD-MultiGuard v4.1
-## 软硬协同多模态电信欺诈检测系统
+## 软硬协同多模态电信欺诈检测系统 + 管理看板
 
 > **推测解码 (Speculative Decoding) × 量化感知蒸馏 (QAD-4bit) × 多模态 L-BFGS 融合**
-> 98 项测试通过 | DP 隐私保护 (ε≈9.69) | PIPL §23 合规
+> 98 项测试通过 | DP 隐私保护 (ε≈9.69) | PIPL §23 合规 | Web 管理看板
 
 ---
 
@@ -18,7 +18,8 @@ campus_safety_v3/
 │   │   ├── inference.py             # ★ 推理引擎 API（8个端点）
 │   │   ├── auth.py / calls.py / sms.py
 │   │   ├── cases.py / alerts.py / reports.py / users.py
-│   │   └── admin.py
+│   │   ├── admin.py                 # 管理后台 API（14 个端点）
+│   │   └── admin_web.py            # ★ 管理看板 Web 认证 + 页面路由
 │   ├── ml/
 │   │   ├── speculative_decoder.py   # 推测解码 (DraftModel + VerifyModel)
 │   │   ├── qad_pipeline.py          # 量化感知蒸馏 (INT4 + ov-freeze)
@@ -30,6 +31,16 @@ campus_safety_v3/
 │   ├── models/                      # SQLAlchemy ORM (13张表)
 │   ├── schemas/                     # Pydantic 请求/响应校验
 │   ├── services/                    # 短信 / FCM / 调度器
+│   ├── static/admin/                # ★ 管理看板前端
+│   │   ├── login.html               # 管理员登录页
+│   │   ├── index.html               # 数据仪表盘 (Chart.js)
+│   │   ├── reports.html             # 举报审核
+│   │   ├── cases.html               # 案例管理 (CRUD)
+│   │   ├── alerts.html              # 预警发布
+│   │   ├── keywords.html            # 关键词管理
+│   │   ├── phones.html              # 诈骗号码库
+│   │   ├── css/admin.css            # 管理看板样式
+│   │   └── js/admin.js              # 共享工具函数
 │   └── tests/                       # 98 测试（3 套件）
 │       ├── test_v41_features.py     # v4.1 新功能测试 (25)
 │       ├── test_security.py         # 安全回归测试 (9)
@@ -93,8 +104,21 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env && vim .env
+# 开发模式默认使用 SQLite，无需安装 PostgreSQL/Redis
 uvicorn main:app --reload --port 8000
 ```
+
+**管理看板**：浏览器打开 `http://127.0.0.1:8000/admin/login`
+
+- 开发环境万能验证码：`888888`
+- 首次使用需在数据库中创建管理员账号（`role=admin`）
+
+**切换数据库**：编辑 `.env` 中 `DATABASE_TYPE`
+
+| 配置 | 值 | 说明 |
+|------|-----|------|
+| `DATABASE_TYPE` | `sqlite` (默认) | 本地开发，零依赖 |
+| `DATABASE_TYPE` | `postgresql` | 生产环境 |
 
 ---
 
@@ -172,7 +196,37 @@ voice_risk_score: [0, 100] = 35·E + 28·T + 25·U + 12·P
 | POST | `/v1/infer/evaluate` | 批量评估 | 异步 |
 | POST | `/v1/infer/train-from-data` | 热启动训练 | 异步 |
 
-### 原有端点
+### 管理看板
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| POST | `/admin/api/login` | 管理员登录 | 验证码 |
+| GET | `/admin/api/me` | 当前管理员信息 | Cookie |
+| POST | `/admin/api/logout` | 登出 + Token 黑名单 | Cookie |
+| GET | `/admin/dashboard` | 数据仪表盘页面 | — |
+| GET | `/admin/reports` | 举报审核页面 | — |
+| GET | `/admin/cases` | 案例管理页面 | — |
+| GET | `/admin/alerts` | 预警管理页面 | — |
+| GET | `/admin/keywords` | 关键词管理页面 | — |
+| GET | `/admin/phones` | 诈骗号码库页面 | — |
+
+### 管理后台 API
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/v1/admin/dashboard` | 数据总览（用户/案例/举报统计） |
+| GET/POST | `/v1/admin/reports` | 举报审核列表 / 审核操作 |
+| POST | `/v1/admin/reports/{id}/approve` | 审核通过（自动入号码库） |
+| POST | `/v1/admin/reports/{id}/reject` | 审核拒绝 |
+| GET/POST | `/v1/admin/cases` | 案例列表 / 新建案例 |
+| PUT/DELETE | `/v1/admin/cases/{id}` | 编辑 / 下架案例 |
+| GET/POST | `/v1/admin/alerts` | 预警列表 / 发布预警 |
+| GET/POST | `/v1/admin/keywords` | 关键词列表 / 添加关键词 |
+| DELETE | `/v1/admin/keywords/{id}` | 停用关键词 |
+| GET | `/v1/admin/fraud-phones` | 诈骗号码库列表 |
+| POST | `/v1/admin/fraud-phones/{id}/verify` | 人工核实号码 |
+
+### 其它端点
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
@@ -184,7 +238,6 @@ voice_risk_score: [0, 100] = 35·E + 28·T + 25·U + 12·P
 | GET | `/v1/alerts` | 预警列表 |
 | POST | `/v1/reports` | 举报 |
 | GET | `/v1/user/stats` | 防护统计 |
-| `*` | `/v1/admin/*` | 管理后台 |
 
 ---
 
@@ -211,6 +264,7 @@ SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
 |------|------|
 | Token 存储 | AES-256-GCM (Android Keystore) |
 | JWT | HS256 + jti + Refresh Token Rotation + 黑名单 |
+| 管理看板认证 | Cookie Session (httpOnly + SameSite) + Bearer 双通道 |
 | 手机号隐私 | PBKDF2-SHA256 (非明文 SHA256) |
 | 声学隐私 | 差分隐私高斯机制 (ε≈9.69) |
 | SQL 安全 | SQLAlchemy ORM 参数化 |
