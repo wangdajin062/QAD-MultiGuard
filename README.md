@@ -1,24 +1,24 @@
-# QAD-MultiGuard v4.1
+# QAD-MultiGuard v5.0
 ## 软硬协同多模态电信欺诈检测系统 + 管理看板
 
-> **推测解码 (Speculative Decoding) × 量化感知蒸馏 (QAD-4bit) × 多模态 L-BFGS 融合**
-> 98 项测试通过 | DP 隐私保护 (ε≈9.69) | PIPL §23 合规 | Web 管理看板
+> **推测解码 (Speculative Decoding) × 量化感知蒸馏 (QAD-4bit) × 端侧 LLM × 多模态 L-BFGS 融合**
+> Material Design 3 | 深色 OLED 管理看板 | DP 隐私保护 (ε≈9.69) | PIPL §23 合规
 
 ---
 
 ## 目录结构
 
 ```
-campus_safety_v3/
-├── backend/                         # Python FastAPI 后端 v4.1
-│   ├── main.py                      # 应用入口（v4.1 多模态架构）
+campus_safety_v5/
+├── backend/                         # Python FastAPI 后端 v5.0
+│   ├── main.py                      # 应用入口（v5.0 多模态架构）
 │   ├── requirements.txt
-│   ├── Dockerfile                   # 多阶段构建 (builder+runtime)
+│   ├── Dockerfile                   # Python 3.12 多阶段构建
 │   ├── api/v1/
 │   │   ├── inference.py             # ★ 推理引擎 API（8个端点）
 │   │   ├── auth.py / calls.py / sms.py
 │   │   ├── cases.py / alerts.py / reports.py / users.py
-│   │   ├── admin.py                 # 管理后台 API（14 个端点）
+│   │   ├── admin.py                 # 管理后台 API
 │   │   └── admin_web.py            # ★ 管理看板 Web 认证 + 页面路由
 │   ├── ml/
 │   │   ├── speculative_decoder.py   # 推测解码 (DraftModel + VerifyModel)
@@ -28,46 +28,31 @@ campus_safety_v3/
 │   │   ├── fraud_detector.py        # 集成规则引擎 + GBM
 │   │   └── data_loader.py           # 训练数据加载
 │   ├── core/                        # 配置 / 数据库 / Redis / 安全
-│   ├── models/                      # SQLAlchemy ORM (13张表)
+│   ├── models/                      # SQLAlchemy ORM
 │   ├── schemas/                     # Pydantic 请求/响应校验
 │   ├── services/                    # 短信 / FCM / 调度器
-│   ├── static/admin/                # ★ 管理看板前端
-│   │   ├── login.html               # 管理员登录页
-│   │   ├── index.html               # 数据仪表盘 (Chart.js)
-│   │   ├── reports.html             # 举报审核
-│   │   ├── cases.html               # 案例管理 (CRUD)
-│   │   ├── alerts.html              # 预警发布
-│   │   ├── keywords.html            # 关键词管理
-│   │   ├── phones.html              # 诈骗号码库
-│   │   ├── css/admin.css            # 管理看板样式
-│   │   └── js/admin.js              # 共享工具函数
-│   └── tests/                       # 98 测试（3 套件）
-│       ├── test_v41_features.py     # v4.1 新功能测试 (25)
+│   ├── static/admin/                # ★ 管理看板前端 (深色 OLED 主题)
+│   │   ├── login.html / index.html  # 登录 / 数据仪表盘 (Chart.js)
+│   │   ├── reports.html / cases.html
+│   │   ├── alerts.html / keywords.html / phones.html
+│   │   └── css/admin.css            # 管理看板样式 (玻璃态卡片)
+│   └── tests/
+│       ├── test_v5_features.py      # v5.0 功能测试 (25)
 │       ├── test_security.py         # 安全回归测试 (9)
 │       └── test_api_contract.py     # 前后端契约测试 (12)
-├── android/                         # Java Android 前端
-│   ├── app/build.gradle             # v4.1 (versionCode 41)
+├── android/                         # Java Android 前端 (Material 3)
+│   ├── app/build.gradle             # v5.0 (compileSdk 36, AGP 9.2)
 │   └── src/main/java/com/campus/safety/
-│       ├── engine/OnDeviceLLMEngine.java
+│       ├── ml/OnDeviceMultimodalDetector.java  # 端侧多模态检测
 │       ├── ml/SpeculativeDecoder.java
-│       ├── ml/SmsFeatureExtractor.java  # ★ 6维URL特征
-│       ├── service/RealTimeCallAnalyzer.java
-│       ├── model/MultimodalFeatures.java
-│       └── util/TokenManager.java
-├── database/
-│   ├── schema_postgresql.sql
-│   └── migrations/
-├── scripts/
-│   ├── verify_deployment.py
-│   ├── prepare_models.py
-│   ├── download_audio.py
-│   └── download_teleantifraud.py
+│       ├── ml/SmsFeatureExtractor.java
+│       ├── ml/AcousticEmbeddingExtractor.java
+│       └── engine/OnDeviceLLMEngine.java
+├── deploy.sh                        # 一键部署脚本
 ├── nginx/nginx.conf
-├── .github/workflows/ci.yml        # CI/CD 流水线
 ├── docker-compose.yml
 ├── .env.example
-├── .gitignore
-├── deploy.sh
+├── .github/workflows/ci.yml
 └── README.md
 ```
 
@@ -247,15 +232,15 @@ voice_risk_score: [0, 100] = 35·E + 28·T + 25·U + 12·P
 cd backend
 pip install -r requirements.txt
 SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
-# 预期结果：98 passed / 0 failed
+# 预期结果：全部通过
 ```
 
 | 测试套件 | 数量 | 覆盖内容 |
 |---------|------|---------|
 | `test_api.py` | 22 | 认证/通话/短信/案例/举报/警报/推理端点 |
 | `test_extended.py` | 30 | 缓存/短信/推送/调度器/管理后台 |
-| `test_v41_features.py` | 25 | 声学评分/URL评分/韵律分解/DP ε/嵌入重建 |
-| `test_security.py` | 9 | 死代码/并发/H2-H6/M3/M5 安全回归 |
+| `test_v5_features.py` | 25 | 声学评分/URL评分/韵律分解/DP ε/嵌入重建 |
+| `test_security.py` | 9 | 安全回归测试 |
 | `test_api_contract.py` | 12 | Java↔Python 字段对齐/Schema/维度 |
 
 ## 安全特性
@@ -280,10 +265,10 @@ SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
 ```yaml
 # .github/workflows/ci.yml
 # 触发: push/PR → 自动运行
-- Python 测试 (pytest 98 tests)
+- Python 测试 (pytest)
 - 语法检查 (ruff + pyright)
 - Docker 构建验证
-- Android 语法检查
+- Android 语法检查 (AGP 9.2)
 ```
 
 ## 性能指标
@@ -298,6 +283,19 @@ SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
 | F1-Score | >93% | 93.5% |
 | 在线学习@600样本 | >95% | 95.4% |
 
+## V5.0 更新内容
+
+| 类别 | 升级项 |
+|------|--------|
+| **Android 构建** | AGP 8.3 → 9.2, Gradle 9.0 → 9.4, compileSdk/targetSdk 34 → 36 |
+| **Android 版本** | versionCode 41 → 50, versionName 4.1.0 → 5.0.0 |
+| **Android 依赖** | AndroidX 全线升级, Firebase BOM 33.1 → 34.13, Coil 2.6 → 2.7 |
+| **Android UI** | Material Design 3 主题 (sky-700 #0369A1), 全量 emoji → 矢量图标替换 |
+| **后端版本** | FastAPI 0.111 → 0.115, Pydantic 2.9 → 2.10, API 版本 5.0.0 |
+| **后端运行时** | Docker Python 3.11 → 3.12, 全部依赖升级至最新 |
+| **管理看板** | 深色 OLED 主题重构 (Fira Code 等宽字体, 玻璃态卡片, 毛玻璃模态框) |
+| **安全性** | 全量移除 UI emoji, 修复缺失图标引用, 统一 Chip/卡片组件风格 |
+
 ## 环境要求
 
 ### 最低配置（CPU）
@@ -309,6 +307,6 @@ SECRET_KEY="test_secret_key_32_characters_long_ok" python -m pytest tests/ -v
 - **内存**: 32GB | **存储**: 100GB NVMe
 
 ### Android
-- **SDK**: 24-34 (Android 7.0-14)
-- **推荐**: Snapdragon 8 Gen 2+ (NNAPI)
+- **SDK**: 24-36 (Android 7.0-16 "Baklava")
+- **推荐**: Snapdragon 8 Gen 3+ (NNAPI)
 - **内存**: 6GB+ RAM
