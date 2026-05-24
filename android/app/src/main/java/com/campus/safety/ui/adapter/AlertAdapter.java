@@ -53,18 +53,17 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.VH> {
             b = bb;
         }
         void bind(FraudAlert a) {
-            b.tvEmoji.setText(a.emoji != null ? a.emoji : "⚠️");
             b.tvTitle.setText(a.title != null ? a.title : "");
             b.tvContent.setText(a.content != null ? a.content : "");
             b.tvUrgent.setVisibility(a.is_urgent ? View.VISIBLE : View.GONE);
 
             // 风险等级显示
             if ("high".equals(a.risk_level)) {
-                b.tvRiskLevel.setText("🔴 高危");
+                b.tvRiskLevel.setText("高危");
             } else if ("medium".equals(a.risk_level)) {
-                b.tvRiskLevel.setText("🟠 中危");
+                b.tvRiskLevel.setText("中危");
             } else {
-                b.tvRiskLevel.setText("🟢 低危");
+                b.tvRiskLevel.setText("低危");
             }
 
             // 时间格式化

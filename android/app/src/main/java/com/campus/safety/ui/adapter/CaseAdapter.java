@@ -34,7 +34,7 @@ public class CaseAdapter extends RecyclerView.Adapter<CaseAdapter.VH> {
             b.tvTitle.setText((c.emoji != null ? c.emoji + " " : "") + c.title);
             b.tvSummary.setText(c.summary);
             b.tvCategory.setText(c.category);
-            b.tvViewCount.setText("👁 " + c.view_count);
+            b.tvViewCount.setText("浏览 " + c.view_count);
             b.tvFeatured.setVisibility(c.is_featured ? View.VISIBLE : View.GONE);
             b.getRoot().setOnClickListener(v -> onClick.onClick(c));
         }

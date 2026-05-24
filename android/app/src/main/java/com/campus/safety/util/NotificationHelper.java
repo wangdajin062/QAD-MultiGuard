@@ -23,7 +23,7 @@ public class NotificationHelper {
     public static void showCallAlert(Context ctx, String phone, int riskScore,
                                       String ruleTriggered, boolean isUrgent) {
         String ch = isUrgent ? CH_URGENT : CH_WARN;
-        String title = (isUrgent ? "🚨 高危诈骗来电 " : "⚡ 可疑来电 ")
+        String title = (isUrgent ? "高危诈骗来电 " : "可疑来电 ")
                       + Utils.maskPhone(phone);
         String body = "风险评分 " + riskScore + "/100"
                      + (ruleTriggered != null ? "\n触发规则: " + ruleTriggered : "");
@@ -56,7 +56,7 @@ public class NotificationHelper {
     /** 短信预警 */
     public static void showSmsAlert(Context ctx, String sender, int riskScore, String summary) {
         String ch = riskScore >= 70 ? CH_URGENT : CH_WARN;
-        String title = (riskScore >= 70 ? "🚨 诈骗短信 " : "⚡ 可疑短信 ") + Utils.maskPhone(sender);
+        String title = (riskScore >= 70 ? "诈骗短信 " : "可疑短信 ") + Utils.maskPhone(sender);
         Intent i = new Intent(ctx, DetectionResultActivity.class)
             .putExtra("phone", sender)
             .putExtra("risk_score", riskScore)

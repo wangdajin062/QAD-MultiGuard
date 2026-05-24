@@ -66,7 +66,7 @@ public class CaseDetailActivity extends AppCompatActivity {
         String titleText = (c.emoji != null ? c.emoji + " " : "") + (c.title != null ? c.title : "");
         bd.tvTitle.setText(titleText);
         bd.tvCategory.setText(c.category != null ? c.category : "");
-        bd.tvViewCount.setText("👁 阅读 " + c.view_count);
+        bd.tvViewCount.setText("阅读 " + c.view_count);
         bd.tvContent.setText(c.content != null ? c.content : c.summary);
         bd.tvPublishTime.setText(c.published_at != null
             ? "发布：" + c.published_at.substring(0, 10) : "");

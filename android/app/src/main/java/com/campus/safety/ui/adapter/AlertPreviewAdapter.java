@@ -42,7 +42,6 @@ public class AlertPreviewAdapter extends RecyclerView.Adapter<AlertPreviewAdapte
             b = bb;
         }
         void bind(FraudAlert a) {
-            b.tvEmoji.setText(a.emoji != null ? a.emoji : "⚠️");
             b.tvTitle.setText(a.title != null ? a.title : "");
             b.tvContent.setText(a.content != null ? a.content : "");
             b.tvUrgentBadge.setVisibility(a.is_urgent ? View.VISIBLE : View.GONE);

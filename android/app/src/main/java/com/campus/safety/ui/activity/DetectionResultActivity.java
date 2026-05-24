@@ -57,7 +57,7 @@ public class DetectionResultActivity extends AppCompatActivity {
         renderRiskLevel(initialLevel != null ? initialLevel : scoreToLevel(initialScore));
         if (ruleTriggered != null) {
             bd.tvRuleBadge.setVisibility(View.VISIBLE);
-            bd.tvRuleBadge.setText("⚠ 规则触发: " + ruleTriggered);
+            bd.tvRuleBadge.setText("规则触发: " + ruleTriggered);
         }
 
         bd.btnReport.setOnClickListener(x -> {
@@ -87,7 +87,7 @@ public class DetectionResultActivity extends AppCompatActivity {
             public void onFastResult(CoTStreamEvent e) {
                 runOnUiThread(() -> {
                     bd.cardFast.setVisibility(View.VISIBLE);
-                    bd.tvFastLatency.setText("⚡ " + (e.latency_ms != null ? String.format("%.0f", e.latency_ms) : "?") + " ms");
+                    bd.tvFastLatency.setText((e.latency_ms != null ? String.format("%.0f", e.latency_ms) : "?") + " ms");
                     if (e.risk_level != null) renderRiskLevel(e.risk_level);
                     if (e.risk_score != null) animateScore(initialScore, e.risk_score);
                     if (e.modalities != null) {
@@ -102,7 +102,7 @@ public class DetectionResultActivity extends AppCompatActivity {
             public void onImmediateAlert(CoTStreamEvent e) {
                 runOnUiThread(() -> {
                     bd.cardUrgent.setVisibility(View.VISIBLE);
-                    bd.tvUrgentMsg.setText("🚨 高危警告！立即挂断，切勿转账！");
+                    bd.tvUrgentMsg.setText("高危警告！立即挂断，切勿转账！");
                 });
             }
 
@@ -137,15 +137,15 @@ public class DetectionResultActivity extends AppCompatActivity {
                     bd.cardAction.setVisibility(View.VISIBLE);
                     String lvl = e.risk_level;
                     if ("high".equals(lvl)) {
-                        bd.btnAction.setText("⚠️ 立即挂断并举报");
+                        bd.btnAction.setText("立即挂断并举报");
                         bd.btnAction.setBackgroundTintList(getResources().getColorStateList(R.color.risk_red));
                         bd.tvActionHint.setText("此号码存在高危诈骗风险，请勿回拨，切勿透露验证码、银行卡信息。");
                     } else if ("medium".equals(lvl)) {
-                        bd.btnAction.setText("⚡ 提高警惕");
+                        bd.btnAction.setText("提高警惕");
                         bd.btnAction.setBackgroundTintList(getResources().getColorStateList(R.color.risk_orange));
                         bd.tvActionHint.setText("保持警惕，核实对方真实身份后再做决定。");
                     } else {
-                        bd.btnAction.setText("✓ 暂无风险");
+                        bd.btnAction.setText("暂无风险");
                         bd.btnAction.setBackgroundTintList(getResources().getColorStateList(R.color.risk_green));
                         bd.tvActionHint.setText("暂未发现异常，仍建议谨慎应对陌生来电。");
                     }
@@ -204,7 +204,7 @@ public class DetectionResultActivity extends AppCompatActivity {
     private void showFeedbackDialog() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("反馈此次检测")
-            .setItems(new String[]{"✅ 结果正确", "❌ 实际为正常号码 (误报)", "⚠️ 实际为诈骗号码 (漏报)"},
+            .setItems(new String[]{"结果正确", "实际为正常号码 (误报)", "实际为诈骗号码 (漏报)"},
                 (d, which) -> {
                     Toast.makeText(this, "感谢反馈，模型将持续优化", Toast.LENGTH_SHORT).show();
                     // TODO: 调用 /v1/infer/feedback

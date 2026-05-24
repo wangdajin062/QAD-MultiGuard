@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                     TokenManager.saveLogin(LoginActivity.this, lr.token, lr.user.id,
                         lr.user.nickname, lr.user.phone);
                     TokenManager.saveProtectionScore(LoginActivity.this, lr.user.protection_score);
-                    toast(lr.user.is_new_user ? "欢迎加入校园安全 🛡" : "登录成功");
+                    toast(lr.user.is_new_user ? "欢迎加入校园安全" : "登录成功");
                     startActivity(new Intent(LoginActivity.this, MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

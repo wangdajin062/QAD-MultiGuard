@@ -150,12 +150,12 @@ public class SpeculativeDecoder {
     private String generateToken(SmsFeatureExtractor.Features f, int pos, float score, String cat) {
         float catAlpha = getAlphaForCategory(cat);
         if (score >= 90 || catAlpha >= 0.90f)
-            return pos == 0 ? "⚠高危" : pos == 1 ? "诈骗" : pos == 2 ? "立即挂断" : "特征";
+            return pos == 0 ? "高危" : pos == 1 ? "诈骗" : pos == 2 ? "立即挂断" : "特征";
         if (score >= 70)
-            return pos == 0 ? "⚡中高危" : "可疑";
+            return pos == 0 ? "中高危" : "可疑";
         if (score >= 35)
-            return pos == 0 ? "⚡注意" : "观察";
-        return pos == 0 ? "✓安全" : "正常";
+            return pos == 0 ? "注意" : "观察";
+        return pos == 0 ? "安全" : "正常";
     }
 
     private float computeTokenProb(float score, int position, String cat) {

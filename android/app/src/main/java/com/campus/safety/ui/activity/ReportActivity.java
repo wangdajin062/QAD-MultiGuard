@@ -59,7 +59,7 @@ public class ReportActivity extends AppCompatActivity {
             @Override public void onResponse(Call<ApiResponse<Map<String, Object>>> c, Response<ApiResponse<Map<String, Object>>> r) {
                 bd.progress.setVisibility(View.GONE);
                 if (r.isSuccessful() && r.body() != null && r.body().isSuccess()) {
-                    Toast.makeText(ReportActivity.this, "✅ 举报已提交，感谢您的贡献", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReportActivity.this, "举报已提交，感谢您的贡献", Toast.LENGTH_LONG).show();
                     finish();
                 } else {
                     bd.btnSubmit.setEnabled(true);

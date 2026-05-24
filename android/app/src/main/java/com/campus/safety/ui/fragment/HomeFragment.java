@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
 
         // 今日提示
         if (d.today_tip != null) {
-            String tipTitle = (d.today_tip.emoji != null ? d.today_tip.emoji + " " : "💡 ")
+            String tipTitle = (d.today_tip.emoji != null ? d.today_tip.emoji + " " : "")
                 + (d.today_tip.title != null ? d.today_tip.title : "今日防骗提示");
             bd.tvTipTitle.setText(tipTitle);
             bd.tvTipContent.setText(d.today_tip.content != null ? d.today_tip.content : "");
