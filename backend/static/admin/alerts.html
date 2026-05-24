@@ -2,30 +2,40 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>预警管理 — QAD-MultiGuard 管理看板</title>
+<title>预警管理 &mdash; QAD-MultiGuard 管理看板</title>
 <link rel="stylesheet" href="/static/admin/css/admin.css">
 </head>
 <body>
 <aside class="sidebar">
-  <div class="sidebar-brand"><span class="icon">🛡️</span><span>QAD-MultiGuard</span></div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">&Sigma;</div>
+    <div class="brand-text">QAD-MultiGuard<small>v4.1 管理看板</small></div>
+  </div>
   <nav class="sidebar-nav">
-    <a href="/admin/dashboard"><span class="icon">📊</span><span>数据仪表盘</span></a>
-    <a href="/admin/reports"><span class="icon">📋</span><span>举报审核</span></a>
-    <a href="/admin/cases"><span class="icon">📖</span><span>案例管理</span></a>
-    <a href="/admin/alerts" class="active"><span class="icon">🔔</span><span>预警发布</span></a>
-    <a href="/admin/keywords"><span class="icon">🔑</span><span>关键词管理</span></a>
-    <a href="/admin/phones"><span class="icon">📞</span><span>诈骗号码库</span></a>
+    <a href="/admin/dashboard"><span class="nav-icon">&#9783;</span><span>数据仪表盘</span></a>
+    <a href="/admin/reports"><span class="nav-icon">&#9997;</span><span>举报审核</span></a>
+    <a href="/admin/cases"><span class="nav-icon">&#128214;</span><span>案例管理</span></a>
+    <a href="/admin/alerts" class="active"><span class="nav-icon">&#9888;</span><span>预警发布</span></a>
+    <a href="/admin/keywords"><span class="nav-icon">&#128272;</span><span>关键词管理</span></a>
+    <a href="/admin/phones"><span class="nav-icon">&#9742;</span><span>诈骗号码库</span></a>
   </nav>
-  <div class="sidebar-user"><span class="name">管理员</span><span class="logout" title="登出">⏻</span></div>
+  <div class="sidebar-user">
+    <div class="avatar">A</div>
+    <div class="user-info"><div class="name">管理员</div><div class="role">超级管理员</div></div>
+    <div class="logout" title="登出">&#9211;</div>
+  </div>
 </aside>
 
 <main class="main">
   <div class="page-header">
-    <h1>🔔 预警管理</h1>
+    <div>
+      <h1>预警发布</h1>
+      <div class="subtitle">发布并推送反诈骗预警消息</div>
+    </div>
     <button class="btn btn-primary" onclick="showCreateAlert()">+ 发布预警</button>
   </div>
   <div class="card">
-    <div id="alertsTable"></div>
+    <div class="table-container" id="alertsTable"></div>
     <div id="pagination" class="pagination"></div>
   </div>
 </main>
@@ -43,19 +53,19 @@ async function loadAlerts(page = 1) {
 function renderAlerts(data) {
   const items = data.data || data.items || [];
   if (!items.length) {
-    document.getElementById('alertsTable').innerHTML = '<p style="text-align:center;padding:20px;">暂无预警</p>';
+    document.getElementById('alertsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">&#128196;</div><p>暂无预警</p></div>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
   const rows = items.map(a => `
     <tr>
-      <td>${a.id}</td>
-      <td>${a.emoji || ''} ${a.title}</td>
+      <td style="color:var(--text-muted);font-family:'Fira Code',monospace;">${a.id}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.emoji || ''} ${a.title}</td>
       <td>${riskBadge(a.risk_level)}</td>
-      <td>${a.is_urgent ? '🔴 紧急' : '🟢 常规'}</td>
-      <td>${a.push_count || 0} / ${a.read_count || 0}</td>
+      <td>${a.is_urgent ? '<span class="badge badge-urgent">紧急</span>' : '<span class="badge badge-safe">常规</span>'}</td>
+      <td><span style="font-family:\'Fira Code\',monospace;">${a.push_count || 0}</span> / <span style="font-family:\'Fira Code\',monospace;">${a.read_count || 0}</span></td>
       <td>${(a.tags || []).join(', ') || '-'}</td>
-      <td>${fmtTime(a.published_at)}</td>
+      <td style="font-family:'Fira Code',monospace;font-size:12px;">${fmtTime(a.published_at)}</td>
     </tr>
   `).join('');
   document.getElementById('alertsTable').innerHTML = `
@@ -86,15 +96,16 @@ function showCreateAlert() {
       <input id="target_schools" class="form-control" placeholder="清华大学, 北京大学">
     </div>
   `, async (overlay) => {
+    const title = overlay.querySelector('#title').value;
+    if (!title) { showToast('请输入标题', 'error'); return; }
     const schools = overlay.querySelector('#target_schools').value;
     const body = {
-      title: overlay.querySelector('#title').value,
+      title,
       content: overlay.querySelector('#content').value,
       risk_level: overlay.querySelector('#risk_level').value,
       is_urgent: overlay.querySelector('#is_urgent').value === 'true',
     };
     if (schools) body.target_schools = schools.split(',').map(s => s.trim()).filter(Boolean);
-    if (!body.title) { showToast('请输入标题', 'error'); return; }
     try {
       await apiPost(V1 + '/alerts', body);
       showToast('预警发布成功，正在推送...', 'success');

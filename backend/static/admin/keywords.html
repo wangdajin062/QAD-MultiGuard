@@ -2,30 +2,40 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>关键词管理 — QAD-MultiGuard 管理看板</title>
+<title>关键词管理 &mdash; QAD-MultiGuard 管理看板</title>
 <link rel="stylesheet" href="/static/admin/css/admin.css">
 </head>
 <body>
 <aside class="sidebar">
-  <div class="sidebar-brand"><span class="icon">🛡️</span><span>QAD-MultiGuard</span></div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">&Sigma;</div>
+    <div class="brand-text">QAD-MultiGuard<small>v4.1 管理看板</small></div>
+  </div>
   <nav class="sidebar-nav">
-    <a href="/admin/dashboard"><span class="icon">📊</span><span>数据仪表盘</span></a>
-    <a href="/admin/reports"><span class="icon">📋</span><span>举报审核</span></a>
-    <a href="/admin/cases"><span class="icon">📖</span><span>案例管理</span></a>
-    <a href="/admin/alerts"><span class="icon">🔔</span><span>预警发布</span></a>
-    <a href="/admin/keywords" class="active"><span class="icon">🔑</span><span>关键词管理</span></a>
-    <a href="/admin/phones"><span class="icon">📞</span><span>诈骗号码库</span></a>
+    <a href="/admin/dashboard"><span class="nav-icon">&#9783;</span><span>数据仪表盘</span></a>
+    <a href="/admin/reports"><span class="nav-icon">&#9997;</span><span>举报审核</span></a>
+    <a href="/admin/cases"><span class="nav-icon">&#128214;</span><span>案例管理</span></a>
+    <a href="/admin/alerts"><span class="nav-icon">&#9888;</span><span>预警发布</span></a>
+    <a href="/admin/keywords" class="active"><span class="nav-icon">&#128272;</span><span>关键词管理</span></a>
+    <a href="/admin/phones"><span class="nav-icon">&#9742;</span><span>诈骗号码库</span></a>
   </nav>
-  <div class="sidebar-user"><span class="name">管理员</span><span class="logout" title="登出">⏻</span></div>
+  <div class="sidebar-user">
+    <div class="avatar">A</div>
+    <div class="user-info"><div class="name">管理员</div><div class="role">超级管理员</div></div>
+    <div class="logout" title="登出">&#9211;</div>
+  </div>
 </aside>
 
 <main class="main">
   <div class="page-header">
-    <h1>🔑 关键词管理</h1>
+    <div>
+      <h1>关键词管理</h1>
+      <div class="subtitle">管理短信/电话诈骗检测关键词库</div>
+    </div>
     <button class="btn btn-primary" onclick="showAddKeyword()">+ 添加关键词</button>
   </div>
   <div class="card">
-    <div id="keywordsTable"></div>
+    <div class="table-container" id="keywordsTable"></div>
   </div>
 </main>
 
@@ -42,19 +52,19 @@ async function loadKeywords() {
 function renderKeywords(items) {
   const arr = Array.isArray(items) ? items : (items.data || items.items || []);
   if (!arr.length) {
-    document.getElementById('keywordsTable').innerHTML = '<p style="text-align:center;padding:20px;">暂无关键词</p>';
+    document.getElementById('keywordsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">&#128196;</div><p>暂无关键词</p></div>';
     return;
   }
   const rows = arr.map(k => `
     <tr>
-      <td>${k.id}</td>
-      <td><code style="background:#f1f3f4;padding:2px 8px;border-radius:4px;">${k.keyword}</code></td>
-      <td>${k.risk_weight || 0}</td>
+      <td style="color:var(--text-muted);font-family:'Fira Code',monospace;">${k.id}</td>
+      <td><code class="keyword-tag">${k.keyword}</code></td>
+      <td style="font-family:'Fira Code',monospace;">${k.risk_weight || 0}</td>
       <td>${k.category || '-'}</td>
-      <td>${k.hit_count || 0}</td>
-      <td>${k.is_active ? '<span class="badge badge-approved">启用</span>' : '<span class="badge badge-rejected">停用</span>'}</td>
-      <td>${fmtTime(k.created_at)}</td>
-      <td>
+      <td style="font-family:'Fira Code',monospace;">${k.hit_count || 0}</td>
+      <td>${k.is_active ? '<span class="badge badge-approved"><span class="status-dot active"></span>启用</span>' : '<span class="badge badge-rejected"><span class="status-dot inactive"></span>停用</span>'}</td>
+      <td style="font-family:'Fira Code',monospace;font-size:12px;">${fmtTime(k.created_at)}</td>
+      <td style="white-space:nowrap;">
         ${k.is_active ? `<button class="btn btn-sm btn-danger" onclick="deactivateKeyword(${k.id}, '${k.keyword}')">停用</button>` : ''}
       </td>
     </tr>
@@ -82,22 +92,22 @@ function showAddKeyword() {
       </div>
     </div>
   `, async (overlay) => {
-    const body = {
-      keyword: overlay.querySelector('#keyword').value,
-      risk_weight: parseInt(overlay.querySelector('#risk_weight').value) || 50,
-      category: overlay.querySelector('#category').value,
-    };
-    if (!body.keyword) { showToast('请输入关键词', 'error'); return; }
+    const keyword = overlay.querySelector('#keyword').value;
+    if (!keyword) { showToast('请输入关键词', 'error'); return; }
     try {
-      await apiPost(V1 + '/keywords', body);
+      await apiPost(V1 + '/keywords', {
+        keyword,
+        risk_weight: parseInt(overlay.querySelector('#risk_weight').value) || 50,
+        category: overlay.querySelector('#category').value,
+      });
       showToast('关键词添加成功', 'success');
       loadKeywords();
     } catch (e) { showToast(e.message, 'error'); }
   }, '添加');
 }
 
-async function deactivateKeyword(id, keyword) {
-  showModal('停用关键词', '<p>确认停用关键词「<b>' + keyword + '</b>」？</p>', async () => {
+function deactivateKeyword(id, keyword) {
+  showModal('停用关键词', '<p>确认停用关键词「<b>' + keyword + '」？</p>', async () => {
     try {
       await apiDelete(V1 + '/keywords/' + id);
       showToast('已停用', 'info');

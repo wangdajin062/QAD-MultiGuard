@@ -2,25 +2,37 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>举报审核 — QAD-MultiGuard 管理看板</title>
+<title>举报审核 &mdash; QAD-MultiGuard 管理看板</title>
 <link rel="stylesheet" href="/static/admin/css/admin.css">
 </head>
 <body>
 <aside class="sidebar">
-  <div class="sidebar-brand"><span class="icon">🛡️</span><span>QAD-MultiGuard</span></div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">&Sigma;</div>
+    <div class="brand-text">QAD-MultiGuard<small>v4.1 管理看板</small></div>
+  </div>
   <nav class="sidebar-nav">
-    <a href="/admin/dashboard"><span class="icon">📊</span><span>数据仪表盘</span></a>
-    <a href="/admin/reports" class="active"><span class="icon">📋</span><span>举报审核</span></a>
-    <a href="/admin/cases"><span class="icon">📖</span><span>案例管理</span></a>
-    <a href="/admin/alerts"><span class="icon">🔔</span><span>预警发布</span></a>
-    <a href="/admin/keywords"><span class="icon">🔑</span><span>关键词管理</span></a>
-    <a href="/admin/phones"><span class="icon">📞</span><span>诈骗号码库</span></a>
+    <a href="/admin/dashboard"><span class="nav-icon">&#9783;</span><span>数据仪表盘</span></a>
+    <a href="/admin/reports" class="active"><span class="nav-icon">&#9997;</span><span>举报审核</span></a>
+    <a href="/admin/cases"><span class="nav-icon">&#128214;</span><span>案例管理</span></a>
+    <a href="/admin/alerts"><span class="nav-icon">&#9888;</span><span>预警发布</span></a>
+    <a href="/admin/keywords"><span class="nav-icon">&#128272;</span><span>关键词管理</span></a>
+    <a href="/admin/phones"><span class="nav-icon">&#9742;</span><span>诈骗号码库</span></a>
   </nav>
-  <div class="sidebar-user"><span class="name">管理员</span><span class="logout" title="登出">⏻</span></div>
+  <div class="sidebar-user">
+    <div class="avatar">A</div>
+    <div class="user-info"><div class="name">管理员</div><div class="role">超级管理员</div></div>
+    <div class="logout" title="登出">&#9211;</div>
+  </div>
 </aside>
 
 <main class="main">
-  <div class="page-header"><h1>📋 举报审核</h1></div>
+  <div class="page-header">
+    <div>
+      <h1>举报审核</h1>
+      <div class="subtitle">审核和管理用户提交的诈骗举报</div>
+    </div>
+  </div>
   <div class="tabs">
     <div class="tab active" data-status="pending">待审核</div>
     <div class="tab" data-status="approved">已通过</div>
@@ -28,7 +40,7 @@
     <div class="tab" data-status="all">全部</div>
   </div>
   <div class="card">
-    <div id="reportsTable"></div>
+    <div class="table-container" id="reportsTable"></div>
     <div id="pagination" class="pagination"></div>
   </div>
 </main>
@@ -61,22 +73,22 @@ async function loadReports(page = 1) {
 function renderReports(data) {
   const items = data.data || data.items || [];
   if (!items.length) {
-    document.getElementById('reportsTable').innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:20px;">暂无数据</p>';
+    document.getElementById('reportsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">&#128196;</div><p>暂无数据</p></div>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
   const rows = items.map(r => `
     <tr>
-      <td>${r.id}</td>
+      <td style="color:var(--text-muted);font-family:'Fira Code',monospace;">${r.id}</td>
       <td>${statusBadge(r.report_type)}</td>
-      <td title="${r.target || ''}">${(r.target || '').substring(0, 30)}</td>
-      <td>${(r.description || '').substring(0, 40)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.target || ''}">${(r.target || '').substring(0, 30)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(r.description || '').substring(0, 40)}</td>
       <td>${statusBadge(r.status)}</td>
-      <td>${fmtTime(r.created_at)}</td>
-      <td>
+      <td style="font-family:'Fira Code',monospace;font-size:12px;">${fmtTime(r.created_at)}</td>
+      <td style="white-space:nowrap;">
         ${r.status === 'pending' ? `
           <button class="btn btn-sm btn-success" onclick="approveReport(${r.id})">通过</button>
-          <button class="btn btn-sm btn-outline" onclick="rejectReport(${r.id})">拒绝</button>
+          <button class="btn btn-sm btn-ghost" onclick="rejectReport(${r.id})">拒绝</button>
         ` : r.review_note || '-'}
       </td>
     </tr>
@@ -89,7 +101,7 @@ function renderReports(data) {
   renderPagination(document.getElementById('pagination'), data.meta || data, loadReports);
 }
 
-async function approveReport(id) {
+function approveReport(id) {
   showModal('审核通过', `
     <div class="form-group"><label>风险类型</label>
       <select id="riskType" class="form-control">
@@ -102,17 +114,18 @@ async function approveReport(id) {
       <input id="note" class="form-control" placeholder="可选">
     </div>
   `, async (overlay) => {
-    const riskType = overlay.querySelector('#riskType').value;
-    const note = overlay.querySelector('#note').value;
     try {
-      await apiPost(V1 + '/reports/' + id + '/approve', { note, risk_type: riskType });
+      await apiPost(V1 + '/reports/' + id + '/approve', {
+        note: overlay.querySelector('#note').value,
+        risk_type: overlay.querySelector('#riskType').value,
+      });
       showToast('已通过', 'success');
       loadReports(1);
     } catch (e) { showToast(e.message, 'error'); }
   }, '确认通过');
 }
 
-async function rejectReport(id) {
+function rejectReport(id) {
   showModal('拒绝举报', `
     <div class="form-group"><label>拒绝原因</label>
       <input id="note" class="form-control" placeholder="可选">

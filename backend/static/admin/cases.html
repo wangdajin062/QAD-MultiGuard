@@ -2,30 +2,40 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>案例管理 — QAD-MultiGuard 管理看板</title>
+<title>案例管理 &mdash; QAD-MultiGuard 管理看板</title>
 <link rel="stylesheet" href="/static/admin/css/admin.css">
 </head>
 <body>
 <aside class="sidebar">
-  <div class="sidebar-brand"><span class="icon">🛡️</span><span>QAD-MultiGuard</span></div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">&Sigma;</div>
+    <div class="brand-text">QAD-MultiGuard<small>v4.1 管理看板</small></div>
+  </div>
   <nav class="sidebar-nav">
-    <a href="/admin/dashboard"><span class="icon">📊</span><span>数据仪表盘</span></a>
-    <a href="/admin/reports"><span class="icon">📋</span><span>举报审核</span></a>
-    <a href="/admin/cases" class="active"><span class="icon">📖</span><span>案例管理</span></a>
-    <a href="/admin/alerts"><span class="icon">🔔</span><span>预警发布</span></a>
-    <a href="/admin/keywords"><span class="icon">🔑</span><span>关键词管理</span></a>
-    <a href="/admin/phones"><span class="icon">📞</span><span>诈骗号码库</span></a>
+    <a href="/admin/dashboard"><span class="nav-icon">&#9783;</span><span>数据仪表盘</span></a>
+    <a href="/admin/reports"><span class="nav-icon">&#9997;</span><span>举报审核</span></a>
+    <a href="/admin/cases" class="active"><span class="nav-icon">&#128214;</span><span>案例管理</span></a>
+    <a href="/admin/alerts"><span class="nav-icon">&#9888;</span><span>预警发布</span></a>
+    <a href="/admin/keywords"><span class="nav-icon">&#128272;</span><span>关键词管理</span></a>
+    <a href="/admin/phones"><span class="nav-icon">&#9742;</span><span>诈骗号码库</span></a>
   </nav>
-  <div class="sidebar-user"><span class="name">管理员</span><span class="logout" title="登出">⏻</span></div>
+  <div class="sidebar-user">
+    <div class="avatar">A</div>
+    <div class="user-info"><div class="name">管理员</div><div class="role">超级管理员</div></div>
+    <div class="logout" title="登出">&#9211;</div>
+  </div>
 </aside>
 
 <main class="main">
   <div class="page-header">
-    <h1>📖 案例管理</h1>
+    <div>
+      <h1>案例管理</h1>
+      <div class="subtitle">管理与发布反诈骗宣传案例</div>
+    </div>
     <button class="btn btn-primary" onclick="showCreateForm()">+ 新建案例</button>
   </div>
   <div class="card">
-    <div id="casesTable"></div>
+    <div class="table-container" id="casesTable"></div>
     <div id="pagination" class="pagination"></div>
   </div>
 </main>
@@ -43,21 +53,21 @@ async function loadCases(page = 1) {
 function renderCases(data) {
   const items = data.data || data.items || [];
   if (!items.length) {
-    document.getElementById('casesTable').innerHTML = '<p style="text-align:center;padding:20px;">暂无案例，点击右上角新建</p>';
+    document.getElementById('casesTable').innerHTML = '<div class="empty-state"><div class="empty-icon">&#128196;</div><p>暂无案例，点击右上角新建</p></div>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
   const rows = items.map(c => `
     <tr>
-      <td>${c.id}</td>
-      <td>${c.emoji || ''} ${c.title}</td>
+      <td style="color:var(--text-muted);font-family:'Fira Code',monospace;">${c.id}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.emoji || ''} ${c.title}</td>
       <td>${c.category || '-'}</td>
       <td>${riskBadge(c.risk_level)}</td>
       <td>${c.view_count || 0}</td>
       <td>${statusBadge(c.status)}</td>
-      <td>${fmtTime(c.published_at)}</td>
-      <td>
-        <button class="btn btn-sm btn-outline" onclick="editCase(${c.id}, '${c.title.replace(/'/g, "\\'")}', '${(c.summary||'').replace(/'/g, "\\'")}', '${(c.content||'').replace(/'/g, "\\'")}', '${c.category}', '${c.risk_level}')">编辑</button>
+      <td style="font-family:'Fira Code',monospace;font-size:12px;">${fmtTime(c.published_at)}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-sm btn-ghost" onclick="editCase(${c.id}, '${c.title.replace(/'/g, "\\'")}', '${(c.summary||'').replace(/'/g, "\\'")}', '${(c.content||'').replace(/'/g, "\\'")}', '${c.category}', '${c.risk_level}')">编辑</button>
         ${c.status !== 'archived' ? `<button class="btn btn-sm btn-danger" onclick="archiveCase(${c.id})">下架</button>` : ''}
       </td>
     </tr>
@@ -90,16 +100,16 @@ function showCreateForm() {
       </div>
     </div>
   `, async (overlay) => {
-    const body = {
-      title: overlay.querySelector('#title').value,
-      summary: overlay.querySelector('#summary').value,
-      content: overlay.querySelector('#content').value,
-      category: overlay.querySelector('#category').value,
-      risk_level: overlay.querySelector('#risk_level').value,
-    };
-    if (!body.title) { showToast('请输入标题', 'error'); return; }
+    const title = overlay.querySelector('#title').value;
+    if (!title) { showToast('请输入标题', 'error'); return; }
     try {
-      await apiPost(V1 + '/cases', body);
+      await apiPost(V1 + '/cases', {
+        title,
+        summary: overlay.querySelector('#summary').value,
+        content: overlay.querySelector('#content').value,
+        category: overlay.querySelector('#category').value,
+        risk_level: overlay.querySelector('#risk_level').value,
+      });
       showToast('案例创建成功', 'success');
       loadCases();
     } catch (e) { showToast(e.message, 'error'); }
@@ -108,9 +118,9 @@ function showCreateForm() {
 
 function editCase(id, title, summary, content, category, risk_level) {
   showModal('编辑案例 #' + id, `
-    <div class="form-group"><label>标题</label><input id="title" class="form-control" value="${title}"></div>
-    <div class="form-group"><label>摘要</label><input id="summary" class="form-control" value="${summary}"></div>
-    <div class="form-group"><label>正文</label><textarea id="content" class="form-control">${content}</textarea></div>
+    <div class="form-group"><label>标题</label><input id="title" class="form-control" value="${title.replace(/"/g, '&quot;')}"></div>
+    <div class="form-group"><label>摘要</label><input id="summary" class="form-control" value="${summary.replace(/"/g, '&quot;')}"></div>
+    <div class="form-group"><label>正文</label><textarea id="content" class="form-control">${content.replace(/"/g, '&quot;')}</textarea></div>
     <div class="grid-2">
       <div class="form-group"><label>分类</label>
         <select id="category" class="form-control">
@@ -130,15 +140,14 @@ function editCase(id, title, summary, content, category, risk_level) {
       </div>
     </div>
   `, async (overlay) => {
-    const body = {
-      title: overlay.querySelector('#title').value,
-      summary: overlay.querySelector('#summary').value,
-      content: overlay.querySelector('#content').value,
-      category: overlay.querySelector('#category').value,
-      risk_level: overlay.querySelector('#risk_level').value,
-    };
     try {
-      await apiPut(V1 + '/cases/' + id, body);
+      await apiPut(V1 + '/cases/' + id, {
+        title: overlay.querySelector('#title').value,
+        summary: overlay.querySelector('#summary').value,
+        content: overlay.querySelector('#content').value,
+        category: overlay.querySelector('#category').value,
+        risk_level: overlay.querySelector('#risk_level').value,
+      });
       showToast('更新成功', 'success');
       loadCases();
     } catch (e) { showToast(e.message, 'error'); }

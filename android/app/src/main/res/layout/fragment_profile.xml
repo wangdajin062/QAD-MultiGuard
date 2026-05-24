@@ -12,15 +12,18 @@
             android:orientation="vertical" android:padding="16dp">
 
             <!-- User card -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                app:cardCornerRadius="14dp" app:cardElevation="3dp">
+                app:cardCornerRadius="16dp" app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white">
                 <LinearLayout
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical" android:padding="20dp">
                     <ImageView android:layout_width="56dp" android:layout_height="56dp"
-                        android:src="@drawable/ic_person" android:background="@drawable/bg_risk_green"
-                        android:padding="12dp" app:tint="@color/primary"/>
+                        android:src="@drawable/ic_person"
+                        android:background="@drawable/bg_risk_green"
+                        android:padding="14dp" app:tint="@color/primary"
+                        android:contentDescription="@null"/>
                     <LinearLayout
                         android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:layout_marginStart="16dp"
@@ -35,20 +38,20 @@
                             android:textColor="@color/text_secondary" android:textSize="13sp"/>
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Protection card -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="14dp" app:cardElevation="2dp"
+                app:cardCornerRadius="16dp" app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/primary">
                 <LinearLayout
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="vertical" android:padding="20dp">
                     <TextView
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🛡️ 当前防护等级" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
+                        android:text="当前防护等级" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
                     <LinearLayout
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
@@ -72,20 +75,15 @@
                         android:layout_marginTop="10dp" android:max="100" android:progress="60"
                         android:progressTint="@color/white" android:progressBackgroundTint="#44FFFFFF"/>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- 4 stats inline -->
-            <LinearLayout
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="12dp">
-                <include layout="@layout/item_stat_profile" android:id="@+id/inc_calls"/>
-            </LinearLayout>
-
-            <!-- Quick stats (simple 4-column) -->
-            <androidx.cardview.widget.CardView
+            <!-- Stats card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp" app:cardElevation="2dp">
+                app:cardCornerRadius="14dp" app:cardElevation="1dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp" app:strokeColor="@color/divider">
                 <LinearLayout
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:padding="16dp">
@@ -97,7 +95,7 @@
                             android:textStyle="bold" android:textSize="20sp" android:textColor="@color/primary"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="4dp" android:text="拦截来电"
-                            android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                            android:textSize="11sp" android:textColor="@color/text_hint"/>
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -107,7 +105,7 @@
                             android:textStyle="bold" android:textSize="20sp" android:textColor="@color/risk_orange"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="4dp" android:text="短信预警"
-                            android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                            android:textSize="11sp" android:textColor="@color/text_hint"/>
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -117,34 +115,37 @@
                             android:textStyle="bold" android:textSize="20sp" android:textColor="@color/risk_red"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="4dp" android:text="我的举报"
-                            android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                            android:textSize="11sp" android:textColor="@color/text_hint"/>
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                         <TextView android:id="@+id/tv_cases_read" android:layout_width="wrap_content"
                             android:layout_height="wrap_content" android:text="0"
-                            android:textStyle="bold" android:textSize="20sp" android:textColor="@color/risk_green"/>
+                            android:textStyle="bold" android:textSize="20sp" android:textColor="@color/accent"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="4dp" android:text="案例阅读"
-                            android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                            android:textSize="11sp" android:textColor="@color/text_hint"/>
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_settings"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/BtnOutline"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:text="设置"/>
+                android:layout_marginTop="16dp"
+                android:text="@string/settings_title"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_logout"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" android:text="退出登录"
+                android:layout_marginTop="8dp"
+                android:text="@string/action_logout"
                 android:textColor="@color/risk_red"
                 app:strokeColor="@color/risk_red"/>
+
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

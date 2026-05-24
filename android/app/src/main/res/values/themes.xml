@@ -1,15 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.CampusSafety" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/primary_dark</item>
+
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/accent</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/accent_container</item>
+
+        <!-- Surface -->
         <item name="colorSurface">@color/bg_surface</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/bg_gray</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/bg_gray</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+
+        <!-- Error -->
+        <item name="colorError">@color/risk_red</item>
+        <item name="colorOnError">@color/white</item>
+
+        <!-- Outline -->
+        <item name="colorOutline">@color/divider</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowBackground">@color/bg_gray</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+
+        <!-- Font -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.01</item>
+
+        <!-- Bottom navigation -->
         <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
     </style>
 
@@ -23,31 +58,67 @@
         <item name="android:background">@color/white</item>
         <item name="itemIconTint">@drawable/nav_item_color</item>
         <item name="itemTextColor">@drawable/nav_item_color</item>
-        <item name="itemRippleColor">#1A1976D2</item>
-        <item name="elevation">8dp</item>
+        <item name="itemRippleColor">#1A0369A1</item>
+        <item name="elevation">4dp</item>
+        <item name="labelVisibilityMode">labeled</item>
     </style>
 
     <!-- Toolbar -->
     <style name="AppToolbar" parent="Widget.Material3.Toolbar">
         <item name="android:background">@color/primary</item>
         <item name="titleTextColor">@color/white</item>
+        <item name="titleTextAppearance">@style/TextToolbar</item>
         <item name="navigationIconTint">@color/white</item>
+    </style>
+
+    <!-- Toolbar Text -->
+    <style name="TextToolbar">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <!-- Card -->
     <style name="CardElevated">
-        <item name="cardElevation">2dp</item>
-        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">3dp</item>
+        <item name="cardCornerRadius">16dp</item>
         <item name="cardBackgroundColor">@color/bg_card</item>
-        <item name="android:stateListAnimator">@null</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <!-- Card (flat variant) -->
+    <style name="CardFlat">
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardBackgroundColor">@color/bg_card</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/divider</item>
+        <item name="contentPadding">16dp</item>
     </style>
 
     <!-- Button primary -->
     <style name="BtnPrimary" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/primary</item>
         <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">10dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Button outline -->
+    <style name="BtnOutline" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">@color/primary</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Button text -->
+    <style name="BtnText" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <!-- Chip -->
@@ -56,6 +127,16 @@
         <item name="chipStrokeWidth">1dp</item>
         <item name="chipStrokeColor">@color/divider</item>
         <item name="android:textSize">13sp</item>
+        <item name="chipBackgroundColor">@color/bg_gray</item>
+    </style>
+
+    <!-- Risk Chip -->
+    <style name="ChipRisk" parent="Widget.Material3.Chip.Assist">
+        <item name="chipCornerRadius">16dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <!-- Text styles -->
@@ -64,11 +145,19 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.02</item>
     </style>
     <style name="TextH2">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="TextH3">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
     <style name="TextBody1">
         <item name="android:textSize">15sp</item>
@@ -81,7 +170,12 @@
         <item name="android:lineSpacingExtra">2dp</item>
     </style>
     <style name="TextCaption">
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/text_hint</item>
+    </style>
+    <style name="TextMono">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 </resources>

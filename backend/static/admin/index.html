@@ -3,55 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数据仪表盘 — QAD-MultiGuard 管理看板</title>
+<title>数据仪表盘 &mdash; QAD-MultiGuard 管理看板</title>
 <link rel="stylesheet" href="/static/admin/css/admin.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-<!-- Sidebar -->
 <aside class="sidebar">
-  <div class="sidebar-brand"><span class="icon">🛡️</span><span>QAD-MultiGuard</span></div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">&Sigma;</div>
+    <div class="brand-text">QAD-MultiGuard<small>v4.1 管理看板</small></div>
+  </div>
   <nav class="sidebar-nav">
-    <a href="/admin/dashboard" class="active"><span class="icon">📊</span><span>数据仪表盘</span></a>
-    <a href="/admin/reports"><span class="icon">📋</span><span>举报审核</span></a>
-    <a href="/admin/cases"><span class="icon">📖</span><span>案例管理</span></a>
-    <a href="/admin/alerts"><span class="icon">🔔</span><span>预警发布</span></a>
-    <a href="/admin/keywords"><span class="icon">🔑</span><span>关键词管理</span></a>
-    <a href="/admin/phones"><span class="icon">📞</span><span>诈骗号码库</span></a>
+    <a href="/admin/dashboard" class="active"><span class="nav-icon">&#9783;</span><span>数据仪表盘</span></a>
+    <a href="/admin/reports"><span class="nav-icon">&#9997;</span><span>举报审核</span></a>
+    <a href="/admin/cases"><span class="nav-icon">&#128214;</span><span>案例管理</span></a>
+    <a href="/admin/alerts"><span class="nav-icon">&#9888;</span><span>预警发布</span></a>
+    <a href="/admin/keywords"><span class="nav-icon">&#128272;</span><span>关键词管理</span></a>
+    <a href="/admin/phones"><span class="nav-icon">&#9742;</span><span>诈骗号码库</span></a>
   </nav>
   <div class="sidebar-user">
-    <span class="name">管理员</span>
-    <span class="logout" title="登出">⏻</span>
+    <div class="avatar">A</div>
+    <div class="user-info"><div class="name">管理员</div><div class="role">超级管理员</div></div>
+    <div class="logout" title="登出">&#9211;</div>
   </div>
 </aside>
 
-<!-- Main -->
 <main class="main">
   <div class="page-header">
-    <h1>📊 数据仪表盘</h1>
-    <span style="color:var(--text-secondary);font-size:13px;">QAD-MultiGuard v4.1</span>
+    <div>
+      <h1>数据仪表盘</h1>
+      <div class="subtitle">QAD-MultiGuard v4.1 &middot; 系统运行概览</div>
+    </div>
   </div>
 
-  <!-- Stat Cards -->
   <div class="stat-grid" id="statCards"></div>
 
-  <!-- Charts -->
   <div class="grid-2">
     <div class="card">
-      <h3 style="margin-bottom:16px;">风险等级分布</h3>
+      <div class="card-header">
+        <div class="card-title"><span class="title-icon">&#9679;</span> 风险等级分布</div>
+      </div>
       <div class="chart-container"><canvas id="riskPieChart"></canvas></div>
     </div>
     <div class="card">
-      <h3 style="margin-bottom:16px;">举报趋势（近7天）</h3>
+      <div class="card-header">
+        <div class="card-title"><span class="title-icon">&#9654;</span> 举报趋势（近7天）</div>
+      </div>
       <div class="chart-container"><canvas id="trendBarChart"></canvas></div>
     </div>
   </div>
 
-  <!-- Top Fraud Phones -->
-  <div class="card" style="margin-top:20px;">
-    <h3 style="margin-bottom:16px;">🚨 高风险电话 Top 5</h3>
-    <div id="topPhonesTable"></div>
+  <div class="card" style="margin-top:4px;">
+    <div class="card-header">
+      <div class="card-title"><span class="title-icon">&#9888;</span> 高风险电话 Top 5</div>
+    </div>
+    <div class="table-container" id="topPhonesTable"></div>
   </div>
 </main>
 
@@ -73,14 +80,14 @@ async function loadDashboard() {
 
 function renderStats(d) {
   const stats = [
-    { label: '总用户数', value: d.total_users || 0, icon: '👥', cls: 'blue' },
-    { label: '诈骗号码', value: d.total_fraud_phones || 0, icon: '📞', cls: 'red' },
-    { label: '案例总数', value: d.total_cases || 0, icon: '📖', cls: 'green' },
-    { label: '待审核举报', value: d.pending_reports || 0, icon: '📋', cls: 'orange' },
+    { label: '总用户数', value: d.total_users || 0, icon: '&#128101;', cls: 'blue' },
+    { label: '诈骗号码', value: d.total_fraud_phones || 0, icon: '&#9742;', cls: 'red' },
+    { label: '案例总数', value: d.total_cases || 0, icon: '&#128214;', cls: 'green' },
+    { label: '待审核举报', value: d.pending_reports || 0, icon: '&#9997;', cls: 'orange' },
   ];
   document.getElementById('statCards').innerHTML = stats.map(s => `
     <div class="stat-card">
-      <div class="stat-icon ${s.cls}">${s.icon}</div>
+      <div class="stat-icon-wrapper ${s.cls}">${s.icon}</div>
       <div class="stat-info">
         <div class="stat-value">${s.value.toLocaleString()}</div>
         <div class="stat-label">${s.label}</div>
@@ -91,17 +98,17 @@ function renderStats(d) {
 
 function renderTopPhones(phones) {
   if (!phones.length) {
-    document.getElementById('topPhonesTable').innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:20px;">暂无数据</p>';
+    document.getElementById('topPhonesTable').innerHTML = '<div class="empty-state"><div class="empty-icon">&#128196;</div><p>暂无高风险号码数据</p></div>';
     return;
   }
   const rows = phones.map((p, i) => `
     <tr>
-      <td>${i + 1}</td>
-      <td>${p.phone_number || '-'}</td>
+      <td style="color:var(--text-muted);font-family:'Fira Code',monospace;">${String(i+1).padStart(2,'0')}</td>
+      <td style="font-family:'Fira Code',monospace;">${p.phone_number || '-'}</td>
       <td>${riskBadge(p.risk_level)}</td>
-      <td>${p.risk_score || 0}</td>
+      <td style="font-family:'Fira Code',monospace;">${p.risk_score || 0}</td>
       <td>${p.report_count || 0}</td>
-      <td>${p.is_verified ? '✅ 已验证' : '待验证'}</td>
+      <td>${p.is_verified ? '<span style="color:var(--success);">已验证</span>' : '<span style="color:var(--text-muted);">待验证</span>'}</td>
     </tr>
   `).join('');
   document.getElementById('topPhonesTable').innerHTML = `
@@ -112,49 +119,66 @@ function renderTopPhones(phones) {
 }
 
 function renderCharts(d) {
-  // Pie chart - risk distribution (using available data)
   const highCount = d.top_risky_phones ? d.top_risky_phones.filter(p => p.risk_level === 'high').length : 0;
   const medCount = d.top_risky_phones ? d.top_risky_phones.filter(p => p.risk_level === 'medium').length : 0;
   const safeCount = Math.max(0, (d.total_fraud_phones || 0) - highCount - medCount);
 
   if (riskChart) riskChart.destroy();
-  const pieCtx = document.getElementById('riskPieChart').getContext('2d');
-  riskChart = new Chart(pieCtx, {
+  riskChart = new Chart(document.getElementById('riskPieChart').getContext('2d'), {
     type: 'doughnut',
     data: {
       labels: ['高危', '中危', '低危/安全'],
       datasets: [{
         data: [highCount || 1, medCount || 1, safeCount || 1],
-        backgroundColor: ['#d93025', '#f9ab00', '#188038'],
+        backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(245,158,11,0.8)', 'rgba(34,197,94,0.8)'],
+        borderColor: ['rgba(239,68,68,1)', 'rgba(245,158,11,1)', 'rgba(34,197,94,1)'],
+        borderWidth: 2,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      plugins: { legend: { position: 'bottom' } }
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#94a3b8', padding: 16, usePointStyle: true, font: { family: 'Fira Sans' } }
+        }
+      }
     }
   });
 
-  // Bar chart - monthly trend placeholder
   if (trendChart) trendChart.destroy();
-  const barCtx = document.getElementById('trendBarChart').getContext('2d');
   const days = ['周一','周二','周三','周四','周五','周六','周日'];
-  trendChart = new Chart(barCtx, {
+  trendChart = new Chart(document.getElementById('trendBarChart').getContext('2d'), {
     type: 'bar',
     data: {
       labels: days,
       datasets: [{
         label: '新增举报',
         data: [d.new_reports_this_month || 0, 0, 0, 0, 0, 0, 0],
-        backgroundColor: '#1a73e8',
+        backgroundColor: 'rgba(2,132,199,0.7)',
+        borderColor: 'rgba(2,132,199,1)',
+        borderWidth: 1,
         borderRadius: 4,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(30,41,59,0.5)' },
+          ticks: { color: '#64748b', font: { family: 'Fira Sans' } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#64748b', font: { family: 'Fira Sans' } }
+        }
+      }
     }
   });
 }
