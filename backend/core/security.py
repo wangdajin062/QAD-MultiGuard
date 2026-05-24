@@ -1,5 +1,5 @@
 """
-core/security.py - JWT 鉴权 & 密码工具 (v4.1 安全修复)
+core/security.py - JWT 鉴权 & 密码工具 (v5.0)
   安全修复 (2026-05):
   ✓ H3: PBKDF2 手机号哈希（替代无盐 SHA256）
   ✓ H4: Refresh token rotation（每次刷新签发新 refresh_token）

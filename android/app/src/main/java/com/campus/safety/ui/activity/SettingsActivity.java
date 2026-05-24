@@ -39,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
         bd.tvAbout.setOnClickListener(x -> {
             new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("关于校园安全")
-                .setMessage("校园安全 APP v3.0\n\n软硬协同多模态电信欺诈检测系统\n基于推测解码 + 量化感知蒸馏\n\n©2025 校园安全团队")
+                .setMessage("校园安全 APP v5.0\n\n软硬协同多模态电信欺诈检测系统\n基于推测解码 + 量化感知蒸馏 + 端侧 LLM\n\n©2025 校园安全团队")
                 .setPositiveButton("确定", null)
                 .show();
         });

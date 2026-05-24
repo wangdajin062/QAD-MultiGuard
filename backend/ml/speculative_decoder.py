@@ -1,5 +1,5 @@
 """
-ml/speculative_decoder.py — QAD-MultiGuard v4
+ml/speculative_decoder.py — QAD-MultiGuard v5.0
 α=0.86 (domain-tuned), 3.5× speedup, Qwen2.5-0.5B-Instruct
 """
 from __future__ import annotations

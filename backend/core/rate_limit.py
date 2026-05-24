@@ -1,5 +1,5 @@
 """
-core/rate_limit.py - 基于 Redis 的 API 限流中间件 (v4.1 修复版)
+core/rate_limit.py - 基于 Redis 的 API 限流中间件 (v5.0)
 """
 
 from fastapi import Request, HTTPException

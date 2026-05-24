@@ -1,11 +1,11 @@
 """
-ml/multimodal_detector.py — QAD-MultiGuard v4.1
+ml/multimodal_detector.py — QAD-MultiGuard v5.0
 ================================================
 多模态风险融合  论文公式 (3):
     r = σ(Σ_{m∈{text,audio,url,meta}} w_m · r_m + b)
     权重 w = [0.40, 0.30, 0.20, 0.10]（L-BFGS 优化结果）
 
-升级内容（v4 → v4.1）:
+升级内容（v4 → v5.0）:
   ✓ 修复 voice_ext 不存在的 AttributeError（inference.py /voice 端点）
   ✓ URL 特征评分（6-d url_features 现在实际参与融合，而非总是 0）
   ✓ L-BFGS 权重改为 σ(5·logit) 软截止 + 最大值保底（鲁棒性）

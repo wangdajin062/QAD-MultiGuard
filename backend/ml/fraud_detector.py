@@ -1,5 +1,5 @@
 """
-ml/fraud_detector.py  (v3)
+ml/fraud_detector.py  (v5.0)
 集成检测器 — 规则引擎 + 梯度提升 + 集成融合
 与 v2 完全向后兼容，供 MultimodalDetector 调用
 """

@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════
-# QAD-MultiGuard v4.1 — Production multi-stage Docker build
+# QAD-MultiGuard v5.0 — Production multi-stage Docker build
 # Soft-edge collaborative multimodal detection
 # ═══════════════════════════════════════════════════════════════
 
-ARG PYTHON_VERSION=3.11-slim
+ARG PYTHON_VERSION=3.12-slim
 
 # ── Stage 1: Dependency installation ──────────────────────────
 FROM python:${PYTHON_VERSION} AS builder
@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 FROM python:${PYTHON_VERSION}
 
 LABEL maintainer="Campus Safety Team"
-LABEL version="4.1.0"
+LABEL version="5.0.0"
 LABEL description="QAD-MultiGuard API Server"
 
 WORKDIR /app

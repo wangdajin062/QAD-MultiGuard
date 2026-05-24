@@ -1,5 +1,5 @@
 """
-校园安全 APP v3 — FastAPI 主入口
+校园安全 APP v5 — FastAPI 主入口
 软硬协同多模态推测解码架构
 """
 
@@ -31,17 +31,17 @@ async def lifespan(app: FastAPI):
     if settings.APP_ENV == "production":
         if not settings.SECRET_KEY or len(settings.SECRET_KEY) < 32:
             raise RuntimeError(
-                "❌ 生产环境必须设置 SECRET_KEY (>= 32 字符)"
+                "生产环境必须设置 SECRET_KEY (>= 32 字符)"
             )
     logger.info(f"App environment: {settings.APP_ENV}")
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await get_redis()
     from ml.speculative_decoder import spec_decoder
     logger.info("Draft model: %s", "loaded" if spec_decoder.draft_model._loaded else "prior")
     _scheduler_task = start_scheduler()
-    logger.info("QAD-MultiGuard v4.1 ready — SpecDec(α=0.86) + QAD-4bit + Multimodal + DP")
+    logger.info("QAD-MultiGuard v5.0 ready — SpecDec(α=0.86) + QAD-4bit + Multimodal + DP")
     yield
     if _scheduler_task: _scheduler_task.cancel()
     await close_redis()
@@ -49,9 +49,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="校园安全 API v4.1",
-    description="QAD-MultiGuard 软硬协同多模态检测 | 推测解码 α=0.86 | 隐私保护 PIPL §23",
-    version="4.1.0",
+    title="校园安全 API v5.0",
+    description="QAD-MultiGuard 软硬协同多模态检测 | 推测解码 α=0.86 | 端侧 LLM | 隐私保护 PIPL §23",
+    version="5.0.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -88,7 +88,7 @@ async def health():
     from ml.speculative_decoder import spec_decoder
     redis = await get_redis()
     return {
-        "status": "ok", "version": "4.1.0",
+        "status": "ok", "version": "5.0.0",
         "arch": "speculative_decoding+QAD_4bit+multimodal",
         "redis": "ok" if await redis.ping() else "degraded",
         "draft_model": "loaded" if spec_decoder.draft_model._loaded else "prior",

@@ -1,5 +1,5 @@
 """
-tests/test_v41_features.py — QAD-MultiGuard v4.1 新功能单元测试
+tests/test_v5_features.py — QAD-MultiGuard v5.0 功能测试
 =================================================================
 覆盖 6 个差距修复 + 安全修复的单元级验证。
 

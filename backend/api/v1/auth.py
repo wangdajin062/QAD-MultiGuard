@@ -1,5 +1,5 @@
 """
-api/v1/auth.py - 认证路由 (v4.1 修复版)
+api/v1/auth.py - 认证路由 (v5.0)
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Request

@@ -1,7 +1,7 @@
 """
-api/v1/inference.py  — QAD-MultiGuard v4.1
+api/v1/inference.py  — QAD-MultiGuard v5.0
 ===========================================
-升级内容（v4 → v4.1）:
+升级内容（v4 → v5.0）:
   ✓ /voice 端点修复：使用 acoustic_extractor 而非不存在的 voice_ext
   ✓ /fast  端点：返回 qad_spec 推测解码元数据
   ✓ /stream 端点：保持 SSE 格式不变，添加 model_spec 字段

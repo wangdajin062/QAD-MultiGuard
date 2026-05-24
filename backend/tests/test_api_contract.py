@@ -1,5 +1,5 @@
 """
-tests/test_api_contract.py — QAD-MultiGuard v4.1 前后端契约测试
+tests/test_api_contract.py — QAD-MultiGuard v5.0 前后端契约测试
 ================================================================
 验证 Java ↔ Python 字段对齐、API Schema 一致性。
 

@@ -1,10 +1,10 @@
 """
-ml/acoustic_embedding.py  — QAD-MultiGuard v4.1
+ml/acoustic_embedding.py  — QAD-MultiGuard v5.0
 ================================================
 隐私保护声学嵌入  论文 §III.B  公式 (2):
     F_v = [f_mfcc ; W_proj · h̄_w] ∈ ℝ^128
 
-升级内容（v4 → v4.1）:
+升级内容（v4 → v5.0）:
   ✓ MFCC 流水线：对齐论文参数 (n_mels=64, hop=10ms, sr=16kHz)
   ✓ WhisperProjection：增加行归一化 + 4 路粗粒度韵律分解
   ✓ DP 高斯机制：正确实现 (ε, δ)-DP 上界，Δ₂=2.0

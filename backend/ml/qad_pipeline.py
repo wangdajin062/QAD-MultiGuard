@@ -1,5 +1,5 @@
 """
-ml/qad_pipeline.py — QAD-MultiGuard v4
+ml/qad_pipeline.py — QAD-MultiGuard v5.0
 量化感知蒸馏 + OV-Freeze 策略
 论文公式 (1): L_QAD = α·L_task + β·L_KD(τ) + γ·L_quant
 α=0.4, β=0.5, γ=0.1, τ=3.0
