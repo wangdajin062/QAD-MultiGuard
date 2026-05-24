@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-# QAD-MultiGuard v4.1 — Git 忽略规则
+# QAD-MultiGuard v5.0 — Git 忽略规则
 # ═══════════════════════════════════════════════════════════════
 
 # ── Python ───────────────────────
@@ -66,3 +66,17 @@ tmp/
 temp/
 *.tmp
 .claude/*
+
+# ── 论文/图片生成产物 ────────────
+figures_scripts/output/
+figures_scripts/*.png
+docs/QAD-IEEE/
+docs/QAD_MultiGuard_latex/
+docs/*.drawio
+docs/*.json
+qad_multiguard/
+
+# ── 研究脚本 (已移除) ────────────
+scripts/SAFF-QAQ.py
+scripts/SafeData-QAQ.py
+scripts/cases_data.json
