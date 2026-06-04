@@ -92,10 +92,20 @@ class FraudCaseListItem(BaseModel):
 
     model_config = {"from_attributes": True}
 
+    @field_validator('tags', mode='before')
+    @classmethod
+    def coerce_tags(cls, v):
+        return v or []
+
 class FraudCaseDetail(FraudCaseListItem):
     content:      str
     share_count:  int
     related_ids:  List[int] = []
+
+    @field_validator('related_ids', mode='before')
+    @classmethod
+    def coerce_related_ids(cls, v):
+        return v or []
 
 
 # ── 电诈预警 ─────────────────────────────────────────────
@@ -111,6 +121,11 @@ class FraudAlertResponse(BaseModel):
     published_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @field_validator('tags', mode='before')
+    @classmethod
+    def coerce_tags(cls, v):
+        return v or []
 
 class FraudAlertSummary(BaseModel):
     id:           int

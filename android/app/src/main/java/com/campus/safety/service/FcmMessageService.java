@@ -52,7 +52,7 @@ public class FcmMessageService extends FirebaseMessagingService {
         Log.d(TAG, "FCM token refreshed (len=" + token.length() + ")");
 
         if (!TokenManager.isLoggedIn(this)) return;
-        Map<String, String> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("fcm_token", token);
         body.put("platform", "android");
         ApiClient.getApi().registerDevice(body).enqueue(new Callback<com.campus.safety.model.ApiResponse<Map<String, Object>>>() {

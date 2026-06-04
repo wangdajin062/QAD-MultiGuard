@@ -48,14 +48,18 @@ async def send_code(body: SendCodeRequest, request: Request):
             detail="服务暂时不可用，请稍后重试"
         )
     
-    logger.info(f"SMS code sent to {mask_phone(body.phone)}")
+    logger.info(f"SMS code for {mask_phone(body.phone)}: {code}")
     # 实际环境：调用阿里云/腾讯云短信 API
     # await sms_service.send(body.phone, f"验证码: {code}，5分钟内有效")
-    
-    return {
-        "code": 200, 
+
+    resp = {
+        "code": 200,
         "message": f"验证码已发送到 {mask_phone(body.phone)}，请注意查收"
     }
+    # DEV: 本地开发/调试时返回验证码明文
+    if settings.APP_ENV == "development":
+        resp["data"] = {"code": code, "expires_in": settings.SMS_CODE_EXPIRE_SECONDS}
+    return resp
 
 
 @router.post("/login", response_model=dict, summary="登录 / 注册 (验证码必填)")

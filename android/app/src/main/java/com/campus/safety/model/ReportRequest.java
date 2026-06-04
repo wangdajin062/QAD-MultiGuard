@@ -1,8 +1,12 @@
 package com.campus.safety.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ReportRequest {
+    @SerializedName("report_type")
+    public String reportType;   // phone|sms|link|other
+
     public String target;       // 手机号
-    public String risk_type;    // fraud|harassment|spam
     public String description;  // 描述
-    public String evidence_url; // 可选截图 URL
+    public String school;       // 学校
 }

@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     private void sendCode() {
         String phone = bd.etPhone.getText().toString().trim();
 
-        Map<String, String> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("phone", phone);
         bd.btnSendCode.setEnabled(false);
         ApiClient.getApi().sendCode(body).enqueue(new Callback<ApiResponse<Map<String, Object>>>() {
@@ -84,7 +84,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<ApiResponse<Map<String, Object>>> c,
                                    Response<ApiResponse<Map<String, Object>>> r) {
                 if (r.isSuccessful() && r.body() != null && r.body().isSuccess()) {
-                    toast("验证码已发送");
+                    // DEV: 如果后端返回了验证码明文，直接显示
+                    String msg = "验证码已发送";
+                    if (r.body().data != null && r.body().data.containsKey("code")) {
+                        msg = "验证码: " + r.body().data.get("code") + "（5分钟有效）";
+                    }
+                    toast(msg);
                     startCountdown();
                     bd.etCode.requestFocus();
                 } else if (r.code() == 429) {
@@ -124,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
         bd.btnLogin.setEnabled(false);
         bd.progress.setVisibility(View.VISIBLE);
 
-        Map<String, String> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("phone", phone);
         body.put("code", code);
 
@@ -134,10 +139,10 @@ public class LoginActivity extends AppCompatActivity {
                 bd.progress.setVisibility(View.GONE);
                 if (r.isSuccessful() && r.body() != null && r.body().isSuccess()) {
                     LoginResponse lr = r.body().data;
-                    TokenManager.saveLogin(LoginActivity.this, lr.token, lr.user.id,
-                        lr.user.nickname, lr.user.phone);
-                    TokenManager.saveProtectionScore(LoginActivity.this, lr.user.protection_score);
-                    toast(lr.user.is_new_user ? "欢迎加入校园安全" : "登录成功");
+                    TokenManager.saveLogin(LoginActivity.this, lr.token, lr.refreshToken,
+                        lr.user.id, lr.user.nickname, null);
+                    TokenManager.saveProtectionScore(LoginActivity.this, lr.user.protectionScore);
+                    toast("登录成功");
                     startActivity(new Intent(LoginActivity.this, MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

@@ -39,7 +39,7 @@ public class CampusSafetyApp extends Application {
 
         // 3. 异步加载端侧 LLM 草稿模型（不阻塞应用启动）
         if (TokenManager.isLoggedIn(this)) {
-            OnDeviceLLMEngine.getInstance().loadModelAsync(this, (success, size) -> {
+            OnDeviceLLMEngine.getInstance().loadModelAsync(this, (success, size, modelType) -> {
                 Log.i(TAG, "Draft model " + (success ? "loaded (" + size/1024/1024 + "MB)" : "fallback to statistical prior"));
             });
         }

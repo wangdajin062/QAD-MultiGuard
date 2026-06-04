@@ -56,7 +56,7 @@
                 android:textColor="@color/risk_orange"
                 app:chipBackgroundColor="@color/risk_orange_light"
                 android:textSize="11sp"
-                android:maxWidth="120dp"
+                android:maxWidth="160dp"
                 android:ellipsize="end"
                 android:lines="1"/>
 

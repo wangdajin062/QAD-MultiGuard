@@ -87,13 +87,16 @@ public class DetectionResultActivity extends AppCompatActivity {
             public void onFastResult(CoTStreamEvent e) {
                 runOnUiThread(() -> {
                     bd.cardFast.setVisibility(View.VISIBLE);
-                    bd.tvFastLatency.setText((e.latency_ms != null ? String.format("%.0f", e.latency_ms) : "?") + " ms");
+                    bd.tvFastLatency.setText(String.format("%.0f ms", e.latency_ms));
                     if (e.risk_level != null) renderRiskLevel(e.risk_level);
-                    if (e.risk_score != null) animateScore(initialScore, e.risk_score);
+                    animateScore(initialScore, e.risk_score);
                     if (e.modalities != null) {
                         StringBuilder sb = new StringBuilder("多模态: ");
-                        e.modalities.forEach((k, v) -> sb.append(k).append("=").append(v).append(" "));
-                        bd.tvModalities.setText(sb.toString().trim());
+                        sb.append("sms=").append(e.modalities.sms).append(" ");
+                        sb.append("call=").append(e.modalities.call).append(" ");
+                        sb.append("url=").append(e.modalities.url).append(" ");
+                        sb.append("voice=").append(e.modalities.voice);
+                        bd.tvModalities.setText(sb.toString());
                     }
                 });
             }
@@ -110,10 +113,8 @@ public class DetectionResultActivity extends AppCompatActivity {
             public void onSpecDraft(CoTStreamEvent e) {
                 runOnUiThread(() -> {
                     bd.cardSpecDraft.setVisibility(View.VISIBLE);
-                    if (e.acceptance_rate != null)
-                        bd.tvAcceptance.setText(String.format("接受率 %.1f%%", e.acceptance_rate * 100));
-                    if (e.speedup_factor != null)
-                        bd.tvSpeedup.setText(String.format("加速比 %.1fx", e.speedup_factor));
+                    bd.tvAcceptance.setText(String.format("接受率 %.1f%%", e.acceptance_rate * 100));
+                    bd.tvSpeedup.setText(String.format("加速比 %.1fx", e.speedup_factor));
                 });
             }
 
@@ -130,10 +131,9 @@ public class DetectionResultActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     bd.progressStream.setVisibility(View.GONE);
                     bd.btnCancel.setVisibility(View.GONE);
-                    if (e.risk_score != null) animateScore(0, e.risk_score);
+                    animateScore(0, e.risk_score);
                     if (e.risk_level != null) renderRiskLevel(e.risk_level);
-                    if (e.confidence != null)
-                        bd.tvConfidence.setText(String.format("综合置信度 %.1f%%", e.confidence * 100));
+                    bd.tvConfidence.setText(String.format("综合置信度 %.1f%%", e.confidence * 100));
                     bd.cardAction.setVisibility(View.VISIBLE);
                     String lvl = e.risk_level;
                     if ("high".equals(lvl)) {

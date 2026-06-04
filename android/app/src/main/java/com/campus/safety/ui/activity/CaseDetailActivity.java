@@ -43,7 +43,7 @@ public class CaseDetailActivity extends AppCompatActivity {
 
     private void loadCase() {
         bd.progress.setVisibility(View.VISIBLE);
-        ApiClient.getApi().getCaseDetail(caseId).enqueue(new Callback<ApiResponse<FraudCase>>() {
+        ApiClient.getApi().getCaseDetail((int) caseId).enqueue(new Callback<ApiResponse<FraudCase>>() {
             @Override
             public void onResponse(Call<ApiResponse<FraudCase>> c,
                                    Response<ApiResponse<FraudCase>> r) {
@@ -75,7 +75,7 @@ public class CaseDetailActivity extends AppCompatActivity {
     }
 
     private void toggleFavorite() {
-        ApiClient.getApi().toggleFavorite(caseId).enqueue(new Callback<ApiResponse<Map<String,Object>>>() {
+        ApiClient.getApi().toggleFavorite((int) caseId).enqueue(new Callback<ApiResponse<Map<String,Object>>>() {
             @Override
             public void onResponse(Call<ApiResponse<Map<String,Object>>> c, Response<ApiResponse<Map<String,Object>>> r) {
                 if (r.isSuccessful()) {

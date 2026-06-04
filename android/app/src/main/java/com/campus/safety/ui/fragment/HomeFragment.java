@@ -124,7 +124,7 @@ public class HomeFragment extends Fragment {
 
         bd.tvProtectionScore.setText(String.valueOf(score));
         bd.tvProtectionLevel.setText(level);
-        bd.progressBar.setProgress(score);
+        bd.progressProtection.setProgress(score);
         bd.tvScoreDesc.setText(desc);
 
         // 今日提示

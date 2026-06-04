@@ -62,13 +62,13 @@ android {
 
 dependencies {
     // ── AndroidX core ─────────────────────────────────────
-    implementation 'androidx.appcompat:appcompat:1.7.6'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.core:core:1.15.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
-    implementation 'androidx.fragment:fragment:1.9.0'
+    implementation 'androidx.fragment:fragment:1.8.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.9.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime:2.9.0'

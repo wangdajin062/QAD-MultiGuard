@@ -494,9 +494,17 @@ public final class OnDeviceMultimodalDetector {
             String callSource,
             float[] audioEmbedding) {
 
+        float[] smsFeatArray = null;
+        if (smsFeatureVector != null) {
+            smsFeatArray = new float[smsFeatureVector.size()];
+            for (int i = 0; i < smsFeatureVector.size(); i++) {
+                smsFeatArray[i] = smsFeatureVector.get(i);
+            }
+        }
+
         return detect(
                 smsFeat != null ? smsFeat.hitKeywords : null,
-                smsFeatureVector,
+                smsFeatArray,
                 smsFeat != null && smsFeat.hasUrl,
                 smsFeat != null ? smsFeat.urlCount : 0,
                 smsFeat != null ? smsFeat.urgencyScore : 0f,

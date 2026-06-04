@@ -7,6 +7,7 @@ import com.campus.safety.BuildConfig;
 import com.campus.safety.network.api.CampusApi;
 import com.campus.safety.network.interceptor.AuthInterceptor;
 import com.campus.safety.network.interceptor.ErrorInterceptor;
+import com.campus.safety.network.interceptor.TokenRefreshAuthenticator;
 import com.campus.safety.util.TokenManager;
 
 import java.util.concurrent.TimeUnit;
@@ -45,6 +46,7 @@ public class ApiClient {
             .addInterceptor(new AuthInterceptor(appContext))
             .addInterceptor(new ErrorInterceptor(appContext))
             .addInterceptor(logging)
+            .authenticator(new TokenRefreshAuthenticator(appContext))
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)

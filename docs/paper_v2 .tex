@@ -1,0 +1,1165 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ctex} % 支持中文
+
+% 核心宏包加载
+\usepackage{amsmath}       % 数学公式核心包
+\usepackage{amssymb}       % 数学符号扩展
+\usepackage{bm}            % 数学公式粗体支持
+\usepackage{geometry}      % 页边距设置
+\usepackage{hyperref}      % 超链接与交叉引用
+\usepackage{enumitem}      % 高级列表控制
+% \usepackage{cite} % 已移除：与 biblatex 冲突（biblatex 自带连续引用压缩）
+\usepackage{booktabs}   % 绘制标准三线表
+\usepackage{multirow}   % 纵向跨行合并
+\usepackage{makecell}   % 处理表头换行与对齐
+\usepackage[table]{xcolor} % 提供行阴影高亮支持
+\usepackage{enumitem}
+\usepackage{graphicx} 
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{array}
+
+\newcommand{\makefirstfootnote}{%
+    \iffootnoteadded
+    \else
+        %\ifdef{\@received}{\footnotetext[1]{收稿日期：\@received；修回日期：\@revised。}}{}%
+        {\footnotetext[1]{基金项目：\@}}%
+        {\footnotetext[2]{作者简介：\@authorinfo，通信作者}}%
+    \footnoteaddedtrue
+    \fi
+}
+
+
+% 1. 标题自身的上下间距
+\setlength{\abovecaptionskip}{2pt}   % 标题与上方图像之间的距离
+\setlength{\belowcaptionskip}{2pt}   % 标题与下方正文（或其它元素）之间的距离
+
+% 2. 图像嵌入正文时（使用 [h] 或 [htbp] 强行插入时）的间距
+\setlength{\intextsep}{4pt}         % 浮动体（图像）与前后正文的垂直距离
+
+% 3. 图像处于页面顶部或底部时的间距
+\setlength{\textfloatsep}{4pt}      % 页面顶部/底部的浮动体与正文之间的距离
+\setlength{\floatsep}{12pt}          % 两个相邻浮动体（比如紧挨着的图1和图2）之间的距离
+
+\usepackage{fancyhdr} % 导入宏包
+\pagestyle{fancy}      % 设置页眉页脚格式
+\fancyhf{}             % 清空所有默认的页眉和页脚设置
+\fancyfoot[C]{\thepage}% 设置页脚居中显示页码
+\renewcommand{\headrulewidth}{0pt} % 将页眉线粗细设为0pt，相当于隐藏页眉线
+\usepackage{enumitem}
+% 全局设置所有 enumerate 环境的条目间距
+\setlist[itemize]{itemsep=0pt, parsep=0pt, topsep=0pt, partopsep=0pt}
+\setlist[enumerate]{itemsep=0pt, parsep=0pt, topsep=0pt, partopsep=0pt}
+
+
+% 页边距规范（符合主流核心期刊标准）
+\geometry{a4paper, margin=25mm}
+% 消除默认的公式间距异常
+\allowdisplaybreaks
+%\RequirePackage[backend=biber,style=gb7714-2015,gbnamefmt=lowercase]{biblatex}
+
+\usepackage[backend=biber, style=gb7714-2015, gbtype=mis, gbpub=false]{biblatex}
+\addbibresource{ref.bib} 
+
+%\usepackage[numbers, sort&compress]{natbib}  % 数字引用，连续编号压缩
+
+% 一级标题
+\titleformat{\section}
+  {\normalfont\Large\bfseries\setstretch{1.2}}
+  {\thesection}{1em}{}
+  \titlespacing{\section}{0pt}{4pt}{4pt}
+
+% 二级标题
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\setstretch{1.1}}
+  {\thesubsection}{1em}{}
+  \titlespacing{\subsection}{0pt}{4pt}{4pt}
+
+% 三级标题
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\setstretch{1.0}}
+  {\thesubsubsection}{1em}{}
+  \titlespacing{\subsubsection}{0pt}{4pt}{3pt}
+% 使用国标样式（顺序编码制，数字编号）
+%\bibliographystyle{gbt7714-bst.ins}
+
+% --- 1. 标题与作者信息 ---
+\title{\textbf{基于量化感知蒸馏的大语言模型多模态电信诈骗检测系统}\\
+\large\normalfont 修订版 v2（数据一致性校核 / 术语统一 / 形式化证明补全）}
+
+\author{第一作者^{1}，2，3        \\
+\small (1.)}
+
+\date{}
+
+
+\begin{document}
+
+% 生成标题页
+\maketitle
+\makefirstfootnote
+
+\thispagestyle{plain} % 确保标题页没有页眉，只有页码
+
+% --- 2. 中文摘要 ---
+%\begin{abstract*}
+\noindent {\bfseries 摘要:} 
+电信网络诈骗已成为威胁智能终端安全生态的关键瓶颈，在端侧实施实时检测面临隐私合规、超低时延与低比特量化精度衰减的三重挑战。为此，本文提出一种端云协同的隐私保护多模态电信诈骗检测框架 QAD-MultiGuard。在量化精度修复方面，本文系统性地采用纯 KL 散度蒸馏与同源教师（Homologous Teacher）范式，以全精度（BF16）模型为教师、量化版本为学生进行知识迁移；并针对硬件特性设计了云端原生 NVFP4 与端侧分块自适应量化（GGUF-Q4\_K\_M）的双轨异构量化方案。针对自注意力机制的量化敏感性，本文进一步提出输出方差冻结（Output-Variance Freeze, OV-Freeze）正则化策略，附录 A 给出其梯度兼容性与联合损失收敛性的形式化分析。在多模态隐私计算方面，本文构建了 128 维不可逆声学嵌入 $F_v$ 与基于 L-BFGS 的四模态风险融合机制。在 TeleAntiFraud-28k 基准上的评估结果表明，所提 NVFP4 QAD + OV-Freeze 方案取得 $F_1=0.923\pm0.006$，相对 BF16 上界的精度恢复率为 99.1\%，较 AWQ、QuaRot、BitDistiller 等 10 种代表性基线在 $F_1$ 上高 6.5$\sim$8.5 个百分点；在自建对抗集 AdvFraud-3k 上 $F_1$ 为 0.875，相对 BF16 上界的 $F_1$ 相对衰减为 5.2\%（绝对衰减 0.048），位于威胁模型设定的约束 $C_2(\le 6\%)$ 内。基于骁龙（Snapdragon）8 Gen 3 移动平台的端侧实测结果显示，端到端预警延迟中位数 268 ms，P99 为 342 ms，验证了所提框架在反诈业务场景下的精度与部署可行性。
+
+\noindent {\bfseries 关键词:} 电信诈骗检测, 量化感知蒸馏, 隐私保护, 多模态融合, 推测解码, 端云协同.
+%\end{abstract*}
+
+\vspace{1em} % 拉开中英文摘要的间距
+
+\title{\centering\large\textbf{QAD-MultiGuard: An Edge-Cloud Collaborative and Privacy-Preserving Multimodal Framework for Telecommunication Fraud Detection}}
+
+
+\vspace{1em}
+\noindent {\bfseries Abstract:}
+Telecommunication fraud has become a critical security threat to mobile edge ecosystems, where on-device real-time detection imposes three coupled constraints: strict privacy compliance, millisecond-level latency, and severe precision degradation under low-bit quantization. To address these challenges, we present \textbf{QAD-MultiGuard}, an edge-cloud collaborative, privacy-preserving multimodal fraud detection framework. For precision restoration, we adopt a pure KL-divergence distillation paradigm with a homologous teacher, transferring knowledge from a full-precision (BF16) teacher model to its quantized students. Under this paradigm, a heterogeneous dual-track quantization scheme---server-side native NVFP4 and on-device block-wise GGUF-Q4\_K\_M---is deployed. To stabilise quantization-sensitive projection layers, we further propose the \textbf{Output-Variance Freeze (OV-Freeze)} regularizer, whose gradient compatibility and joint-loss convergence bound are analysed formally in Appendix~A. For privacy-preserving feature fusion, we construct a 128-dimensional irreversible acoustic embedding ($F_v$) and an L-BFGS-optimized four-modality risk fusion mechanism. On the TeleAntiFraud-28k benchmark, NVFP4 QAD + OV-Freeze attains $F_1 = 0.923\pm0.006$, recovering 99.1\% of the BF16 upper bound and outperforming 10 representative baselines (e.g., AWQ, QuaRot, BitDistiller) by 6.5 to 8.5 $F_1$ points. On the in-house adversarial set AdvFraud-3k, the model attains $F_1 = 0.875$, corresponding to a 5.2\% relative drop (absolute drop 0.048) against the BF16 upper bound---well within the threat-model constraint $C_2(\le 6\%)$. End-to-end deployment on the Snapdragon~8 Gen 3 platform yields a median alert latency of 268~ms (P99: 342~ms), confirming the framework's deployment feasibility under real-world anti-fraud workloads.
+
+\noindent {\bfseries Keywords:} 
+Telecommunication fraud detection, quantization-aware distillation, privacy preservation, multimodal fusion, speculative decoding, edge-cloud collaboration.
+
+
+
+\section{引言}
+随着生成式人工智能技术的广泛应用，电信诈骗已由传统单一的流程化脚本模式，逐渐向精准化、隐蔽化的多模态攻击演进。Ma 等~\cite{1} 在构建的 TeleAntiFraud-28k 数据集上识别出 14 种典型欺诈话术与 7 种声学伪装策略，单个案件平均2.7 种异构模态信号，包含短信钓鱼、语音通话、恶意 URL 链接及社交伪装话术等。面对此类复合型攻击，传统的单模态方案（如基于自动语音识别 ASR 转写文本的检测方法）在实际业务场景中表现出明显的滞后性。Wang 等~\cite{2} 在部署的实时反诈系统 SAFE-QAQ 上也显示，受地方方言、环境强噪声以及刻意语音变形的干扰，基于转写文本的检测召回率仅为 $60\%\sim75\%$，存在严重的漏报隐患。
+
+传统的机器学习或规则引擎方案在应对上述组合式攻击时，难以同时满足实时性、隐私保护与端侧资源的工程约束。首先，反诈电话平均时长约为 90 秒，且关键诈骗指令多出现在通话前 60 秒。此处需区分两类时延指标：（i）\emph{单窗口增量推理时延}，即每个流式滑动窗口触发后系统完成一次风险评分迭代的时间，本文要求其 $\le 500~\text{ms}$，以保证风险分数能以 $1~\text{s}$ 步长持续刷新（实测 P50 $=268~\text{ms}$，见 \S~3.3.1）；（ii）\emph{首次预警时延}，即从通话开始到产生第一个有效风险判决的时间，受声学统计窗口长度 $W$ 约束（本文 $W=3~\text{s}$，首次预警约在 $3.3~\text{s}$ 内完成）。由于关键诈骗指令集中在前 $60~\text{s}$，$3.3~\text{s}$ 的首次预警与 $1~\text{s}$ 的持续刷新可在诱导指令窗口内提供充分的多次拦截机会。系统须在上述双重时延约束下完成预警响应。其次，依据我国《个人信息保护法》（PIPL）有关个人敏感信息及生物识别信息的保护规定，原始音频等特征的跨端传输面临严格的合规限制，核心数据的处理通常需要在移动终端本地完成检测。最后，移动端设备面临设备内存（$\text{RAM} \le 4~\text{GB}$）与可用空间（$\le 500~\text{MB}$）的硬件约束。因此，在端侧部署 4-bit 量化的大语言模型（LLM）成为兼顾隐私合规与实时响应的可行技术路径。
+
+然而，常规训练后量化（PTQ）应用于 $0.5\text{B}$ 级别的轻量化模型时，在通用基准（如 MMLU、AIME25、GPQA-D）上会引入 $6.0\%\sim12.5\%$ 的精度退化（见 NVIDIA Nemotron 报告~\cite{3}）；在本文电信反诈任务（TAF-28k）上，PTQ 与 QAD 的 $F_1$ 差距为 $6.5\sim8.5$ 个百分点（见 \S~4.2 表~\ref{tab3}），无法满足反诈业务对模型保真度的严苛要求。若采用传统的量化感知训练（QAT），则需重构包含监督微调（SFT）、强化学习（RL）及模型合并的完整训练流水线，不仅会增加工程复杂度，还会破坏模型在对齐阶段确立的对话风格与拒绝边界。NVIDIA Nemotron 团队于 2026 年 1 月发布的 NVFP4 QAD 报告~\cite{3} 为解决该瓶颈提供了新思路。研究表明，虽然传统的 QAT 在 AIME25、GPQA-D 等基准上的精度损失最高达 $12.5\%$，但采用量化感知蒸馏（Quantization-Aware Distillation, QAD）方法，通过纯 KL 散度对齐教师模型输出的概率分布，能够将模型精度恢复至全精度（BF16）基线的 $97.0\%\sim99.4\%$。这为缓解端侧轻量化模型的低比特量化退化提供了方法论基础。
+
+尽管如此，将原生 QAD 方法直接迁移并应用于电信反诈这一领域，仍面临以下三重挑战：
+
+\textbf{一是低资源场景下的泛化瓶颈：}反诈对话语料深度涉及用户隐私与使用限制，导致可用于训练的高价值跨模态数据集规模有限，亟待验证 QAD 方法在低数据覆盖度场景下的泛化性与鲁棒性。
+
+\textbf{二是多模态融合与超低位量化的硬件不兼容：} 准确的诈骗研判需要联合文本、声学、URL 和元数据四个异构模态进行综合计算，而现有的 QAD 方案主要覆盖单模态（文本或视觉）模型；同时，既有的多模态融合系统（如 SAFE-QAQ）并未考虑端侧超低位量化（如 NVFP4 与 GGUF 格式）下的硬件兼容与特征分布对齐。
+
+\textbf{三是端侧软硬件协同的严苛时延约束：} 包含特定推理流程的反诈检测需要在 $300~\text{ms}$（中位数）内完成。实测表明，纯粹的低比特权重量化加速难以完全突破当前移动端算力的时延瓶颈，必须引入低比特量化与领域推测解码（Speculative Decoding）的深度联合优化。
+
+针对上述挑战，本文在 NVFP4 QAD 方法论的基础上进行系统性拓展，主要贡献可归纳为以下四点：
+
+    \textbf{1) 方法贡献——纯 KL 同源蒸馏与双轨量化范式。} 本文在电信反诈任务上系统性地采用纯 KL 散度蒸馏与同源教师（Homologous Teacher）范式，将传统量化感知训练（QAT）中包含任务损失、KD 损失与量化损失的混合目标简化为单一 KL 散度损失，规避了 QAT 对预训练对齐结构的破坏。在此基础上，构建云端 NVFP4 与端侧 GGUF-Q4\_K\_M 的双轨协同量化方案：云端依托 Blackwell 架构 GPU 的原生 FP4 Tensor Core 与 vLLM 推理引擎实现硬件级加速，端侧采用面向 ARM/骁龙平台优化的分块自适应量化（Block-wise Quantization）GGUF 格式，实现跨平台软硬件高效协同。
+
+    \textbf{2) 算法贡献——输出方差冻结（OV-Freeze）正则化。} 针对自注意力机制中 $\{q,k,v,o\}\text{-proj}$ 量化敏感层，本文提出输出方差冻结（Output-Variance Freeze, OV-Freeze）正则化策略：通过逐层标量重标定，将量化学生的敏感层输出方差强约束至 BF16 同源教师的统计基线，并配合指数移动平均（EMA）方差估计抑制小批次噪声。附录 A 给出 OV-Freeze 与 KL 散度主损失的梯度兼容性证明（命题 A.1）与联合优化的 Lipschitz 收敛性分析（定理 A.2）。
+
+    \textbf{3) 隐私贡献——不可逆声学嵌入与多模态融合。} 为在不上传原始音频的前提下提供鲁棒声学特征，本文构建 128 维不可逆声学嵌入 $F_v$（64 维时间平均 MFCC 与 64 维 Whisper-tiny 编码器全局平均池化投影特征的拼接），其形式化定义为
+    \begin{equation}
+        F_v = \mathcal{C}\!\left( f_{\text{mfcc}},\, \psi(W_{\text{proj}}\,\bar{h}_w) \right) \in \mathbb{R}^{128}.
+    \end{equation}
+    白盒梯度泄漏优化（GLO）与黑盒模型反演攻击下的字错率均满足 $\text{WER} \ge 0.95$，附录 A.3 给出 $I(x; F_v) \approx 0$ 的信息论非可逆性论证。进一步引入基于 L-BFGS 的四模态加权 Sigmoid 融合，5-折按用户分层交叉验证证实融合权重的稳定性。
+
+    \textbf{4) 工程贡献——领域推测解码与端云协同实测。} 利用电信反诈话术的强模式性，对 1.24 亿参数草稿模型（Qwen2-0.1B）进行领域微调，将 Token 平均接受率从通用基线的 0.78 提升至 0.86。在 H100 服务端与 SD8G3 移动端的实测加速比分别为 3.49$\times$ 与 3.32$\times$；端到端预警 P50/P99 延迟为 268~ms / 342~ms（5\,000 用户灰度部署，30 天）。在 TAF-28k、AdvFraud-3k、ChiFraud-OOD 三组数据集上的统一评测显示，所提方案 $F_1$ 分别为 0.923、0.875、0.860，全面验证系统的精度、鲁棒性与端侧可部署性。
+
+本文提出端云协同的轻量化检测框架 QAD-MultiGuard。该架构以量化感知蒸馏为核心，通过教师--学生模型间的分布对齐，在低比特量化条件下恢复语义判别能力；引入输出方差冻结（OV-Freeze）正则化以约束关键层表征的统计波动，缓解量化引入的输出不稳定；通过云端 NVFP4 与端侧 Q4\_K\_M 的双轨量化实现跨设备一致性推理，并以不可逆声学嵌入完成端侧表征脱敏，在满足隐私合规前提下达成实时可部署能力。本文结构安排：第~2~节回顾相关工作；第~3~节详述系统架构与方法；第~4~节给出系统级与组件级实验评估；第~5~节讨论局限性；第~6~节为结论。附录~A 给出 OV-Freeze 梯度兼容性与收敛性的形式化分析以及声学嵌入的非可逆性论证。
+
+\section{相关工作}
+
+\subsection{量化感知蒸馏（QAD）}
+Hinton 等~\cite{4} 提出的知识蒸馏（Knowledge Distillation, KD）通过引入软标签实现了从高能力教师模型到轻量化学生模型的知识迁移。Polino 等~\cite{5} 首次将 KD 框架融入权重量化网络的训练流程中，开创了量化蒸馏方法。Mishra 与 Marr~\cite{6} 进一步论证了低精度网络可通过拟合全精度教师模型的输出表征显著提升预测精度。Liu 等~\cite{7} 提出 LLM-QAT 方法，证实了利用模型自生成数据（Data-free/Model-generated Data）进行量化感知蒸馏的高效性。Du 等~\cite{8} 提出 BitDistiller 方法，通过结合非对称量化与自蒸馏目标，有效缓解了超低比特（Sub-4-bit）LLM 的性能退化。
+
+近期，NVIDIA Nemotron 团队发布的 NVFP4 QAD 技术报告为领域提供了重要的方法论参考。与传统量化感知训练（QAT）相比，QAD 在经过密集强化学习（RL）对齐的模型上能有效避免基座能力的退化，同源教师（即 BF16 模型的自蒸馏）的对齐效果优于跨规模教师模型（如 9B $\rightarrow$ 9B 的蒸馏效果优于 12B $\rightarrow$ 9B），KL 散度的损失函数在优化效果上优于均方误差（MSE）损失，表现出较强的泛化鲁棒性，仅在数学语料（Math-only）上进行蒸馏训练即可同步恢复模型的代码能力，且随机 Token（Random Tokens）输入也不会导致模型能力崩塌。
+
+此外，先进的训练后量化（PTQ）方法也取得了显著进展。Lin 等~\cite{9} 提出的 AWQ 方法通过激活感知的权重缩放保护关键通道权重；Frantar 等~\cite{10} 开发的 GPTQ 方法利用二阶泰勒展开信息进行逐层权重重建；Liu 等~\cite{11} 提出的 SpinQuant 通过引入可学习的正交旋转矩阵抑制激活异常值；Ashkboos 等~\cite{12} 提出的 QuaRot 则利用 Hadamard 变换实现了无异常值的 4-bit 推理。尽管这些 PTQ 方法在 8-bit 量化下表现优异，但在 4-bit 超低位场景下，其精度与 QAD 相比仍存在 $6.5\%\sim8.5\%$ 的显著差距。与上述工作不同，本文首次将 NVIDIA QAD 范式系统化引入电信反诈多模态任务中，并提出输出方差冻结（OV-Freeze）正则化策略以进一步抑制低比特量化噪声。
+
+\subsection{电信诈骗检测}
+早期的电信诈骗检测工作~\cite{13,14,15} 主要依赖于基于关键词匹配的规则引擎或浅层机器学习分类器（如支持向量机 SVM、随机森林 RF）。BERT-Fraud~\cite{16} 在中文反诈短信数据集上取得了 $0.876$ 的 $F_1$ 值，但该方案不支持端侧部署，且未考虑隐私合规约束与声学模态的融合。
+
+Ma 等~\cite{1} 发布了 TeleAntiFraud-28k（以下简称 TAF-28k）数据集，这是首个面向电信反诈垂直领域开源的、具备复杂推理特征的音频-文本双模态数据集。该数据集包含 $28,511$ 条经过匿名化处理的语音-文本对，总音频时长超过 $307~\text{h}$。利用自动语音识别（ASR）转写真实通话录音并进行匿名化处理后通过语音合成（TTS）重新生成音频，在保护隐私的同时维持了真实的语音分布。该数据集被划分为场景分类、欺诈检测以及欺诈类型分类三个核心任务，并提供了配套的 TeleAntiFraud-Bench 评测基准。
+
+Wang 等~\cite{2} 提出了 SAFE-QAQ——一种基于强化学习的端到端音频-文本多模态反诈检测框架。该框架采用端到端音频-文本联合处理，消除了传统方案中 ASR 转写误差引发的级联错误，通过引入基于规则的推理奖励机制，引导系统通过分层推理过程识别潜在的欺诈模式，构建了通话过程中的动态风险评估机制，实现了欺诈行为的早期预警。据文献~\cite{2} 报告，SAFE-QAQ 在生产环境的日均处理量约 $7\times10^4$ 通呼叫；然而其高昂的计算开销（参数 7B 量级、服务端推理）限制了端侧落地能力，这正是该工作显式列出的主要局限。
+
+本文与上述两项工作形成明确的互补关系：TAF-28k为本文提供了数据基础与评测协议，SAFE-QAQ 奠定了多模态框架基础，本文则聚焦端侧超低位量化与软硬件协同部署难题。表\ref{tab1}总结了三者之间的核心差异。
+
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{3pt}
+
+\caption{本文方法与现有工作的对比}
+\label{tab1}
+
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{6pt}
+
+\begin{tabular}{>{\centering\arraybackslash}m{2.2cm}
+                >{\raggedright\arraybackslash}m{3.5cm}
+                >{\raggedright\arraybackslash}m{3.5cm}
+                >{\raggedright\arraybackslash}m{5cm}}
+\toprule
+
+\textbf{维度} &
+\textbf{TAF-28k [1]} &
+\textbf{SAFE-QAQ [2]} &
+\textbf{本文 QAD-MultiGuard} \\
+
+\midrule
+
+核心定位 
+& 数据集 + 基准 
+& RL 端到端框架 
+& 端云协同部署系统 \\
+
+音频处理 
+& ASR + TTS 重生成 
+& 端到端音频-文本 
+& 端侧 $128$-d $\mathbf{F}_v$（不上云） \\
+
+量化 
+& 未涉及 
+& 未涉及 
+& NVFP4 + Q4\_K\_M 双轨 \\
+
+端侧部署 
+& --- 
+& 服务端为主 
+& 端云协同（$<300$ ms） \\
+
+隐私机制 
+& 数据脱敏 
+& 未明确 
+& $\mathbf{F}_v$ 不可逆 + DP \\
+
+训练范式 
+& SFT 
+& RL + 慢思考奖励 
+& QAD 纯 KL 蒸馏 \\
+
+实证规模 
+& Bench 评测 
+& 70k 通话/日 
+& 5{,}000 用户灰度 \\
+
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+\subsection{端侧大语言模型推理}
+端侧大语言模型（LLM）的高效推理受限于模型存储体积与解码时延的双重硬性约束。GGUF 格式~\cite{17} 通过引入 Q4\_K\_M 混合精度量化策略（即 4-bit 权重结合 6-bit 关键层激活），成功将 $0.5\text{B}$ 参数级别的模型体积压缩至约 $240~\text{MB}$，使其得以在移动端 ARM 架构设备上流畅运行。在服务端，vLLM 引擎~\cite{18} 通过 PagedAttention 技术~\cite{19}极大提升了并发吞吐量。
+
+为了突破自回归解码的串行时延瓶颈，Leviathan 等~\cite{20} 提出了推测解码（Speculative Decoding）技术，该技术利用轻量级草稿模型（Draft Model）快速预测多个候选 Token，再由大模型进行并行验证，可实现 $2\sim3$ 倍的端到端加速。Chen 等~\cite{21} 进一步推导出了 Token 平均接受率 $\alpha$ 与序列加速比之间的解析关系公式：
+\begin{equation}
+    \text{Speedup} = \frac{1-\alpha^{\gamma+1}}{1-\alpha}
+\end{equation}
+
+其中 $\gamma$ 表示草稿模型的单次前向预测步数。与通用领域的推测解码不同，本文针对电信反诈语料的强模式性特征，对草稿模型进行了领域自适应微调，成功将平均接受率 $\alpha$ 从通用基线的 $0.78$ 大幅提升至 $0.86$。
+
+\subsection{隐私保护语音特征}
+我国《个人信息保护法》（PIPL）明确规定，原始生物识别信息在未经严格授权及安全评估前不得脱离用户终端设备。为了在本地闭环处理中隐匿用户身份特征，Tomashenko 等~\cite{22} 依托 Voice Privacy Challenge 提出了采用 x-vector 替换实现声学身份混淆的方法。然而，Bora 等~\cite{23} 提出的生成潜变量优化（Generative Latent Optimization, GLO）攻击表明，部分传统的匿名化嵌入向量仍存在被逆向重构的风险。
+
+为进一步提升语音数据的隐私保护能力，本文提出一种更具非可逆性的声学特征构建策略：首先对帧级梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients, MFCC）沿时间轴执行全局统计平均，得到 64 维统计特征 $\bar{f}_{\text{mfcc}}\in\mathbb{R}^{64}$；随后对 Whisper-tiny 编码器输出的 384 维帧级特征序列执行**全局平均池化**（而非 BERT 式的 CLS token，因 Whisper encoder 不引入 CLS 标记），并经可学习投影矩阵 $W_{\text{proj}}\in\mathbb{R}^{64\times384}$ 映射至 64 维子空间；最终拼接为 128 维联合嵌入 $F_v\in\mathbb{R}^{128}$。两步压缩均破坏帧级时序依赖，从机制上削弱原始语音的可重构性。在白盒与黑盒两类 Generative Latent Optimization（GLO）攻击场景下，对截获 $F_v$ 实施的语音逆向重构均满足 $\text{WER}\ge 0.95$。与 Tomashenko 等~\cite{22} 的 x-vector 替换方案（其残留可逆性已在文献~\cite{23} 中被证实）相比，本文方法在物理压缩层面切断了语义与说话人身份两条信息通路，详细论证见 \S~3.3.2 与附录 A.3。    
+
+\section{系统架构与方法}
+\subsection{系统架构与威胁模型}
+\subsubsection{系统架构}
+
+QAD-MultiGuard 采用端云协同的三层防御架构体系（如图~\ref{fig1} 所示）：
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{Fig/fig1_architecture.png}
+    \caption{QAD-MultiGuard 三层端云协同架构}
+    \label{fig1}
+    \vspace{2pt}
+\end{figure}
+
+\textbf{端侧轻量检测层：} 部署于 Snapdragon 8 Gen 3 等移动计算平台。该层运行轻量化学生模型（240~MB，Q4\_K\_M 量化），在本地构建短信特征提取器（12 维）、URL 结构特征提取器（6 维）以及非可逆（Non-invertible）声学嵌入提取器。通过提取声学特征向量 $\bm{F}_v \in \mathbb{R}^{128}$，确保原始音频明文与短信文本局域化留存，满足《个人信息保护法》（PIPL）的合规性要求。
+
+\textbf{云端深度推理层：} 部署于 NVIDIA Blackwell GPU 集群。该层运行经 NVFP4 量化的 0.5B 大语言模型（LLM）算力集群，执行高并发的链式推理（Chain-of-Thought, CoT）与多模态交叉验证。
+    
+\textbf{多模态风险融合层：} 运行于端侧。通过 L-BFGS 算法离线优化决策边界，利用加权 Sigmoid 函数 $\sigma(\cdot)$ 对多源异构模态的风险评分进行线性加权融合，实时输出三级风险判决（Safe / Medium / High）并触发端侧 UI 拦截响应。
+
+
+
+\subsubsection{形式化威胁模型}
+
+本工作将系统所面临的威胁场景形式化定义为四元组 $\langle \mathcal{A}, \mathcal{K}, \mathcal{G}, \mathcal{C} \rangle$，分别涵盖攻击者的能力边界、先验知识、恶意企图以及防御系统的安全约束边界。
+
+\textbf{1) 攻击者能力} ($\mathcal{A}$)
+~假设攻击者部署于不可信的网络边界环境中（如受损的无线接入点或代理网关），充当主动或被动的人在中间（MITM）角色。攻击者具备截获并解析端云信道中传输的声学嵌入向量 $\bm{F}_v$ 及关联文本特征的能力，同时拥有对云端推理模型 API 进行黑盒交互式查询的权限。然而，防御边界设定攻击者无法攻破移动终端的硬件受信执行环境（TEE），即本地易失性内存与持久化存储对于攻击者而言是完全隔离且不可达的。
+
+\textbf{2) 攻击者知识} ($\mathcal{K}$) 
+~本模型假定攻击者对端侧特征提取网络（如映射矩阵 $\bm{W}_{\text{proj}}$ 的配置参数）具备完全的白盒先验（White-box Knowledge），且持有部分历史通信拦截生成的 $\bm{F}_v$ 序列。相比之下，攻击者对云端大语言模型（LLM）的内部拓扑结构、核心权重及参数仅具备黑盒知识。
+
+\textbf{3) 攻击者目标} ($\mathcal{G}$)
+~攻击者的恶意企图涵盖以下三种异构威胁路径：
+
+\begin{itemize}
+    \item \textbf{$\mathcal{G}_1$（隐私重构攻击）：} 试图构建逆向映射网络，从截获的低维声学特征 $\bm{F}_v$ 中逆向还原受害者的原始语音波形或高保真转录明文。
+    \item \textbf{$\mathcal{G}_2$（对抗逃逸攻击）：} 通过在输入端注入精心构造的语义级对抗提示词（Adversarial Prompts）或语境变体，误导云端 LLM 的风险判决链路。
+    \item \textbf{$\mathcal{G}_3$（身份欺诈攻击）：} 通过对截获特征向量进行重放（Replay），或伪造合法通信凭证，诱导云端做出错误授信。
+\end{itemize}
+
+\textbf{4) 安全约束与防御边界} ($\mathcal{C}$)
+~为确保系统在上述威胁下的鲁棒性，防御框架必须严格收敛于以下安全基准：
+\begin{itemize}
+    \item \textbf{针对 $\mathcal{G}_1$ 的非可逆性约束：} 逆向重构语音的字错率须维持在极高位（$\text{WER} \ge 0.90$），且特征提取机制须严格满足 $\epsilon$-局部差分隐私（$\epsilon$-LDP，本系统中约束隐私预算 $\epsilon = 1.5$），切断隐私泄露通路。
+    \item \textbf{针对 $\mathcal{G}_2$ 的抗扰动约束：} 系统须具备跨领域的语义泛化能力，在 AdvFraud-3k 对抗评测集上的 $F_1\text{-score}$ 性能衰减须控制在 6 个百分点以内。
+    \item \textbf{针对 $\mathcal{G}_3$ 的交叉验证约束：} 必须强制引入呼叫元数据（Call Metadata）等多源异构特征进行动态关联分析，阻断基于单一模态伪造的欺诈通路。
+\end{itemize}
+
+\textbf{5) 研究范围界定} (Scope Exclusion)
+~本威胁模型聚焦于攻击者运行全自动生成式欺诈流水线（即 $\text{ASR}\!\rightarrow\!\text{LLM}\!\rightarrow\!\text{TTS}$ 闭环）的标准场景。本文不考虑攻击者在物理信号层对端侧声学编码器实施恶意注入（如信号层声学对抗逃逸、ASRJam~\cite{Grabovski2025ASRJam} 式人为干扰扰动）的反向对抗场景，理由有二：（i）本系统的多模态融合（文本、声学、URL、元数据）对单一模态扰动具备天然鲁棒性，即使 $F_v$ 受物理层噪声干扰，文本与元数据通路仍可独立支撑决策；（ii）\S~4.3 构建的 AdvFraud-3k 已覆盖 8 种自然语言层面对抗变体，提供了语义层鲁棒性的完备验证。完整的反对抗鲁棒性（包括物理信号层扰动与端侧编码器的对抗训练）作为未来工作（\S~5.3）。
+ 
+\subsection{量化感知蒸馏 (QAD)}
+\subsubsection{纯 KL 散度损失函数设计}
+
+为了在低比特量化过程中最大程度保留基座模型在多阶段对齐中习得的先验概率分布，QAD-MultiGuard 引入了一种纯 Kullback-Leibler (KL) 散度驱动的蒸馏范式。给定输入序列 $x$ 与预定义词表 $\mathcal{V}$，记 $p_{\text{teacher}}(y|x)$ 为 16 位浮点（BF16）基座教师模型的预测概率分布，$p_{\text{student}}(y|x)$ 为经量化约束后的低比特学生模型的输出分布。则量化感知蒸馏（Quantization-Aware Distillation, QAD）损失函数 $L_{\text{QAD}}$ 形式化定义为：
+\begin{equation}
+    L_{\text{QAD}} = D_{\text{KL}}\big( p_{\text{teacher}}(y|x) \parallel p_{\text{student}}(y|x) \big) = \sum_{y \in \mathcal{V}} p_{\text{teacher}}(y|x) \cdot \log \left[ \frac{p_{\text{teacher}}(y|x)}{p_{\text{student}}(y|x)} \right]
+\end{equation}
+
+在整个蒸馏优化阶段，为了实现对教师模型原始概率流的无偏差逼近，Softmax 激活函数的温度系数严格统一设为 $T = 1$。
+
+传统的量化感知训练（Quantization-Aware Training, QAT）~\cite{24,25,26}通常沿用监督微调（SFT）阶段的交叉熵损失，其本质是在离散化约束下重新拟合任务目标。然而，对于经过“SFT 欺诈文本对齐 + RL 安全行为对齐”等多阶段演进的复杂欺诈检测大模型而言，QAT 会诱发严重的分布偏移风险（Distribution Drift）。这是因为交叉熵损失无法约束模型次优 Token 的概率分布，进而导致强化学习（RL）阶段构建的安全拒绝边界（Safety Alignment Boundary）与回复风格发生灾难性降解。实验表明，常规 QAT 优化后的模型与原 BF16 教师模型的 KL 散度高达 0.311，而采用纯 KL 散度约束的 QAD 范式则能将这一分布发散度压制在 0.004 数量级，在修复量化精度的同时，完美继承了教师模型的安全行为特征。
+
+\subsubsection{同源教师自蒸馏选型}
+
+传统的知识蒸馏（Knowledge Distillation, KD）普遍遵循“大模型教师引导小模型学生”的跨尺度能力迁移模式。然而，在面向大模型的低比特量化任务中，引入异构大模型的策略其效果往往不及同源自蒸馏（Self-Distillation）。其内在机理在于：QAD 的核心优化目标在于修复和补偿由于权重离散化（Quantization Discretization）引入的截断误差与方差扰动（即输出概率分布的精细化对齐），而非传授新的任务领域知识。由于异构大模型与学生模型之间存在固有的特征空间与拓扑结构错位，强行进行跨分布蒸馏反而会引入额外的优化负荷，增加训练收敛对数据吞吐量的依赖。因此，本系统选用未量化的原生 Qwen2.5-0.5B-Instruct（BF16）~\cite{27,28,29} 作为同源教师模型（teacher），用于对端侧学生模型进行监督与蒸馏对齐。
+在训练阶段，教师模型保持 BF16 精度输出，用于提供软标签/中间表征，从而在不引入结构域偏移的前提下提升量化学生模型的性能与稳定性。。
+
+\subsubsection{端云协同量化方案}
+
+有别于单一云端算力（如 Blackwell 架构专用 NVFP4 算子）的单轨量化模式，本文提出了一种端云协同双轨量化方案，在系统层面深度融合了云端高性能计算集群与移动终端异构硬件的底层指令集特性，在模型泛化精度、硬件吞吐量以及多端可部署性之间确立了动态可控的机制，以满足端侧毫秒级拦截与云端高并发推理的并发需求（硬件适配参数指标见表~\ref{tab2}）。
+
+\begin{table}[h]
+\centering
+\caption{端云协同双轨量化方案适配参数}
+\label{tab2}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{6.5cm}>{\raggedright\arraybackslash}p{4.7cm}}
+\toprule
+\textbf{组件} & \textbf{服务端 NVFP4} & \textbf{端侧 Q4\_K\_M} \\
+\midrule
+骨干网络            & Qwen2.5-0.5B-Instruct & Qwen2.5-0.5B-Instruct \\
+参数量              & 4.94 亿 (FP16) & 4.94 亿 (FP16) \\
+教师                & BF16 自蒸馏 & BF16 自蒸馏 \\
+量化格式            & NVFP4 (block=16, E4M3 scale) & Q4\_K\_M (4/6-bit GGUF) \\
+模型体积            & 248 MB & 240 MB \\
+部署平台            & Blackwell GPU + vLLM & ARM / Snapdragon \\
+推理加速 vs FP8     & 2.1$\times$  & — \\
+精度恢复率 vs BF16  & \textbf{99.1\%} & \textbf{98.5\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+云端集群采用低精度数值表征架构 NVFP4。该架构集成三项核心设计：具备 $16$ 元素的微块（Micro-block）级缩放机制（$\text{block\_size}=16$）、基于 FP8 E4M3 格式的块标度存储，以及协同的张量级 FP32 全局标度。微块级缩放将局部的数值动态范围紧凑映射至 FP4 的有限可表示区间内，规避了长尾分布引发的局部饱和并收敛了量化噪声；FP8 E4M3 格式提供高分辨率的尺度表征，减缓了超低比特空间下的截断与舍入偏差；全局 FP32 标度则在宏观层面重映射张量分布，引导微块标度精确覆盖激活与权重矩阵的有效动态范围，在抑制数值溢出的同时稳定了深层神经网络固有的尺度漂移现象。
+
+与之相对应，移动端防御边界聚焦于轻量化落地与高通量实时响应。系统基于 GGUF 开放生态引入 Q4\_K\_M 分组量化方案，在维持 4-bit 紧凑表征为主体的前提下，通过多维分组尺度超参数控制数值精度的损耗边界。在算子执行图底层，系统推理路径直接绑定 ARM 平台的 SIMD（单指令多数据流）向量化指令集，在算子级实现高通量并行计算。该设计突破了移动终端有限内存带宽下的算力瓶颈，保障了极端网络环境下的低延迟实时防御需求。
+
+\subsubsection{数值仿真协议与对齐验证}
+
+系统构建中采用了数值行为仿真（Numerical Behavior Emulation, NBE）协议，在 H100 集群上建立对云端 NVFP4 推理链路的等效闭环对齐，以应对 Blackwell 架构 GPU 的商用量产与部署周期。协议将“数值精度等效性验证”与“硬件微架构使能的性能增益”实施解耦与分离建模：前者通过前向计算图中的伪量化算子定量刻画量化误差，后者通过部署侧的引擎编译与基准测试完成直接测定。这种双重行为解耦机制确保了对比基准的可解释性与高度可复现性。
+
+在模型预训练与感知蒸馏阶段，前向传播计算图中显式嵌入了伪量化（Fake Quantization）算子：具体而言，权重与激活在 H100 上仍以 FP16/BF16 进行实际矩阵运算，但在每个线性层前向时，先经 QDQ 算子（式~\ref{eq:qdq_impl}）将其按 NVFP4 的两级缩放（block=16 的 FP8-E4M3 块标度 $\times$ FP32 张量标度）做截断-反量化，从而在 FP16 计算精度下精确复现 FP4 的舍入与饱和截断误差，而非依赖 Blackwell 物理 FP4 算子。该方案与 NVIDIA TensorRT-LLM (v0.13) 的 NVFP4 伪量化算子库行为对齐。在下游的推理部署与性能评测阶段，基于 TensorRT-LLM（v0.13）~\cite{NVIDIA2024TRTLLMReleaseNotes,NVIDIA2024TensorRTLLMDocs}工具链编译高性能推理引擎，且端到端延迟与吞吐量指标的测定均约束在统一的运行时（Runtime）配置下。所有对照实验均保持硬件基准、通信拓扑及批处理超参数的完全一致，并以原生无损 BF16 分布作为性能基线，开展严谨的对照与消融分析。
+
+\textbf{1) 数值仿真计算图}
+~在前向传播图构建中，各密集线性层（Linear Layer）的权重张量 $\bm{W}$ 统一接受“量化—反量化”（Quantize--Dequantize, QDQ）映射算子的约束。为完整保留微观编码格式的数值特征而不进行过度简化，伪量化算子形式化表述为：
+\begin{equation}
+\label{eq:fake_quant}
+    \bm{W}\ \mapsto\ \widehat{\bm{W}} = \mathcal{D}\!\left(\mathcal{Q}\!\left(\bm{W};\, s\right)\right)
+\end{equation}
+
+其中 $\mathcal{Q}(\cdot)$ 算子执行数值离散化映射（集成符号舍入与饱和截断机制），$\mathcal{D}(\cdot)$ 算子执行反量化回归，变量 $s$ 代表复合尺度因子。在工程实现中，可复现的 QDQ 路径由分段饱和与自适应舍入算子协同构造：
+\begin{equation}
+\label{eq:qdq_impl}
+    \widehat{\bm{W}} = \mathrm{clamp}\!\Big(\mathrm{round}\!\big(\bm{W}/s\big),\, q_{\min},\, q_{\max}\Big)\cdot s
+\end{equation}
+
+此处的复合尺度因子具有双层耦合形式，即 $s = s_{\text{block}}\cdot s_{\text{tensor}}$。具体而言，块级标度 $s_{\text{block}}$ 沿输入维度按固定微块步长（$\text{block\_size}=16$）进行细粒度切分，并统一映射为 FP8-E4M3 编码格式，实现了对 NVFP4 块缩放表征的高保真对齐。张量级标度 $s_{\text{tensor}}$ 则维持静态 FP32 精度，赋予了框架全局尺度重映射能力并确保了宏观数值稳定性。
+
+反量化权重 $\widehat{\bm{W}}$ 以 FP16 或 BF16 格式无缝注入后续的矩阵乘加运算，在高精度计算拓扑中直接承载并展现低比特量化诱发的精度退化与误差传播特征。此外，激活张量的数值仿真严格继承同构的块级（Block-wise）约束与双层缩放策略，保障了全局误差模型的一致性。上述算子链路与参数配置在底层工程中进行了固化闭环，可提供完备的可复现实验脚本。
+
+\textbf{2) 硬件级行为解耦与精度校准}
+~ 仿真协议聚焦于算法层面的数值精度等效性验证，显式剥离并解耦了依赖 Blackwell 物理架构实现的特有加速属性。具体排除的硬件级行为包括：2:4 结构化稀疏带来的吞吐增益、特定 Tensor Core 生成单元（tcgen）的中间累加与舍入级扰动、以及两代微架构间异构的内存层次拓扑与调度开销。根据上述边界设定，后续实验报告的实测吞吐量与延迟指标均产生自 H100 硬件平台。Blackwell/NVFP4 的理论加速比与峰值性能指标则独立引用自 NVIDIA 官方公开技术文档，与本工作的实测数据分离呈现。
+
+仿真器的功能正确性通过两步校准确立：（1）数值精度等效性——以 NVIDIA 官方发布的 NVFP4 参考检查点（Nemotron Nano 9B V2）作为参考，在 MMLU~\cite{30}、GSM8K~\cite{31}、HumanEval~\cite{32} 三个公共基准上交叉比对，本仿真链路与参考检查点的绝对准确率偏差均低于 $0.3\%$，验证了 QDQ 算子链路的实现正确性；（2）下游任务波动——在本文 0.5B 学生模型上，重复 5 个随机种子的仿真训练-推理流程，TAF-28k 测试集 $F_1$ 的种子间标准差为 $\pm 0.006$。需指出，校准基准为 9B 模型的通用任务，与本文 0.5B 模型在 TAF-28k 上的下游 $F_1$ 之间存在外推鸿沟；因此，所有报告结果均以 5 个种子均值$\pm$标准差形式呈现，而非依赖单一仿真器外推。
+
+\subsubsection{输出方差冻结（OV-Freeze）正则化}
+
+低比特离散化操作使得自注意力的四个敏感投影层（$\ell \in \{\bm{q}, \bm{k}, \bm{v}, \bm{o}\}_{\text{proj}}$）的输出分布相对无损基线发生严重漂移，实测输出方差的相对增幅最高达 $+18.2\%$。这种方差偏移直接破坏了注意力分数的尺度平衡，并进一步削弱了深层网络的数值稳定性。输出方差冻结作为一个轻量级正则化模块被引入后训练阶段，旨在将量化学生模型的敏感层输出方差强约束至同源教师基线的统计水平。
+
+OV-Freeze 机制在后训练过程的末端（即最后 $30\%$ 的优化步）激活。该机制依赖离线校准阶段预先提取的同源教师模型（BF16）对应层的输出方差常数 $\sigma^2_{\text{BF16},\ell}$。在训练前向传播中，学生模型的对应层输出 $\bm{y}_\ell$ 接受如下自适应方差重标定：
+\begin{equation}
+\label{eq:ov_freeze_rescale}
+    \bm{y}'_\ell
+    = \bm{y}_\ell \cdot c_\ell,
+    \qquad
+    c_\ell
+    = \sqrt{\frac{\sigma^2_{\text{BF16},\ell}}{\mathrm{Var}(\bm{y}_\ell)+\epsilon}}
+\end{equation}
+
+其中 $\epsilon=10^{-6}$ 为数值平滑项，$\mathrm{Var}(\cdot)$ 提取特征维度的方差估计值。上述操作等效于对输出张量施加逐层的标量重标定，未引入额外结构假设，也未改变注意力机制的底层拓扑。
+
+\textbf{1) 梯度兼容性与实现约束}
+~依据微积分链式法则，校正系数 $c_\ell$ 作为动态输出 $\bm{y}_\ell$ 的函数，其诱导的损失函数偏导数具备如下解析展开：
+\begin{equation}
+\label{eq:ov_freeze_full_grad}
+    \frac{\partial L_{\text{QAD}}}{\partial \bm{y}_\ell}
+    =
+    c_\ell \cdot \frac{\partial L_{\text{QAD}}}{\partial \bm{y}'_\ell}
+    \;+\;
+    \left\langle
+    \frac{\partial L_{\text{QAD}}}{\partial \bm{y}'_\ell},\, \bm{y}_\ell
+    \right\rangle
+    \cdot
+    \frac{\partial c_\ell}{\partial \bm{y}_\ell}
+\end{equation}
+
+等式右侧第二项为 $c_\ell$ 依赖于 $\bm{y}_\ell$ 所产生的伴生梯度（$\langle\cdot,\cdot\rangle$ 表示张量缩并运算）。在教师方差 $\sigma^2_{\text{BF16},\ell}$ 恒定以及样本规模有限的数学前提下，雅可比项 $\partial c_\ell/\partial \bm{y}_\ell$ 严格有界，从机制上排除了无界梯度的风险。
+
+为进一步提升训练稳定性，实际的反向传播路径对该方差估计分支执行了计算图截断（\texttt{detach()}）。此时 $c_\ell$ 降级为常数系数参与反向传播，主损失梯度被简化为：
+\begin{equation}
+\label{eq:ov_freeze_practical_grad}
+    \frac{\partial L_{\text{QAD}}}{\partial \bm{y}_\ell}
+    =
+    c_\ell \cdot \frac{\partial L_{\text{QAD}}}{\partial \bm{y}'_\ell}
+\end{equation}
+
+该截断操作完整保留了 KL 散度损失的原始梯度方向空间，仅在幅值层面实施层级自适应缩放，从而规避了潜在的梯度冲突问题。
+
+\textbf{2) 批次噪声抑制与 EMA 方差平滑}
+~小批次训练（$\text{batch\_size}=8$）环境下，直接依赖瞬时批次方差 $\mathrm{Var}_{\text{batch}}(\bm{y}_\ell)$ 会在优化早期引发剧烈的参数抖动（观测变异系数 $\mathrm{CV}\approx 0.43$）。系统引入指数移动平均（Exponential Moving Average, EMA）机制以构建长周期平稳的方差估计量：
+\begin{equation}
+\label{eq:ov_freeze_ema}
+    \mathrm{Var}^{(t)}_{\text{EMA}}(\bm{y}_\ell)
+    =
+    \rho \cdot \mathrm{Var}^{(t-1)}_{\text{EMA}}(\bm{y}_\ell)
+    + (1-\rho)\cdot \mathrm{Var}^{(t)}_{\text{batch}}(\bm{y}_\ell),
+    \qquad \rho=0.95.
+\end{equation}
+
+EMA 缓冲区的初始状态锚定为教师基线统计量（$\mathrm{Var}^{(0)}_{\text{EMA}}=\sigma^2_{\text{BF16},\ell}$）。设定衰减率 $\rho=0.95$ 使得平滑窗口的有效半衰期约为 $14$ 个迭代步（等效覆盖约 $110$ 个独立样本），成功将方差估计的变异系数收敛至 $\mathrm{CV}<0.05$。前向计算阶段使用 $\mathrm{Var}_{\text{EMA}}$ 替代式 \eqref{eq:ov_freeze_rescale} 中的批次方差，且在反向传播中对 EMA 缓冲区严格执行 \texttt{detach()} 截断，保证了式 \eqref{eq:ov_freeze_practical_grad} 梯度假设的自洽性。
+
+\textbf{3) 消融验证与收敛性分析}
+~ 方差估计策略的消融实验印证了 EMA 机制的必要性。Batch-level 估计因早期高频噪声注入，导致前 500 步 PPL 振幅达 $+1.4$（最终 $F_1=0.918$）；Global 固定统计策略缺乏对师生分布动态演进的跟踪能力（$F_1=0.919$）；而 EMA 估计将 PPL 振幅压制至 $+0.18$（$F_1=0.923$），在收敛稳定性与下游精度间取得最优折中（详见 \S~4.5 表~\ref{tab:ovf_var_ablation}）。在 NVFP4 与 Q4\_K\_M 双量化路径上，OV-Freeze 相对未激活基线分别贡献 $+0.7$ 与 $+0.6$ 个 $F_1$ 百分点（$\Delta\text{PPL}=-0.11$，见 \S~4.5 表~\ref{tab:ovf_layer_ablation} 与表~\ref{tab9}）。
+
+%在优化动力学层面，OV-Freeze 等效于对敏感层梯度施加基于稳定 EMA 统计量的有界标量缩放，其梯度截断实现保证了优化器基础收敛行为的拓扑不变性。
+
+\subsection{隐私保护声学嵌入}
+
+系统在架构设计上严格遵循《个人信息保护法》中有关数据使用合规的底线约束。去中心化拓扑在终端设备本地直接提取低维、非可逆的声学特征表征，在阻断原始语音原始波形外流的前提下，为下游风险判别链路提供核心输入。系统构建的隐私保护声学嵌入向量记为： 
+\begin{equation}
+\label{eq:Fv_main}
+    \bm{F}_v
+    =
+    \mathcal{C}\!\left(
+        \bm{f}_{\mathrm{mfcc}},
+        \;
+        \psi\!\left(
+            \bm{W}_{\mathrm{proj}}
+            \bar{\bm{h}}_{w}
+        \right)
+    \right)
+    \in \mathbb{R}^{128}
+\end{equation}
+
+其中，$\mathcal{C}(\cdot)$ 表示特征拼接算子，$\psi(\cdot)$ 表示逐向量归一化映射，用于约束投影特征的尺度稳定性并抑制塌缩。时域统计特征向量 $\bm{f}_{\mathrm{mfcc}}\in\mathbb{R}^{64}$ 提取自 64 维梅尔频率倒谱系数（MFCC），底层的算子流水线配置包含 $16\,\mathrm{kHz}$ 采样率、$n_{\mathrm{mels}}=64$ 组梅尔滤波器组、$10\,\mathrm{ms}$ 帧移以及 $25\,\mathrm{ms}$ 分析窗长。序列级池化表征 $\bar{\bm{h}}_{w}\in\mathbb{R}^{384}$ 衍生自 Whisper-tiny 编码器的深层输出，并通过一个可学习的投影矩阵 $\bm{W}_{\mathrm{proj}}\in\mathbb{R}^{64\times384}$ 映射至 64 维线性子空间。该投影矩阵在量化感知蒸馏（QAD）微调阶段与学生模型实施端到端联合优化，其行向量并行承载行归一化（Row Normalization）约束，从机制上阻断了潜在的投影塌缩与表征退化现象。
+
+\subsubsection{流式滑动窗口实现}
+
+实时预警指标的达成依赖底层的流式滑动窗口（Streaming Sliding Window）执行机制。终端环形缓冲区动态维护一个时间跨度 $W=3\,\mathrm{s}$ 的音频时序窗口，并以步长 $\Delta=1\,\mathrm{s}$ 向前推进，相邻时段的窗口重叠率稳定在 $66.7\%$。完整滑移窗口的构建会即时触发声学嵌入 $\bm{F}_v$ 的流式提取，驱动 Tier-2 推理链路完成风险评分的单次迭代。首次预警响应时间的解析上界定义为：
+\begin{equation}
+\label{eq:latency_bound}
+    W + t_{\mathrm{infer}}
+\end{equation}
+
+其中 $t_{\mathrm{infer}}$ 代表端到端推理延迟。本文在实验环境中测得的端到端单窗口推理 P50 延迟为 $268\,\mathrm{ms}$（$<500\,\mathrm{ms}$ 增量推理预算，对应 \S~1.1 时延指标 (i)），首次预警时延为 $W+t_{\mathrm{infer}}\approx 3.3\,\mathrm{s}$（对应 \S~1.1 时延指标 (ii)），此后风险分数以 $1\,\mathrm{s}$ 步长持续刷新。需强调，本文的「时间平均」严格定义在\emph{单个滑动窗口}（$W=3\,\mathrm{s}$，约 $300$ 帧 MFCC）内，而非对整通通话做累积平均；因此首次完整窗口构建后（$\approx 3.3\,\mathrm{s}$）即可触发流式预警，无需等待整通通话结束，从机制上解决了实时性约束与时间平均特征之间的潜在冲突。
+
+窗口跨度 $W$ 统辖了首次预警延迟、MFCC 统计鲁棒性与跨窗口时域分辨率之间的帕累托折中（Pareto Trade-off）。针对候选集合 $W\in\{1,2,3,5,10\}\,\mathrm{s}$ 的消融分析表明，$W=3\,\mathrm{s}$ 确立了实时响应与检测精度的高效平衡点。具体而言，$W=1\,\mathrm{s}$ 配置因有效分析帧数匮乏而放大了高频统计噪声，致使 F1 分数跌落至 $0.897$；$W=5\,\mathrm{s}$ 配置仅带来微幅精度增益（$\text{F1}=0.924$），却显著提升了首次预警的时延开销；而 $W=10\,\mathrm{s}$ 的极端设置则导致系统全局实时吞吐与响应能力急剧劣化。
+
+连续窗口间的评分扰动通过引入指数移动平均（EMA）聚合机制予以平滑抑制：
+\begin{equation}
+\label{eq:ema_risk}
+    r_t = \beta r_{t-1} + (1-\beta)r_t^{(\mathrm{new})}, \qquad \beta=0.4
+\end{equation}
+
+显示动态聚合在保持首次预警时延绝对不变的同时，增强了后续评分轨迹的稳健性。高危拦截状态的判定基准设定为连续两个滑移窗口的聚合分值均满足 $r\ge 0.70$，该状态会直接激活端侧用户界面（UI）的即时预警提示。
+
+\subsubsection{非可逆性论证与差分隐私扩展}
+
+由于声学嵌入 $\bm{F}_v$ 的构造显式剥离了帧级高频时序特征，阻断了通过逆向推导恢复语音内容的路径。这种强非可逆特征源于双重信息压缩：一方面，MFCC 算子沿时域维度实施全局统计平均，将单窗口内的音素级时序压缩为静态低维统计矩；另一方面，Whisper 编码器的输出表征接受序列级平均池化算子约束，消除了 Token 级的细粒度上下文线索。在 $W=3\,\mathrm{s}$ 的标准基准下，单窗口包含约 $300$ 帧 MFCC 谱图，时域平均操作本质上擦除了微观帧级波形结构。实验评估验证了这一特性，$W=1\,\mathrm{s}$ 与 $W=5\,\mathrm{s}$ 的隐私量化指标偏差小于 $0.5\%$，印证了窗口尺度缩放对非可逆安全性防御强度的正交不相关性。
+
+嵌入向量的可恢复性边界通过白盒 GLO 攻击与黑盒模型反演（Model Inversion）攻击进行了定量评测。在包含 $100$ 段真实电话录音（单段跨度 $3\,\mathrm{s}$）的测试集上，白盒与黑盒逆向攻击诱导的词错误率（WER）分别达到了 $0.95$ 与 $0.97$ ；同时，话语识别准确率降低至 $8.3\%$，逼近统计学上 10 分类随机基线（$10\%$）。实证结果确立了 $\bm{F}_v$ 在底层语义维度与顶层身份表征维度上的高强度不可逆抗攻击特性。
+
+
+\begin{figure}[h] %htbp
+    \centering
+    \captionsetup{font=small} % caption 字体比正文小一号
+    \includegraphics[width=1\textwidth]{Fig/fig10_acoustic_embedding.png} % 替换为你的图片文件名
+    \caption{\protect\linespread{1.3}\selectprotect\selectfont
+    128 维不可逆声学嵌入 $\bm{F}_v$ 的构造流程。
+    a) 原始 mel 谱图，保留完整时序信息；b) 对 mel 谱进行时间平均得到 64 维 MFCC，破坏单窗口内音素序列；c) 最终 $\bm{F}_v$ 将 MFCC 与 Whisper 投影特征拼接形成 128 维嵌入。两步均为不可逆操作，丢失 $\mathcal{O}(T)$ 帧级信息}
+    \label{fig:Fv_construction}
+\end{figure}
+
+针对极端的隐私保护场景，系统支持在表征空间无缝注入自适应高斯噪声，以构建满足差分隐私（DP）保障的增强变体：
+\begin{equation}
+\label{eq:dp_noise}
+    \bm{F}_v' = \bm{F}_v + \mathcal{N}(0,\sigma^2)
+\end{equation}
+
+通过量化控制特征空间的 $\ell_2$ 敏感度并调制高斯噪声标度 $\sigma$，系统能够严格收敛于预设的 $(\varepsilon,\delta)$-DP 理论边界，实现隐私保护强度的闭环可控。
+
+
+\subsection{领域自适应推测解码}
+
+反诈文本交互具备高度模式化的语言分布特征。根据 Ma 等人在 TAF-28k 数据集上的统计表现，前 50 个高频欺诈词汇对欺诈文本样本的覆盖率达到 $73.4\%$。本系统利用该特定任务的先验分布，对参数量为 $1.24 \times 10^8$ 的轻量化草稿模型（Qwen2-0.1B）在 $50\text{K}$ 条专用反诈流式语料上实施领域微调，旨在对齐端云协同中云端大模型的输出轨迹。
+
+在推测验证阶段，系统运行受验证接受率 $\alpha$ 约束的自适应匹配机制。单次推测迭代中，目标大模型与草稿模型协同产出的期望 Token 生成数 $\mathbb{E}[N]$（即理论加速能力的表征基准）形式化定义为：
+\begin{equation}
+\label{eq:expected_token_yield}
+    \mathbb{E}[N] = \frac{1-\alpha^{\gamma+1}}{1-\alpha}
+\end{equation}
+
+式中，$\gamma$ 代表草稿模型在单次前向流中连续推测的 Token 序列长度。
+
+在 $\gamma = 5$ 的基准配置下，通用未微调草稿模型的验证接受率 $\alpha \approx 0.78$，对应理论单步期望 Token 数 $3.52$；经反诈领域自适应微调后，$\alpha$ 提升至 $0.86$，理论 Token 数同步提升至 $4.25$。该理论加速比在 \S~4.8 的硬件实测中因 KV cache 访问与目标模型并行验证开销而部分折损：H100 服务端实测加速比为 $3.49\times$，SD8G3 移动端为 $3.32\times$（详见表~\ref{tab:speculative_decoding}）。
+
+关于推测窗口跨度 $\gamma$ 的边界选择，第~4.9~节给出了针对 $\gamma \in \{3,5,7,10\}$ 的敏感性分析与显存开销评估。实验结果表明，$\gamma=5$ 确立了文本生成效率与硬件显存占用之间的帕累托最优平衡点。相比于 $\gamma=5$ 的系统基准，配置 $\gamma=7$ 仅带来 $17\%$ 的期望 Token 增益，但键值缓存的动态显存分配开销激增 $40\%$；配置 $\gamma=3$ 虽然降低了运行时显存水平，但导致 Token 生成效率大幅跌落 $24\%$。基于上述资源边界与吞吐效率的协同约束，系统统一采用 $\gamma=5$ 作为标准推测解码的窗口配置。
+
+\subsection{多模态风险融合}
+\subsubsection{各模态风险评分定义}
+
+系统最终风险判定依赖于文本、声学、URL 及元数据四个异构模态的决策融合机制。各独立模态的风险输入值统一映射至 $[0,1]$ 区间，其形式化定义如下：
+
+\textbf{文本模态风险评分 $r_{\mathrm{text}} \in [0,1]$}：该评分由端侧轻量化学生大语言模型（Student LLM）对 12 维短消息（SMS）结构化特征及脱敏文本摘要进行前向推理，直接输出其对应的 Sigmoid 后验概率。
+
+\textbf{声学模态风险评分 $r_{\mathrm{audio}} \in [0,1]$}：该评分基于隐私保护声学嵌入向量 $\bm{F}_v$ 派生的四组核心声学代理统计量（能量方差 $\text{energy\_var}$、韵律代理 $\text{tone\_proxy}$、紧迫度代理 $\text{urgency\_proxy}$ 以及基频范围 $\text{pitch\_range}$）进行线性加权聚合：
+    \begin{equation}
+    \label{eq:voice_risk}
+        r_{\mathrm{audio}} = \alpha_1 \cdot \text{energy\_var} + \alpha_2 \cdot \text{tone\_proxy} + \alpha_3 \cdot \text{urgency\_proxy} + \alpha_4 \cdot \text{pitch\_range}
+    \end{equation}
+    
+式中，加权系数向量 $\bm{\alpha} = [0.35, 0.28, 0.25, 0.12]^T$ \textbf{并非人工先验设定，而是数据驱动学习获得}：系统将四组声学代理统计量的 Z-score 标准化值作为输入，以欺诈二分类标签为监督目标，引入 $L_2$ 正则化惩罚项（$\lambda = 0.01$）进行逻辑回归训练，并对学得权重归一化以满足 $\sum_{i=1}^4 \alpha_i = 1$。需说明本系统的两级权重学习分工：模态\emph{内部}的声学代理聚合系数 $\bm{\alpha}$ 由上述轻量逻辑回归一次性离线拟合（仅作用于 4 维标量统计量，计算开销可忽略）；模态\emph{之间}的融合权重 $\mathbf{w}$（见 \S~3.5.2）则由 L-BFGS 在更高维的跨模态决策空间上优化。两级解耦既保证了声学模态内部的可解释性，又使跨模态融合具备全局最优性。
+
+\textbf{URL 模态风险评分 $r_{\mathrm{url}} \in [0,1]$}：该评分基于内嵌链接的 6 维 URL 结构化特征（包括域名长度、路径深度、IP 地址直接访问标识、非标端口通信、信息熵以及短链接服务识别），通过加权赋分矩阵映射为标量风险值。
+    
+\textbf{元数据模态风险评分 $r_{\mathrm{meta}} \in [0,1]$}：该评分提取自通话交互过程中的 12 维通信元数据（包含历史被举报频次、确认欺诈频次、主叫来源可信度等），输入至梯度提升机（GBM）模型中输出其对应的欺诈概率。
+
+
+\subsubsection{L-BFGS 决策级融合机制}
+系统采用基于广义线性架构的决策级融合策略，全局风险决策总分 $r$ 形式化定义为：
+\begin{equation}
+\label{eq:l_bfgs_fusion}
+    r = \sigma\left( w_{\mathrm{text}} \cdot r_{\mathrm{text}} + w_{\mathrm{audio}} \cdot r_{\mathrm{audio}} + w_{\mathrm{url}} \cdot r_{\mathrm{url}} + w_{\mathrm{meta}} \cdot r_{\mathrm{meta}} + b \right)
+\end{equation}
+
+式中，$\sigma(\cdot)$ 表示标准 Sigmoid 激活函数，$\mathbf{w} = [w_{\mathrm{text}}, w_{\mathrm{audio}}, w_{\mathrm{url}}, w_{\mathrm{meta}}]^T$ 为各模态决策权重的可学习向量，$b$ 为全局偏差项。上述参数矩阵通过L-BFGS带标签的训练验证子集上优化求解。
+
+为评估决策权重的泛化稳定性，本文执行按\emph{用户}分层的 5~折交叉验证（同一用户的全部通话仅出现于同一折，避免跨折相关性泄漏）。所得权重的跨折经验分布为 $\mathbf{w} = [0.40 \pm 0.018, 0.30 \pm 0.015, 0.20 \pm 0.012, 0.10 \pm 0.009]^T$。全局判定基准严格划分为三级防御梯度：当 $r \ge 0.70$ 时系统判定为高危状态并激活实时拦截；当 $0.35 \le r < 0.70$ 时判定为中危提示状态；其余区间则归入安全状态。
+
+由于反诈检测在现实中属于二分类后验概率估计任务，Sigmoid 映射能够保证各个独立模态的风险贡献度在潜在表征空间内具备解耦性。若引入 Softmax 算子，则会在事实上施加各输出项相互排斥的强先验假设，从而在异构多模态决策中引入非自然的负相关耦合。\S~3.5.3 表~\ref{tab:fusion_ablation} 的消融实验表明，基于 Sigmoid 的线性决策融合在 $F_1$ 上较 Softmax 融合架构高 $0.014$（$0.923$ vs.\ $0.909$）。
+
+\subsubsection{与深度学习型融合基线的对比}
+
+为评估本研究提出的线性决策融合策略的性能边界，进一步引入基于多模态 Transformer的深度自适应融合架构作为对照基线。在该基线网络的前向计算流中，文本、声学、URL 及通信元数据四类异构特征首先通过各自独立的线性投影层映射至统一的低维潜在表征空间，并级联为四个模态标记输入至两层 Transformer 编码器。其内嵌的多头自注意力机制用于动态捕获不同异构模态间的跨空间非线性交叉相关性。随后，位置无关的特征池化算子将序列化表征聚合为全局多模态联合表征向量，最终由级联的全连接分类头映射为欺诈风险预测概率。
+
+深度自适应基线的引入构建了高容量的非线性映射，用以实证检验高复杂度网络模型在反诈判定任务中的性能增益上限。表~\ref{tab:fusion_ablation} 给出三种融合策略的定量对比。实验数据表明，多模态 Transformer 架构相比本文 L-BFGS Sigmoid 线性融合仅取得 $0.004$ 的 $F_1$ 边际增益（$0.927$ vs.\ $0.923$），却带来约 $42\times$ 的融合层参数膨胀与 $7.2\,\mathrm{ms}$ 的额外端侧推理时延；而基于 Softmax 的线性融合由于施加各模态输出相互排斥的强先验，$F_1$ 反而较 Sigmoid 融合下降 $0.014$（$0.909$ vs.\ $0.923$）。在端侧（EDGE）计算资源受限场景下，本文线性 Sigmoid 融合以可忽略的算力开销逼近深度融合模型的性能上限，在计算效率与检测精度间确立了更优的帕累托权衡。
+
+\begin{table}[htbp]
+\centering
+\caption{多模态融合策略消融对比（TAF-28k 测试集）}
+\label{tab:fusion_ablation}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l>{\centering\arraybackslash}p{0.12\linewidth}>{\centering\arraybackslash}p{0.16\linewidth}>{\centering\arraybackslash}p{0.15\linewidth}>{\centering\arraybackslash}p{0.13\linewidth}}
+\toprule
+\textbf{融合策略} & \textbf{$F_1$ 得分} & \textbf{融合层参数量} & \textbf{端侧融合时延} & \textbf{显存印记} \\
+\midrule
+Softmax 线性融合 & $0.909$ & 5 标量 & $\sim 1\,\mathrm{ms}$ & 可忽略 \\
+\rowcolor[gray]{0.93}\textbf{Sigmoid 线性融合 (本文)} & $\mathbf{0.923}$ & \textbf{5 标量} & $\mathbf{\sim 1\,\mathrm{ms}}$ & \textbf{可忽略} \\
+多模态 Transformer (2 层) & $0.927$ & $1.84\,\mathrm{M}$ & $\sim 8.2\,\mathrm{ms}$ & $+12\,\mathrm{MB}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{实验评估}
+\subsection{实验设置与数据基准}
+\subsubsection{数据集}
+
+本研究性能评估在三组具备代表性的异构数据集上展开，涵盖全场景仿真、人工对抗攻击以及跨域泛化验证：
+
+\textbf{TAF-28k}~\cite{1}：数据集包含 $28,511$ 条高质量的语音-文本配对样本，总计 $307$ 余小时的真实通话音频。实验严格遵循官方既定的 $8:1:1$ 比例划分训练集、验证集与测试集。系统在场景分类、欺诈检测以及欺诈类型分类三个核心任务上分别执行独立评估，整体评测流程完全对齐标准的 TeleAntiFraud-Bench 协议。该数据集在 HuggingFace（\texttt{JimmyMa99/TeleAntiFraud}）和 ModelScope（\texttt{JimmyMa99/TeleAntiFraud}）上公开发布，可通过 HuggingFace Datasets 库直接加载。
+   
+\textbf{AdvFraud-3k}：数据集通过对 TAF-28k 测试集中的 $1{,}000$ 条真实欺诈文本样本进行人工对抗式改写，引入同义词扰动、句式拓扑重排、方言特征转换及隐喻表达等 $8$ 种典型对抗策略；并由领域专家撰写 $2{,}000$ 条新型欺诈话术。改写与撰写由 3 名标注员独立完成，第 4 名资深标注员进行复核（标注者间一致性 Cohen's $\kappa = 0.87$）。由于该数据集仅用于测试评估（不参与训练），原 TAF-28k 测试集样本与其对抗改写样本之间不会形成训练-测试泄漏。数据集构建经所在机构数据合规审查（审批号将在论文录用时披露）。该数据集为自建对抗测试集，复现指南见补充材料。
+   
+\textbf{ChiFraud}~\cite{chifraud}：数据集为长周期的中文网络欺诈文本基准数据集，包含 $411{,}934$ 条多源异构的真实反诈文本样本（$59{,}106$ 欺诈 + $352{,}328$ 正常），覆盖 11 个欺诈类别，收集周期为 2022--2023 年（12 个月）。在本研究中，该数据集作为外部长周期跨域泛化数据集，用以深度验证所提端侧多模态架构在面对长期演进的未知欺诈文本变体时的域迁移能力与泛化鲁棒性边界。该数据集在 GitHub（\texttt{xuemingxxx/ChiFraud}）上公开发布，论文见 ACL Anthology（\texttt{2025.coling-main.398}）。
+
+\subsubsection{基线方法}
+
+为全面验证所提方案的先进性，评估基线涵盖 $10$ 种代表性的低比特量化大模型与反诈架构（PTQ 类 5 种、自蒸馏 1 种、QAT 1 种、Q4\_K\_M PTQ 1 种、领域专用 2 种；本文 4 种方法不计入基线计数）。
+先进训练后量化（PTQ）算法包含 AWQ、GPTQ、SpinQuant 以及 QuaRot，统一在 NVFP4 符号配置下进行定量评估。
+
+自蒸馏量化架构引入 BitDistiller作为代表性的4-bit自蒸馏量化对照基线。
+量化感知训练（QAT）包含基于传统交叉熵损失的 NVFP4 QAT 基线、本文提出的 NVFP4 QAD 架构，以及融合输出方差冻结策略的 NVFP4 QAD + OV-Freeze 完整架构。 
+
+Q4\_K\_M 量化包含 Q4\_K\_M PTQ、Q4\_K\_M QAD 以及 Q4\_K\_M QAD + OV-Freeze，用以验证方案在传统整型量化流形下的通用适配能力。 
+领域专用基线引入 BERT-Fraud 与 SAFE-QAQ~两个代表性的反诈领域专用文本分类网络。
+
+\subsubsection{硬件平台}
+
+{服务端评测环境}：部署于 NVIDIA H100 80GB SXM5 GPU 服务器。由于目标超低比特硬件架构特征，NVFP4 格式通过 TensorRT-LLM 算子库进行数值仿真，其仿真的数值精确性通过与 NVIDIA 官方发布的标准 NVFP4 检查点（Checkpoints）进行交叉校准与经验验证。
+    
+{边缘端（EDGE）测试环境}：部署于第三代骁龙 8（Snapdragon 8 Gen 3）移动平台，该平台内嵌 Hexagon NPU 与 ARM Cortex-X4 微架构，配备 $12\,\mathrm{GB}$ 物理运行内存。
+    
+{训练集群与分布式配置}：模型离线训练基于 $8 \times \text{NVIDIA H100}$ GPU 集群，依托 PyTorch 2.5 与 DeepSpeed ZeRO-3 分布式并行框架展开。各项实验均采用 $5$ 个独立的随机种子重复运行，最终报告测量结果的均值与标准差（$\text{Mean} \pm \text{SD}$）。
+
+
+\subsubsection{训练配置}
+量化感知蒸馏（QAD）的超参数设定与 NVIDIA 官方标准优化器配置保持严格一致：优化器采用 Cosine 学习率衰减策略，初始学习率定标为 $1 \times 10^{-5}$；前向 Warmup 阶段设定为 $100$ 步；全局最大批处理量（Batch Size）设定为 $8$；上下文序列长度截断为 $4,096$。总训练步数控制在 $2,000$ 步，整体消耗的总 Token 量约为 $0.5\times 10^9$（仅占原始监督微调数据总量的 $1.7\%$）。输出方差冻结策略（OV-Freeze）于训练后期的最后 $600$ 步（即总步数的 $30\%$）显式激活，其正则化惩罚调节系数设定为 $\lambda = 1.0$。
+
+\subsubsection{评估指标}
+
+   {精度恢复率（Recovery Rate）}：用以衡量量化模型相比于全精度教师模型的任务泛化保持能力，定义为：
+    \begin{equation}
+    \label{eq:recovery_rate}
+        \text{Recovery Rate} = \frac{\text{Acc}_{\mathrm{quant}}}{\text{Acc}_{\mathrm{BF16}}} \times 100\%
+    \end{equation}
+    
+    {分类性能度量}：包含 $F_1$ 综合得分、精确率（Precision）、召回率（Recall）以及假阳性率（FPR）。
+    
+    {分布对齐度量}：计算量化学生模型与 BF16 教师模型输出后验概率之间的 Kullback-Leibler（KL）散度。
+    
+    {时延效能表现}：统计端到端平均推理延迟（Latency）以及 $99$ 百分位尾部延迟（P99 Latency），单位统一规整为 $\mathrm{ms}$。
+    
+    {隐私防御强度}：测定系统在白盒梯度泄露优化（GLO）攻击下的字错误率（WER），用以定量论证声学嵌入向量的非可逆性隐私防御安全边界。
+
+\subsection{主要实验结果与表征分析}
+
+表~\ref{tab3} 展示了评估模型在 TAF-28k 测试集上的多模态反诈判定量化结果。NVFP4 符号格式的低比特表征数据生成依赖于 NVIDIA H100 平台。以 NVIDIA 官方发布的 NVFP4 架构（Nemotron-Nano-9B-V2为基准模型）进行了一致性验证。实测数据表明，两者间的经验分类边界离散度严格受限于 $0.3\%$ 的标量阈值。
+
+\begin{table}[h]  %htbp
+\centering
+\caption{TAF-28k 测试集多模态欺诈检测实验结果}
+\label{tab3}
+\small
+\renewcommand{\arraystretch}{1.2} 
+%\setlength{\tabcolsep}{4pt} 
+
+% textwidth 代表撑满正文宽度。X 表示自动折行列，c 表示标准居中数据列（共5个c）
+\begin{tabularx}{\textwidth}{Xccccc}
+\toprule
+\textbf{评估方法} & \textbf{$F1$} & \textbf{Precision} & \textbf{Recall} & \textbf{FPR} & \textbf{Recovery (\%)} \\
+\midrule
+BF16 (性能上界) & $0.931 \pm 0.005$ & $0.928$ & $0.934$ & $1.6\%$ & $100.0$ \\
+\midrule
+\multicolumn{6}l{\emph{\textbf{先进训练后量化 (PTQ) 算法}}} \\
+NVFP4 PTQ (max) & $0.838 \pm 0.011$ & $0.847$ & $0.829$ & $2.8\%$ & $90.0$ \\
+NVFP4 + AWQ & $0.838 \pm 0.010$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
+NVFP4 + GPTQ & $0.840 \pm 0.010$ & $0.848$ & $0.832$ & $2.7\%$ & $90.2$ \\
+NVFP4 + SpinQuant & $0.838 \pm 0.011$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
+NVFP4 + QuaRot & $0.838 \pm 0.011$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
+\midrule
+\multicolumn{6}l{\emph{\textbf{自蒸馏的低比特量化架构}}} \\
+NVFP4 + BitDistiller & $0.858 \pm 0.009$ & $0.866$ & $0.850$ & $2.5\%$ & $92.2$ \\
+\midrule
+\multicolumn{6}l{\emph{\textbf{量化感知训练/蒸馏 (QAT/QAD) (本文)}}} \\
+NVFP4 QAT & $0.844 \pm 0.014$ & $0.853$ & $0.835$ & $3.1\%$ & $90.7$ \\
+NVFP4 QAD & $0.916 \pm 0.007$ & $0.918$ & $0.914$ & $1.9\%$ & $98.4$ \\
+\rowcolor[gray]{0.93} \textbf{NVFP4 QAD + OV-Freeze} & $\mathbf{0.923 \pm 0.006}$ & $\mathbf{0.925}$ & $\mathbf{0.921}$ & $\mathbf{1.8\%}$ & $\mathbf{99.1}$ \\
+\midrule
+\multicolumn{6}l{\emph{\textbf{边缘端 Q4\_K\_M 量化(本文)}}} \\
+Q4\_K\_M PTQ & $0.851 \pm 0.011$ & $0.864$ & $0.838$ & $2.6\%$ & $91.4$ \\
+Q4\_K\_M QAD & $0.911 \pm 0.008$ & $0.913$ & $0.909$ & $2.0\%$ & $97.9$ \\
+\rowcolor[gray]{0.93} \textbf{Q4\_K\_M QAD + OV-Freeze } & $\mathbf{0.917 \pm 0.007}$ & $\mathbf{0.920}$ & $\mathbf{0.914}$ & $\mathbf{1.9\%}$ & $\mathbf{98.5}$ \\
+\midrule
+\multicolumn{6}l{\emph{\textbf{领域基线模型}}} \\
+BERT-Fraud & $0.876$ & $0.882$ & $0.870$ & $2.3\%$ & — \\
+SAFE-QAQ & $0.918 \pm 0.006$ & $0.921$ & $0.916$ & $1.8\%$ & — \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[h] %htbp
+\centering
+\captionsetup{font=small} % caption 字体比正文小一号
+\includegraphics[width=0.9\textwidth]{Fig/fig02_main_results.png}
+\caption{\protect\linespread{1.3}\selectprotect\selectfont
+不同量化算法在 TAF-28k 测试集上的综合性能对比。
+(a) 各方案的 $F_1$ 得分与统计误差对比，其中虚线代表全精度 BF16 的性能上限（$0.931$）；
+(b) 相对全精度基准的精度恢复率对比，橙色点线代表端侧非破坏性部署的 $99\%$ 目标恢复线。}
+\label{fig3}
+\end{figure}
+
+依据表~\ref{tab3} 呈现的量化评测结果，可得以下结论：
+
+    \textbf{1）整体性能最优}：所提 NVFP4 QAD + OV-Freeze 方案在所有 4-bit 量化方法中取得最高 $F_1=0.923\pm 0.006$，相对 BF16 上界（$F_1=0.931$）恢复率为 $99.1\%$，验证了 KL 散度蒸馏与 OV-Freeze 正则化的协同增益。
+    
+    \textbf{2）与先进 PTQ 算法的横向对比}：相较于代表性 PTQ 算法 SpinQuant 与 QuaRot（$F_1=0.838$），NVFP4 QAD + OV-Freeze（$F_1=0.923$）取得 $0.085$ 的 $F_1$ 绝对优势；对比引入自蒸馏机制的强 PTQ 基线 BitDistiller（$F_1=0.858$），本方案保持 $0.065$ 的 $F_1$ 领先。结果表明，仅依赖权重/激活后处理的无监督校正难以恢复 4-bit 量化引发的精度退化。
+    
+    \textbf{3）QAD 与传统 QAT 的对比}：NVFP4 QAD 在 $F_1$ 上超越传统交叉熵监督的 NVFP4 QAT（$0.916$ vs.\ $0.844$，绝对增幅 $7.2$ 个百分点；恢复率 $98.4\%$ vs.\ $90.7\%$）。该结果支持文献~\cite{3} 关于"QAT 的硬标签监督会破坏多阶段对齐后模型的对话风格与拒绝边界"的观察。
+    
+    \textbf{4）OV-Freeze 的边际增益}：在 NVFP4 QAD 基础上，OV-Freeze 进一步提升恢复率 $0.7$ 个百分点（$98.4\%\to 99.1\%$），FPR 同步降至 $1.8\%$，验证了对量化敏感层输出方差的显式约束在抑制量化过拟合上的有效性。
+    
+    \textbf{5）端侧 Q4\_K\_M 通用性验证}：面向移动端的 Q4\_K\_M QAD + OV-Freeze 取得恢复率 $98.5\%$（$F_1=0.917$），与云端 NVFP4 方案（$F_1=0.923$）的差距仅为 $0.006$，表明所提方法在异构量化格式间具备良好可迁移性。
+    
+    \textbf{6）与 SAFE-QAQ 基线的对比}：相比 SAFE-QAQ（$F_1=0.918$，参数 7B 量级），本方案 NVFP4 QAD + OV-Freeze（$F_1=0.923$）在 $F_1$ 上取得 $0.005$ 优势，FPR 同为 $1.8\%$；同时模型存储体积由 7\,GB 量级压缩至 $248\,\mathrm{MB}$，更适配端侧部署。
+
+图~\ref{fig3} 直观呈现了各量化方案在统计分布与性能恢复轨迹上的特征，进一步验证了表~\ref{tab3} 评估结果。
+ 在统一采用 NVFP4 符号配置下，传统的训练后量化（PTQ）算法（AWQ、GPTQ、SpinQuant 与 QuaRot）表现出明显瓶颈，其 $F_1$ 得分集中在 $0.838 \sim 0.840$ 区间，相对 BF16 基准（$F_1=0.931$）的恢复率为 $90.0\% \sim 90.2\%$。基于标准交叉熵损失的量化感知训练（NVFP4 QAT）由于缺乏教师模型的软标签监督，仅取得 $F_1=0.844$，恢复率 $90.7\%$（与 PTQ 相近，仅高出约 0.5 个百分点）。相较之下，本研究提出的量化感知蒸馏算法（NVFP4 QAD）将 $F_1$ 得分提升至 $0.916$（恢复率 $98.4\%$）。进一步引入输出方差冻结策略后，完整架构（NVFP4 QAD + OV-Freeze）取得了 $0.923$ 的 $F_1$ 得分，实现了 $99.1\%$ 的精度恢复率，显式超越了特定的领域专用基线 SAFE-QAQ（$0.918$），并且成功跨越了工业端侧部署预设的 $99\%$ 恢复率目标线。此外，该策略在传统整型方案中同样具备通用性，Q4\_K\_M QAD + OV-Freeze 方案取得了 $0.917$ 的 $F_1$ 得分（$98.5\%$ 恢复率），验证了所提方法在异构数值流形下的稳健性。
+
+\subsection{跨数据集泛化性与鲁棒性评估}
+
+为全面评估量化算子的泛化特征与防御稳健性，基于TAF-28k、AdvFraud-3k 以及 SmsSpam-CN (ChiFraud) 异构测试矩阵执行了定量测量，具体数值汇总于表~\ref{tab4}。
+\begin{table}[htbp]
+\centering
+\caption{跨数据集与对抗鲁棒性综合评估结果}
+\label{tab4}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.32\linewidth}>{\centering\arraybackslash}p{0.08\linewidth}>{\centering\arraybackslash}p{0.1\linewidth}>{\centering\arraybackslash}p{0.1\linewidth}>{\centering\arraybackslash}p{0.1\linewidth}}
+\toprule
+\textbf{训练数据集} & \textbf{测试数据集（属性）} & \textbf{BF16 基准} & \textbf{NVFP4 PTQ} & \textbf{NVFP4 QAD+OVF} & \textbf{$\Delta F_1$ vs. BF16} \\
+\midrule
+TAF-28k & TAF-28k (IID) & $0.931$ & $0.838$ & $\textbf{0.923}$ & $-0.008$ \\
+TAF-28k & AdvFraud-3k (对抗) & $0.882$ & $0.778$ & $\textbf{0.875}$ & $-0.007$ \\
+TAF-28k & SmsSpam-CN (ChiFraud, OOD) & $0.871$ & $0.768$ & $\textbf{0.860}$ & $-0.011$ \\
+TAF-28k + SmsSpam & AdvFraud-3k (多源对抗) & $0.889$ & $0.789$ & $\textbf{0.881}$ & $-0.008$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+表~\ref{tab4} 的实证数据表明，所提 NVFP4 QAD + OVF 架构在非理想分布场景下均保持了稳健的分类界限。在长周期分布外文本流形测试集 SmsSpam-CN (ChiFraud) 的 OOD 设置下，本方案取得 $0.860$ 的 $F_1$ 得分，相较于全精度 BF16 性能上界仅发生 $1.1\%$ 的标量衰减，验证了外部域迁移环境下的泛化鲁棒性。
+
+在人工对抗式改写的 AdvFraud-3k 上，所提方案取得 $F_1=0.875$。$F_1$ 衰减口径如下：相对 AdvFraud-3k 上 BF16 基准（$F_1=0.882$）的绝对衰减为 $0.007$；相对 TAF-28k 上 BF16 上界（$F_1=0.931$）的相对衰减为 $(0.931-0.875)/0.931 = 5.2\%$（绝对衰减 $0.048$）。两种口径均位于威胁模型约束 $C_2(\le 6\%)$ 内。此外，多源数据集（TAF-28k + SmsSpam）的联合训练进一步将对抗环境下的 $F_1$ 得分提高至 $0.881$。上述实证路径确立了输出方差冻结策略（OV-Freeze）的实际效能：在校正 IID 投影方差的同时，并未破坏潜在表征空间固有的泛化容量。
+
+\subsection{对齐损失函数的消融实验}
+
+本节针对量化感知蒸馏（QAD）流程中的核心对齐损失函数执行了控制变量消融，实证度量结果如表~\ref{tab5} 所示。实验依照标准硬件与分布式环境，在统一的超参数配置下运行（初始学习率 $1 \times 10^{-5}$，迭代规模 $0.5\text{B}$ tokens），仅显式缩减对齐目标的数学流形形式。
+
+\begin{table}[htbp]
+\centering
+\caption{不同对齐损失函数的量化消融}
+\label{tab5}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lccc}
+\toprule
+\textbf{损失函数变体} & \textbf{$F_1$ 得分} & \textbf{KL 散度 (vs. BF16)} & \textbf{精度恢复率 Recovery (\%)} \\
+\midrule
+纯 KL 散度 (本文方案) & $\mathbf{0.916 \pm 0.007}$ & $\mathbf{0.005}$ & $\mathbf{98.4}$ \\
+Logits 均方误差 (MSE) & $0.901 \pm 0.010$ & $0.082$ & $96.8$ \\
+纯交叉熵 (标准 NVFP4 QAT) & $0.844 \pm 0.014$ & $0.311$ & $90.7$ \\
+三项混合损失 (早期变体) & $0.879 \pm 0.012$ & $0.124$ & $94.4$ \\
+KL 散度 + 任务正则化 & $0.908 \pm 0.009$ & $0.041$ & $97.5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+结果显示，纯 KL 散度目标函数在 $F_1$ 得分与精度恢复率均取得了全局帕累托最优。此时，量化学生网络与 BF16 教师网络之间的潜在分布差异（KL 散度）被平抑至 $0.005$ 的极值。三项混合损失虽比单纯依赖硬标签监督的标准 NVFP4 QAT 呈现出局部恢复率提升（$+3.7\%$），但其最终保真度显著弱于纯 KL 散度流形（$-4.0\%$）。该规律精确对齐了行业基准研究中关于软标签概率对齐优于硬显式约束（$\text{KL} > \text{MSE}$）的底层统计假设。
+
+\subsection{教师知识转移消融实验}
+
+为探究教师模型对低比特知识蒸馏机制的影响，本研究在同源同尺度架构与跨规模大模型架构之间构建了横向比对，其实证参数汇总于表~\ref{tab6}。为消除训练步长不一致导致的经验偏置，除固定的 $0.5\text{B}$ tokens 静态通量外，实验还引入了验证集损失平台期作为自适应截断准则的“按收敛停止”对照机制。
+
+\begin{table}[htbp]
+\centering
+\caption{教师模型知识转移的消融评估}
+\label{tab6}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l>{\centering\arraybackslash}p{0.15\linewidth}>{\centering\arraybackslash}p{0.17\linewidth}>{\centering\arraybackslash}p{0.17\linewidth}>{\centering\arraybackslash}p{0.15\linewidth}}
+\toprule
+\textbf{教师模型选型} & \textbf{$F_1$ (固定 $0.5\text{B}$ token)} & \textbf{$F_1$ (按收敛停止)} & \textbf{收敛所需训练量} & \textbf{恢复率 Recovery (\%)} \\
+\midrule
+0.5B BF16 (同源, 本文) & $\mathbf{0.916}$ & $\mathbf{0.916}$ & $\mathbf{0.5\text{B tokens}}$ & $\mathbf{98.4} / \mathbf{98.4}$ \\
+1.8B BF16 & $0.911$ & $0.913$ & $0.7\text{B tokens}$ & $97.9 / 98.1$ \\
+3B BF16   & $0.904$ & $0.910$ & $1.0\text{B tokens}$ & $97.1 / 97.7$ \\
+7B BF16   & $0.892$ & $0.915$ & $2.0\text{B tokens}$ & $95.8 / 98.3$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+在严格控制收敛状态的消融场景下，同源 $0.5\text{B}$ 教师模型在数据收敛效率与保真度表现上呈现出显著的正相关特征。同源模型仅需最小规模的训练通量（$0.5\text{B}$ tokens）即可锁定最高的精度恢复率。相比之下，拥有更高绝对表征容量的 $7\text{B}$ 教师模型则需要消耗高达 $4\times$ 的数据资产（$2.0\text{B}$ tokens）方能实现保真度的近似对齐。实验结果也进一步实证了文献{1} 的科学发现，即低比特 QAD 流程中的知识转移机制不仅倾向于同源拓扑结构，且在数据吞吐效能方面表现出对跨尺度长程转移的显著排斥。
+
+\begin{figure}[!t]
+\centering
+\captionsetup{font=small} % caption 字体比正文小一号
+\includegraphics[width=0.95\textwidth]{Fig/fig03_ablation_loss_teacher.png}
+\caption{\protect\linespread{1.3}\selectprotect\selectfont
+量化感知蒸馏（QAD）核心组件的消融评估结果。
+a) 不同对齐损失变体下的 $F_1$ 得分（左轴蓝色/橙色柱图）与对应至 BF16 教师网络的潜在分布 KL 散度（右轴红色柱图）的对比关系；
+b) 异构教师模型规模对 $0.5\mathrm{B}$ 量化学生网络泛化指标与数据利用效率的影响对比，柱状图顶端数值指示达标收敛所需的经验训练数据规模（以 Tokens 为单位）。}
+\label{fig4}
+\end{figure}
+
+图~\ref{fig4} 描述了对齐损失函数与教师网络规模执行的控制变量消融，从损失函数几何对齐与教师拓扑尺度两个维度，揭示了量化感知蒸馏（QAD）的底层收敛机制，进一步验证了表~\ref{tab5} 及表~\ref{tab6} 知识转移机制的边界。
+
+图~\ref{fig4}a 展示了不同损失函数形式对量化学生网络性能与潜在空间漂移的影响。实测数据显示，采用纯 KL 散度（Pure KL）作为蒸馏目标时，量化模型能够取得最高的分类泛化性能（$F_1 = 0.916$），同时将学生与全精度教师网络之间的概率分布偏离（KL 散度）抑制在 $0.005$ 的极低水平。若退化为 Logits 均方误差（MSE）或纯交叉熵（CE），由于高阶语义分布特征的丢失，模型的 KL 散度分别上升至 $0.082$ 与 $0.311$，伴随着 $F_1$ 指标的明显衰减。这表明保持软标签概率流的连续对齐对超低比特低保真量化至关重要。
+
+图~\ref{fig4}b进一步揭示了教师模型物理规模对固定 $0.5\mathrm{B}$ 结构学生网络数据能效的动态调节。在限制 $0.5\mathrm{B}$ tokens 训练量的前提下（橙色柱状图），随着教师网络规模由同源的 $0.5\mathrm{B}$ 盲目扩张至跨尺度的 $7\mathrm{B}$，学生的 $F_1$ 性能呈现单调递减趋势（由 $0.916$ 降至 $0.892$）。虽然通过延长微调步长直至验证集收敛（绿色柱状图），大容量教师（$7\mathrm{B}$）最终能够将学生的保真度带回至 $0.915$ 水平，但其所需消耗的经验数据量急剧攀升至 $2.0\mathrm{B}$ tokens（达同源蒸馏成本的 4 倍）。上述观测证实，低比特量化感知蒸馏存在显著的异构跨尺度阻抗，同源教师在数据利用效率与表征平价能力上均具备边际占优。
+
+\subsection{冻结策略（OV-Freeze）消融实验}
+
+\begin{table}[htbp]
+\centering
+\caption{OV-Freeze 结构应用层位选择消融实验结果}
+\label{tab:ovf_layer_ablation}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.42\linewidth}cccc}
+\toprule
+\textbf{正交冻结策略} & \textbf{$F_1$ 得分} & \textbf{困惑度 $\mathrm{PPL}$} & \textbf{$\Delta\mathrm{PPL}$} & \textbf{敏感层方差漂移量} \\
+\midrule
+NVFP4 QAD (未激活 OVF 基线) & $0.916$ & $8.73$ & — & $+18.2\%$ \\
++ OVF (仅 FFN 变换层) & $0.918$ & $8.71$ & $-0.02$ & $+15.4\%$ \\
++ OVF (仅 Attention $q$ 投影算子) & $0.918$ & $8.69$ & $-0.04$ & $+9.4\%$ \\
++ OVF (Attention $q, v$ 投影联合) & $0.920$ & $8.66$ & $-0.07$ & $+5.1\%$ \\
++ OVF (Attention $q, k, v$ 全投影) & $0.922$ & $8.64$ & $-0.09$ & $+2.8\%$ \\
++ OVF (Attention $q, k, v, o$ 全映射) & $\mathbf{0.923}$ & $\mathbf{8.62}$ & $\mathbf{-0.11}$ & $\mathbf{+1.3\%}$ \\
++ OVF ($q, k, v, o$ + FFN 混合全量) & $0.922$ & $8.63$ & $-0.10$ & $+1.5\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+表~\ref{tab:ovf_layer_ablation} 的测量数据表明，将 OV-Freeze 正则化算子施加于不同的张量流形层位时，系统表现出显著的性能分化。仅在 Feed-Forward 网络（FFN Only）中嵌入正交约束，仅能带来 $-0.02$ 的困惑度（$\mathrm{PPL}$）微幅边际增益；而随着注意力机制内异构投影矩阵（$q, k, v, o$）正交约束的逐层显式叠加，语言建模的泛化保真度呈现出单调单峰式的阶梯状演进。
+
+当全量激活自注意力机制中的四个核心投影层（$q, k, v, o$）时，系统泛化困惑度达到极小值（$8.62$），同时成功将量化敏感层的方差漂移幅度从高标量扰动的 $+18.2\%$ 平抑至几近无损的 $+1.3\%$。在此基础上继续引入 FFN 层，未能诱导性能指标的二次叠加。
+
+表~\ref{tab:ovf_var_ablation} 进一步对动态校正系数 $c_\ell$ 赖以生存的潜在特征方差 $\text{Var}(y_\ell)$ 估计机制执行了解耦消融。在微批次尺度（Batch Size = 8）下，直接采用瞬时 Batch-level 统计量度会导致训练前期的困惑度曲线剧烈振荡（波动振幅达 $+1.4$），并在空间引发梯度方向的频繁偏转（如表~\ref{tab:ovf_var_ablation} 所示）。
+
+\begin{table}[htbp]
+\centering
+\caption{OV-Freeze 校正系数中 $\mathrm{Var}(y_\ell)$ 估计算子消融度量}
+\label{tab:ovf_var_ablation}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcc>{\centering\arraybackslash}p{0.23\linewidth}}
+\toprule
+\textbf{$\mathrm{Var}(y_\ell)$ 高阶方差估计变体} & \textbf{$F_1$ 得分} & \textbf{前 $500$ 步 $\mathrm{PPL}$ 波动振幅} & \textbf{迭代收敛稳定性表征} \\
+\midrule
+Batch-level (批尺度瞬时测量) & $0.918 \pm 0.011$ & $+1.4$ & 前期梯度频繁震荡 \\
+EMA, $\rho = 0.95$ (本方案默认) & $\mathbf{0.923 \pm 0.006}$ & $\mathbf{+0.18}$ & 确定性单调收敛 \\
+EMA, $\rho = 0.90$ & $0.922 \pm 0.007$ & $+0.31$ & 稳定收敛 \\
+EMA, $\rho = 0.99$ & $0.921 \pm 0.008$ & $+0.12$ & 收敛速率显著减缓 \\
+Global (全训练集静态先验) & $0.919 \pm 0.008$ & $+0.05$ & 伴随师生漂移诱导偏置 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+引入自适应指数移动平均（EMA, $\rho = 0.95$）机制后，$\mathrm{PPL}$ 扰动被平抑至 $0.18$，系统展现出稳定收敛态，表明时间序列平滑在对冲小样本噪声层面的硬件合理性。相对地，全局静态测量（Global）虽然具备最小的初始波动，但由于完全忽略了量化学生网络在训练生命周期中输出分布的渐进式平滑漂移，其最终泛化 $F_1$ 性能相较于 EMA 产生了 $0.4\%$ 的绝对量差值。
+
+图~\ref{fig5}呈现了输出方差冻结窗口开辟时机对系统性能的演进特征。表~\ref{tab9}实测结果也显示，将约束时机定标于训练后期的最后 $30\%$ 步长区间时，系统处于帕累托效能顶峰。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{Fig/fig04_ovf_ablation.png}
+\caption{\protect\linespread{1.2}\selectprotect\selectfont
+输出方差冻结策略（OV-Freeze）消融。a) 敏感层方差漂移的对齐演进特征：全量激活 $q, k, v, o$ 注意力算子能最大化收紧统计偏差；b) 动态激活时间步比例的收敛：$30\%$ 的相对步长在梯度平稳度与保真度之间达到了帕累托最优。}
+\label{fig5}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{OV-Freeze 动态激活训练步比例消融评估}
+\label{tab9}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.3\linewidth}>{\centering\arraybackslash}p{0.15\linewidth}>{\centering\arraybackslash}p{0.15\linewidth}>{\centering\arraybackslash}p{0.29\linewidth}}
+\toprule
+\textbf{OV-Freeze 动态激活步长比例} & \textbf{$F_1$ 得分} & \textbf{困惑度 $\mathrm{PPL}$ } & \textbf{优化器训练稳定性状态} \\
+\midrule
+$0\%$ (未激活 QAD 基线) & $0.916$ & $8.73$ & 平稳 \\
+$10\%$ & $0.919$ & $8.68$ & 平稳 \\
+$20\%$ & $0.921$ & $8.65$ & 平稳 \\
+$\mathbf{30\%}$ \textbf{(本文默认配置)} & $\mathbf{0.923}$ & $\mathbf{8.62}$ & \textbf{平稳} \\
+$40\%$ & $0.922$ & $8.63$ & 平稳 \\
+$50\%$ & $0.918$ & $8.66$ & 剧烈梯度震荡\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+若缩减该窗口比例（$\le 20\%$），则由于不充分的方差投影校正，导致过拟合抑制效能收敛不足；反之，若过早前置激活该策略（$\ge 50\%$），正交约束项将与量化感知蒸馏（QAD）主损失函数的 KL 散度大梯度产生长程物理冲突，引发前期的梯度流紊乱。该观测与附录~A 定理~A.2 的结论一致：过长的 OV-Freeze 激活窗口会使正则化项累积梯度与主 KL 损失梯度产生方向冲突，从而破坏联合 Lipschitz 常数所保证的收敛性。
+
+\subsection{端侧推测解码能效与延迟}
+
+通过执行特定的领域对齐微调，草稿模型与大容量目标模型之间的潜在条件分布概率相似度提升，直接拉动核心令牌平均接受率 $\alpha$ 从通用基线的 $0.78$ 收敛至高位对齐的 $0.86$。表~\ref{tab:speculative_decoding} 统计了在异构算力平台上，系统加速效率对推测步长 $\gamma$ 的敏感性演进结果。
+
+\begin{table}[htbp]
+\centering
+\caption{超低比特草稿模型的异构平台加速比与敏感性}
+\label{tab:speculative_decoding}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l>{\centering\arraybackslash}p{0.1\linewidth}>{\centering\arraybackslash}p{0.13\linewidth}>{\centering\arraybackslash}p{0.11\linewidth}>{\centering\arraybackslash}p{0.1\linewidth}>{\centering\arraybackslash}p{0.1\linewidth}}
+\toprule
+\textbf{草稿模型拓扑与微调状态} & \textbf{推测跨度 $\gamma$} & \textbf{平均接受率 $\alpha$} & \textbf{理论加速比} & \textbf{H100 加速比}& \textbf{SD8G3 加速比}\\
+\midrule
+
+通用大模型 Qwen2-0.1B & $5$ & $0.78$ & $3.52\times$ & $2.92\times$ & $2.78\times$ \\
+领域调优草稿架构 (本文方案) & $\mathbf{5}$ & $\mathbf{0.86}$ & $\mathbf{4.25\times}$ & $\mathbf{3.49\times}$ & $\mathbf{3.32\times}$ \\
+领域调优草稿架构 & $3$ & $0.86$ & $3.24\times$ & $2.65\times$ & $2.52\times$ \\
+领域调优草稿架构 & $7$ & $0.86$ & $5.01\times$ & $4.10\times$ & $3.90\times$ \\
+领域调优草稿架构 & $10$ & $0.86$ & $5.78\times$ & $4.74\times$ & $4.51\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+在 Snapdragon 8 Gen 3 边缘算力平台上，当定标 $\gamma = 5$ 时，系统实现 $3.32\times$ 的端到端物理加速。实测表明，进一步扩张推测窗口至 $\gamma = 7$ 虽能带来约 $17\%$ 的理论推理通量增益，但其付出的硬件代价是终端 KV Cache 静态显存空间开销扩张 $40\%$。因此，$\gamma = 5$ 是移动端硬件资源约束下的静态帕累托最优水平。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{Fig/fig05_speculative.png}
+\caption{\protect\linespread{1.2}\selectprotect\selectfont
+端侧推测解码多维能效与敏感性特征曲线。a) 加速边界随令牌接受率 $\alpha$ 演进的双对数映射面；b) 移动端运行时硬件资源消耗（KV Cache 显存占用）与实测加速通量的双轴 Pareto 前沿切构。}
+\label{fig6}
+\end{figure}
+
+超低比特轻量化模型作为草稿网络（Draft Model）时，在端侧推测解码（Speculative Decoding）框架下的加速表现。定量测量与敏感性演进特征如图~\ref{fig6}所示。a) 显示了系统理论加速比随令牌接受率 $\alpha$ 演进的特征包络线。通过引入特定领域的对齐微调，草稿网络与目标模型之间的输出条件概率分布相似度得到实质性改善，直接将核心令牌的平均接受率 $\alpha$ 从通用基线（Qwen2-0.1B）的 $0.78$ 提高至 $0.86$。在推测跨度定标为 $\gamma = 5$ 的物理状态下，该提升使得理论加速比从 $3.52\times$ 跨越式跃升至 $4.25\times$。b) 给出了在 $\alpha = 0.86$ 配置下，系统加速效率与硬件资源消耗对推测步长 $\gamma \in \{3, 5, 7, 10\}$ 的解耦敏感性分析。实测结果表明，在 NVIDIA H100 服务端与骁龙 8 Gen 3（SD8G3）移动端平台上，随着 $\gamma$ 的扩张，端到端实际加速比持续走高，并在 $\gamma = 5$ 处实现 $3.49\times$ 与 $3.32\times$ 的非破坏性提升。若将窗口推高至 $\gamma = 7 \sim 10$ 能获取更高的计算通量，但系统运行时的终端 KV Cache 显存空间开销（绿色折线）呈现梯度扩张趋势。综合移动终端硬件的内存约束，$\gamma = 5$ 是整体软硬件协同架构下吞吐增益与存储负载的帕累托最优点。
+
+
+\subsection{ GLO 隐私验证}
+
+为评估高维声学特征 $F_v$ 的非可逆个人隐私合规性，研究部署了两种先进的攻击者威胁模型进行双重语音逆向重构实验，具体评测指标汇总于表
+~\ref{tab:privacy_attack}。
+
+\begin{table}[htbp]
+\centering
+\caption{在双重白盒 GLO 梯度泄漏与黑盒模型反演逆向攻击下的语音重构质量度量}
+\label{tab:privacy_attack}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l>{\centering\arraybackslash}p{0.17\linewidth}>{\centering\arraybackslash}p{0.16\linewidth}>{\centering\arraybackslash}p{0.16\linewidth}}
+\toprule
+\textbf{重构保真度评测物理指标} & \textbf{白盒梯度泄漏优化（GLO 攻击）} & \textbf{黑盒 U-Net 模型反演攻击} & \textbf{统计学完全随机基线} \\
+\midrule
+PESQ (客观语音感知质量, $1 \sim 5$) & $1.21$ & $1.16$ & $1.05$ \\
+WER (自动化语音识别词错误率) & $\ge 0.95$ & $\ge 0.97$ & $1.00$ \\
+MOS (主观盲评听感得分, $1 \sim 5$)& $1.18$ & $1.11$ & $1.00$ \\
+说话人声纹身份识别准确率 (Speaker-ID) & $8.3\%$ & $7.9\%$ & $10.0\%$ \\
+互信息经验估计值 $\hat{I}(x; F_v)$ & $\approx 0$ & $\approx 0$ & — \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+表~\ref{tab:privacy_attack} 测试结果显示，在两种高强度恶意反演尝试下，重构语音的词错误率（$\mathrm{WER}$）均逼近全面崩溃的绝对上限（$\ge 0.95$），这意味着语义信息已被消除。同时，针对重构生成的 PCM 声学音频进行高敏感度声纹特征辨识，其声纹提取器返回的说话人身份识别准确率仅为 $7.9\% \sim 8.3\%$，低于 $10.0\%$ 的纯统计学盲猜随机基线。
+
+这一结果证实了潜在高维向量 $F_v$ 的非可逆本质。它在物理机制层面上切断了非法复现敏感原始音频或提取特定说话人身份声纹的硬件通道，满足了我国《个人信息保护法》（PIPL）相关规定及安全威胁模型中关于“端侧敏感特征流非可逆传输”的合规防御约束 。
+
+为了厘清时域截断算子对隐私和效能的联合调控机制，表~\ref{tab:window_ablation} 维持固定步长 $\Delta = 1\text{ s}$，对特征抽取滑动窗口长度 $W \in \{1, 2, 3, 5, 10\}\text{ s}$ 执行了连续参数扫描。
+
+\begin{table}[htbp]
+\centering
+\caption{高维滑动抽样窗口长度 $W$ 的多维性能与隐私合规消融扫描}
+\label{tab:window_ablation}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{c>{\centering\arraybackslash}p{0.12\linewidth}>{\centering\arraybackslash}p{0.12\linewidth}>{\centering\arraybackslash}p{0.14\linewidth}>{\centering\arraybackslash}p{0.14\linewidth}>{\centering\arraybackslash}p{0.12\linewidth}}
+\toprule
+\textbf{滑动特征窗口长度 $W$} & \textbf{$F_1$ 得分} & \textbf{系统首次预警触发延迟} & \textbf{白盒重构攻击 $\mathrm{WER}$} & \textbf{黑盒反演攻击 $\mathrm{WER}$} & \textbf{声纹识别率 $\mathrm{Spkr\text{-}ID}$} \\
+\midrule
+$1\text{ s}$ & $0.897$ & $\approx 1.3\text{ s}$ & $0.957$ & $0.972$ & $8.1\%$ \\
+$2\text{ s}$ & $0.917$ & $\approx 2.3\text{ s}$ & $0.953$ & $0.971$ & $8.2\%$ \\
+$\mathbf{3\text{ s}}$ \textbf{(本文默认配置)} & $\mathbf{0.923}$ & $\mathbf{\approx 3.3\text{ s}}$ & $\mathbf{0.951}$ & $\mathbf{0.969}$ & $\mathbf{8.3\%}$ \\
+$5\text{ s}$ & $0.924$ & $\approx 5.3\text{ s}$ & $0.949$ & $0.967$ & $8.4\%$ \\
+$10\text{ s}$ & $0.925$ & $\approx 10.3\text{ s}$ & $0.948$ & $0.965$ & $8.5\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+测试表明，当窗口收缩至 $1\text{ s}$ 时，由于 MFCC 音频流帧数受限于极窄的 $100$ 帧标量边界，过大的局部统计不稳定性导致分类 $F_1$ 分数发生了向下的快速塌缩（跌至 $0.897$）。相反，当窗口过度扩张至 $W \ge 5\text{ s}$ 后，泛化性能曲线迅速步入边际效益骤减的饱和平台期（从 $0.923$ 到 $0.925$ 仅提升 $0.002$），但引发了预警延迟。
+
+尤其是当 $W = 10\text{ s}$ 时，首次预警时延被动拉长至 $\approx 10.3\text{ s}$，在实际环境中错失了应对高风险反诈电话“前 $60\text{ s}$ 诱导关键指令”的空间介入时窗。此外，全量测试点下的隐私逆向指标（$\mathrm{WER}$, $\mathrm{Speaker\text{-}ID}$）均稳定处于安全合规安全区，进一步阐明了信息丢弃本质上是由“时间轴整体平均化（Temporal Averaging Lossy Compression）”这一高阶变换决定的。综合预警防御时效与分类精度曲线，本方案选择的 $W = 3\text{ s}$ 建立了全局效能的最优帕累托锚点。
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=\linewidth]{Fig/fig07_privacy_radar.png}
+%\rule{\linewidth}{3cm}
+%\caption{双重恶意逆向重构攻击下的高级合规验证隐私图谱。(a) 重建语音保真度的五维雷达度量图：在白盒与黑盒双重威胁流下，各评测分量均紧密向内收敛、处于国家 PIPL \S~23 安全合规红线内侧（绿色保护伞阴影区）；(b) 滑动窗口参数 $W$ 敏感性解耦曲线：直观展现了首次防御时效延迟与系统泛化 $F_1$ 性能在 $W=3\text{ s}$ 处的帕累托平衡交汇。}
+%\label{fig7_privacy}
+%\end{figure}
+
+
+
+
+
+
+\section{讨论与局限性}
+\subsection{多模态检测性能的消融机理分析}
+
+QAD-MultiGuard 在 TeleAntiFraud-28k 基准集上的分类表现（宏平均 $F_1 = 0.923$）主要得益于低比特量化架构的紧凑设计，以及多模态特征后期融合对微弱欺诈信标的互补补偿机制。
+
+\begin{itemize}
+    \item \textbf{语义与声学的互补效应}：在“虚假投资”类电信诈骗场景中，文本模态因其包含高度专业化的行业非法术语，展现出较高的判别置信度；而对于“冒充熟人”或“紧急事态诱导”类诈骗，文本的口语化特征显著，导致语义置信度降低。此时，系统通过提取 $128$ 维潜在声学嵌入中的副语言表征如语速异常波动、语气焦虑感等时域特征，有效弥补了单一文本模态的判别缺失，从而显著提升了系统的整体召回率。
+    \item \textbf{蒸馏保真度的稳定性}：消融分析显示，OV-Freeze 策略通过在量化感知微调后期引入高阶方差平滑与正交约束，使得紧凑的学生模型在 NVFP4 规格下仍能保持与大容量教师模型（如 $7\mathrm{B}$ 规模）高度一致的逻辑分布，将潜在空间的 KL 散度压制在 $0.005$ 这一极低水平。这表明在电信反诈骗领域，通过高质量领域知识蒸馏与边界重构，小型端侧模型完全可以获得逼近云端大模型的逻辑判别深度。
+\end{itemize}
+
+\subsection{隐私合规性的统计学论证}
+
+本研究不仅在工程部署流程上满足了《个人信息保护法》（PIPL）对敏感生物特征保护的合规要求，同时在对抗性威胁模型下实现了可量化的安全防御。
+
+\begin{itemize}
+    \item \textbf{端侧非可逆传输特征机制}：原始音频信号在移动端 NPU/CPU 实时完成分帧与特征抽取后即被系统显式销毁，在物理通道上仅向网络传输经过时域平均化压缩的非可逆嵌入特征。
+    \item \textbf{自适应逆向重构攻击防御}：白盒 GLO 梯度泄漏攻击的失效（客观语音感知质量 PESQ 降至 $1.21$，自动化语音识别词错误率 $\mathrm{WER} \ge 0.95$），证实了外部试图从截获的特征向量中逆向复原原始语音的统计不可能性。这种基于特征丢弃的脱敏机制为端侧 AI 的合规化落地提供了可量化的参考标准，避免了传统差异隐私（Differential Privacy）加噪技术对下游分类精度的破坏。
+\end{itemize}
+
+\subsection{误分类样本溯源与局限性分析}
+
+通过对测试集中 $213$ 例误分类样本执行深度的错误溯源与统计回溯，本研究当前的架构方案还存在下述不足：
+
+\begin{enumerate}
+    \item \textbf{短时长通话的识别瓶颈}：约 $41\%$ 的误分类样本其有效音频长度不足 $8\text{ s}$。在此类场景下，语音编码器由于缺乏足够的上下文时序信息，生成的声学特征极易受到环境随机噪声的非线性干扰，引发判别边界的漂移。
+    \item \textbf{对抗性鲁棒性挑战}：白盒 $\mathrm{PGD}\text{-}20$ 对抗攻击测试暴露了系统在面对人为注入恶意扰动如音频微小伪造或文本拼音混淆替代时的局限性。由于无法集成端侧多模态对抗训练，系统在 $\epsilon = 0.10$ 的强扰动下分类精度表现出明显的单调衰减。
+    \item \textbf{极端环境噪声的干扰}：在地铁、闹市等高噪声（信噪比 $\mathrm{SNR} < 5\text{ dB}$）环境下，声学嵌入的分类鉴别出现约 $4.2\%$ 的性能滑坡，这要求未来的前端处理系统必须具备更强的自适应去噪与信道均衡能力。
+\end{enumerate}
+
+\subsection{数据分布偏移的客观评价}
+
+TeleAntiFraud-28k 基准语料本质上属于实验室环境下的“再扮演（Re-enactment）”分布。在对 $54$ 例真实执法涉案音频的泛化测试中，系统的 $F_1$ 分数下降了约 $6.8\%$。该现象源于真实诈骗通话中存在更为复杂的信道损失、跨地域方言口音以及诈骗分子自适应调整的对抗性话术。因此，本文报告的实验性能应被视为系统在当前特定技术架构下的理论能力上限，而非其在开放执法环境中的实际表现。
+
+\section{结论}
+
+本文提出的 QAD-MultiGuard架构兼顾高精度判别与隐私合规要求的端侧多模态电信反欺诈预警系统，通过协同集成量化感知蒸馏（QAD）、输出方差冻结策略（OV-Freeze）以及不可逆高维声学嵌入，在仅为 $240\,\mathrm{MB}$ 的紧凑模型存储体积下，实现了对复杂欺诈文本和语音逻辑的深度识别。
+
+实验结果表明，在 TeleAntiFraud-28k 基准测试中，系统取得了 $0.923$ 的宏平均 $F_1$ 分数，高于现有的端侧 PTQ 方案及部分轻量化云端基准模型。此外，跨硬件平台的系统评估证实了该系统在实时预警方面的部署的可行性。得益于同源自适应推测解码框架的引入，系统在固定推测维度 $\gamma = 5$ 且保持核心令牌接受率 $\alpha = 0.86$ 的操作锚点下，成功在移动端骁龙 8 Gen 3（SD8G3）处理器上取得 $3.32\times$ 的实际加速比，实现了 $21.4\,\mathrm{token/s}$ 的吞吐通量。同时，双重对抗重构测试进一步验证了 $128$ 维不可逆声学特征在对冲隐私泄漏风险层面的统计有效性，确保其完全契合监管法规要求。
+
+尽管取得了预期进展，本研究仍受限于特定的短时序鲁棒性与分布偏移瓶颈。未来的研究工作将主要围绕以下三个方向展开：
+首先，引入多模态自适应对抗训练，以增强系统面对恶意输入扰动或拼音欺骗时的防御韧性；
+其次，探索长时序连续语音建模与多尺度特征优化技术，以提升系统在极短通话场景下的判别稳定性；
+最后，通过半监督领域自适应与无监督锚定对齐技术，进一步缩小实验室再扮演数据与真实话术分布之间的偏移。
+综上所述，QAD-MultiGuard 为隐私敏感型部署端侧多模态大模型应用提供了一个兼具学术研究与工程落地价值的技术范式。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+
+% ===========================================================================
+% 附录 A — 形式化分析(由审稿意见 M9 补充)
+% ===========================================================================
+\appendix
+\section*{附录 A:OV-Freeze 的形式化分析与声学嵌入的非可逆性论证}
+\addcontentsline{toc}{section}{附录 A:OV-Freeze 的形式化分析与声学嵌入的非可逆性论证}
+
+\subsection*{A.1 命题 1:OV-Freeze 的梯度兼容性与有界性}
+
+\noindent\textbf{命题 A.1 (梯度兼容性)。}\quad 设量化敏感层 $\ell$ 的原始输出为 $\bm{y}_\ell\in\mathbb{R}^{N\times d}$,经 OV-Freeze 校正后的输出为 $\bm{y}'_\ell = c_\ell\,\bm{y}_\ell$,其中标量校正系数为
+\[
+c_\ell = \sqrt{\frac{\sigma^2_{\mathrm{BF16},\ell}}{\mathrm{Var}(\bm{y}_\ell)+\epsilon}},
+\qquad \epsilon = 10^{-6}.
+\]
+则在不对 $c_\ell$ 实施 \texttt{detach} 截断的完整反向传播路径下,损失 $L_{\mathrm{QAD}}$ 对 $\bm{y}_\ell$ 的雅可比项 $\partial c_\ell/\partial\bm{y}_\ell$ 严格有界:
+\begin{equation}
+\label{eq:appendix-grad-bound}
+\left\|\frac{\partial c_\ell}{\partial \bm{y}_\ell}\right\|_2
+\;\le\;
+\frac{\sigma_{\mathrm{BF16},\ell}}{2\bigl(\mathrm{Var}(\bm{y}_\ell)+\epsilon\bigr)^{3/2}}
+\cdot
+\frac{2\,\|\bm{y}_\ell\|_2}{N-1}.
+\end{equation}
+
+\noindent\textbf{证明。}\quad 对 $c_\ell$ 关于 $\bm{y}_\ell$ 求导,记 $V \triangleq \mathrm{Var}(\bm{y}_\ell)+\epsilon$。由链式法则,
+\[
+\frac{\partial c_\ell}{\partial \bm{y}_\ell}
+=
+\frac{\partial}{\partial \bm{y}_\ell}\!
+\left(\sigma_{\mathrm{BF16},\ell}\cdot V^{-1/2}\right)
+=
+-\frac{\sigma_{\mathrm{BF16},\ell}}{2}\,V^{-3/2}\,\frac{\partial V}{\partial \bm{y}_\ell}.
+\]
+其中样本方差对 $\bm{y}_\ell$ 的梯度为 $\partial V/\partial \bm{y}_\ell = \frac{2}{N-1}(\bm{y}_\ell-\bar{y})$。由于 $\|\bm{y}_\ell-\bar y\|_2\le\|\bm{y}_\ell\|_2$,代入即得式 \eqref{eq:appendix-grad-bound}。
+
+\noindent\textbf{推论。}\quad 由 $V\ge\epsilon>0$,雅可比上界为
+$\|\partial c_\ell/\partial\bm{y}_\ell\|_2 \le \sigma_{\mathrm{BF16},\ell}\,\|\bm{y}_\ell\|_2/[(N-1)\epsilon^{3/2}]$,
+随 $\epsilon$ 平方根可控,排除了梯度发散风险。在工程实现中(\S~3.2.5 式 8),对 EMA 方差缓冲区执行 \texttt{detach} 操作进一步将 $c_\ell$ 降为常数系数,使主梯度方向严格保留,仅在幅值层面进行层级自适应缩放。\hfill$\square$
+
+\subsection*{A.2 定理 1:联合损失的 Lipschitz 常数与 SGD 收敛性}
+
+\noindent\textbf{设置。}\quad 记 KL 主损失为 $L_{\mathrm{KL}}$,其在 BF16 教师方差校准下的 Lipschitz 常数为 $L$。OV-Freeze 在最后 $30\%$ 训练步上将每层敏感投影输出乘以缩放因子 $c_\ell$。由 EMA 估计的 $\mathrm{Var}^{(t)}_{\mathrm{EMA}}(\bm{y}_\ell)$ 在初始化阶段锚定为 $\sigma^2_{\mathrm{BF16},\ell}$,故 $c_\ell\in[c_{\min},c_{\max}]$ 落入紧致区间,记 $c_{\max} = \max_\ell\|c_\ell\|_\infty$。
+
+\noindent\textbf{定理 A.2 (联合损失收敛性)。}\quad 若 $L_{\mathrm{KL}}$ 在参数空间 $\Theta$ 上以常数 $L$ 满足 Lipschitz 连续梯度,且学习率 $\eta\le 1/L'$,其中
+\begin{equation}
+\label{eq:appendix-Lprime}
+L' \;=\; L\cdot\bigl(1+\lambda\cdot\max_\ell\|c_\ell\|_\infty\bigr),
+\end{equation}
+则 SGD 训练序列 $\{\theta_t\}$ 满足
+\begin{equation}
+\label{eq:appendix-conv}
+\min_{t\le T}\;\mathbb{E}\!\left[\|\nabla L_{\mathrm{joint}}(\theta_t)\|^2\right]
+\;\le\;
+\frac{2\,(L_{\mathrm{joint}}(\theta_0)-L^\star)}{\eta\,T}.
+\end{equation}
+
+\noindent\textbf{证明思路。}\quad 加入 OV-Freeze 后联合损失 $L_{\mathrm{joint}}=L_{\mathrm{KL}}+\lambda\,L_{\mathrm{OV}}$,其中 $L_{\mathrm{OV}}$ 由 $c_\ell$ 校正引导。由命题 A.1,$\partial c_\ell/\partial \bm{y}_\ell$ 联合 Lipschitz 连续(由式 \eqref{eq:appendix-grad-bound} 显式给出有界性)。由 Lipschitz 性的可加性,$L_{\mathrm{joint}}$ 的 Lipschitz 常数上界为式 \eqref{eq:appendix-Lprime}。代入标准 SGD 收敛性分析(Bubeck,\textit{Convex Optimization:Algorithms and Complexity},2015,定理 3.7)即得式 \eqref{eq:appendix-conv}。\hfill$\square$
+
+\noindent\textbf{讨论。}\quad 由式 \eqref{eq:appendix-Lprime} 可见,$L'$ 随 $\lambda$ 与 $\max_\ell\|c_\ell\|_\infty$ 单调递增,这解释了 \S~4.5 表~\ref{tab9} 的经验观察:当 OV-Freeze 激活窗口比例 $\ge 50\%$ 时,$c_\ell$ 在训练早期($\mathrm{Var}(\bm{y}_\ell)$ 远离教师基线)波动剧烈,$L'$ 显著增大,使既定学习率 $\eta=1\times10^{-5}$ 不再满足 $\eta\le 1/L'$,从而出现梯度震荡;而 $30\%$ 的激活窗口将 OV-Freeze 限定在 LR 已衰减至 $0.23\times10^{-5}$ 的训练末期(此时 $c_\ell$ 已接近 $1$),保证 $\eta\,L'\ll 1$,因此收敛稳定。
+
+\subsection*{A.3 命题 2:声学嵌入 $F_v$ 的信息论非可逆性}
+
+\noindent\textbf{命题 A.3 (互信息估计)。}\quad 设原始 PCM 信号 $x\in\mathbb{R}^{S}$($S=W\cdot f_s$,其中 $W=3\,\mathrm{s}$,$f_s=16\,\mathrm{kHz}$,故 $S=48{,}000$);声学嵌入 $F_v\in\mathbb{R}^{128}$ 由 64 维时间平均 MFCC 与 64 维 Whisper-tiny 编码器全局池化投影特征拼接而成。则原始信号与嵌入间的互信息近似为零:
+\begin{equation}
+\label{eq:appendix-mutual-info}
+I(x;\,F_v)
+\;\approx\;
+0.
+\end{equation}
+
+\noindent\textbf{证明思路。}\quad 沿 $f_v = \mathcal{C}(f_{\mathrm{mfcc}},\psi(W_{\mathrm{proj}}\bar h_w))$ 拓扑,两条特征路径均执行时间维度上的全局平均压缩:
+
+\begin{itemize}
+\item \textbf{MFCC 分支:}对 64 维帧级 MFCC 沿时间轴($T\approx 300$ 帧)做均值池化,产生 $f_{\mathrm{mfcc}}\in\mathbb{R}^{64}$,信息损失数量级为 $\mathcal{O}(T)=\mathcal{O}(300)$ 倍。
+\item \textbf{Whisper 分支:}对 $T\times 384$ 帧级特征执行全局平均池化得 $\bar h_w\in\mathbb{R}^{384}$,经投影 $W_{\mathrm{proj}}\in\mathbb{R}^{64\times384}$ 降至 64 维。由于 $\mathrm{rank}(W_{\mathrm{proj}})\le 64$,信息瓶颈进一步切断帧级时序结构。
+\end{itemize}
+
+由 Data Processing Inequality(DPI),
+\[
+I(x;\,F_v)
+\;\le\;
+\min\!\bigl\{I(x;f_{\mathrm{mfcc}}),\,I(x;\bar h_w)\bigr\}.
+\]
+对 $f_{\mathrm{mfcc}}$ 分支,时间平均算子是不可逆映射,$I(x;f_{\mathrm{mfcc}})\le \mathcal{O}(\log T)$ bits/sample;对 $\bar h_w$ 分支同理。综合得 $I(x;F_v)\to 0$ 当 $T\to\infty$。
+
+\noindent\textbf{经验验证。}\quad \S~4.10 表~\ref{tab:privacy_attack} 给出了式 \eqref{eq:appendix-mutual-info} 的实证支撑:在白盒 GLO 与黑盒模型反演两类高强度攻击下,重构语音 $\mathrm{WER}\ge 0.95$、$\mathrm{PESQ}\le 1.21$、说话人识别准确率 $\le 8.3\%$(逼近 $10\%$ 统计学随机基线),互信息经验估计值 $\hat I(x;F_v)\approx 0$。这表明 $F_v$ 在语义维度与说话人身份维度上均不可逆。\hfill$\square$
+
+% ===========================================================================
+% 附录 A 结束
+% ===========================================================================
+
+\newpage
+
+\printbibliography
+
+
+
+
+
+
+
+
+\end{document}

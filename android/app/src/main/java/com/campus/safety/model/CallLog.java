@@ -1,11 +1,19 @@
 package com.campus.safety.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CallLog {
     public long id;
-    public String phone;
-    public String risk_level;
-    public int risk_score;
-    public String rule_triggered;
-    public long duration_s;
-    public String checked_at;
+
+    @SerializedName("phone_number")
+    public String phoneNumber;
+
+    @SerializedName("risk_level")
+    public String riskLevel;
+
+    @SerializedName("detection_type")
+    public String detectionType;
+
+    @SerializedName("detected_at")
+    public String detectedAt;
 }

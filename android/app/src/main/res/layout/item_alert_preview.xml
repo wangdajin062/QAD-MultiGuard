@@ -30,7 +30,7 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="14sp" android:textStyle="bold"
                 android:textColor="@color/text_primary"
-                android:maxLines="1" android:ellipsize="end"/>
+                android:maxLines="2" android:ellipsize="end"/>
 
             <TextView android:id="@+id/tv_content"
                 android:layout_width="match_parent" android:layout_height="wrap_content"

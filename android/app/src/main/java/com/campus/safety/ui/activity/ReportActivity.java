@@ -50,8 +50,9 @@ public class ReportActivity extends AppCompatActivity {
 
         ReportRequest req = new ReportRequest();
         req.target = target;
-        req.risk_type = type;
+        req.reportType = type;
         req.description = desc;
+        req.school = "";
 
         bd.btnSubmit.setEnabled(false);
         bd.progress.setVisibility(View.VISIBLE);

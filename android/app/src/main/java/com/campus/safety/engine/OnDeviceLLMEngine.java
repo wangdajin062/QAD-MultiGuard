@@ -176,10 +176,20 @@ public class OnDeviceLLMEngine {
         private String   sessionId = "";
 
         public MultimodalRequestBuilder withSMS(SmsFeatureExtractor.Features feat) {
-            if (feat != null && feat.vector != null) {
-                smsFeatures = new float[feat.vector.size()];
-                for (int i = 0; i < feat.vector.size(); i++)
-                    smsFeatures[i] = feat.vector.get(i);
+            if (feat != null) {
+                float kwHits = Math.min(1.0f, feat.hitKeywords.size() / 5.0f);
+                float kwWeight = 0;
+                for (int w : feat.hitWeights) kwWeight += w;
+                kwWeight = Math.min(1.0f, kwWeight / 100.0f);
+                smsFeatures = new float[]{
+                    kwHits, kwWeight, feat.urgencyScore,
+                    feat.hasUrl ? 1.0f : 0.0f,
+                    Math.min(1.0f, feat.urlCount / 3.0f),
+                    feat.moneyMentioned ? 1.0f : 0.0f,
+                    feat.impersonation ? 1.0f : 0.0f,
+                    Math.min(1.0f, feat.charCount / 300.0f),
+                    0.0f, 0.0f, 0.0f, 0.0f,
+                };
             }
             return this;
         }

@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.campus.safety.databinding.FragmentAlertsBinding;
 import com.campus.safety.model.ApiResponse;
 import com.campus.safety.model.FraudAlert;
-import com.campus.safety.model.PageResult;
 import com.campus.safety.network.ApiClient;
+
+import java.util.List;
 import com.campus.safety.ui.adapter.AlertAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,23 +72,23 @@ public class AlertsFragment extends Fragment {
         bd.swipeRefresh.setRefreshing(page == 1);
 
         ApiClient.getApi().getAlerts(page, 20)
-            .enqueue(new Callback<ApiResponse<PageResult<FraudAlert>>>() {
+            .enqueue(new Callback<ApiResponse<List<FraudAlert>>>() {
                 @Override
-                public void onResponse(Call<ApiResponse<PageResult<FraudAlert>>> c,
-                                       Response<ApiResponse<PageResult<FraudAlert>>> r) {
+                public void onResponse(Call<ApiResponse<List<FraudAlert>>> c,
+                                       Response<ApiResponse<List<FraudAlert>>> r) {
                     if (!isAdded()) return;
                     isLoading = false;
                     bd.swipeRefresh.setRefreshing(false);
                     if (!r.isSuccessful() || r.body() == null || r.body().data == null) return;
-                    PageResult<FraudAlert> pr = r.body().data;
-                    if (page == 1) adapter.setItems(pr.items);
-                    else adapter.appendItems(pr.items);
+                    List<FraudAlert> items = r.body().data;
+                    if (page == 1) adapter.setItems(items);
+                    else adapter.appendItems(items);
                     currentPage = page;
-                    hasMore = pr.items != null && pr.items.size() >= 20;
+                    hasMore = items != null && items.size() >= 20;
                     bd.tvEmpty.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
                 }
                 @Override
-                public void onFailure(Call<ApiResponse<PageResult<FraudAlert>>> c, Throwable t) {
+                public void onFailure(Call<ApiResponse<List<FraudAlert>>> c, Throwable t) {
                     if (!isAdded()) return;
                     isLoading = false;
                     bd.swipeRefresh.setRefreshing(false);

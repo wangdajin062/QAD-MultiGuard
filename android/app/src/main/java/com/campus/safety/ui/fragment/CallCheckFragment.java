@@ -73,8 +73,8 @@ public class CallCheckFragment extends Fragment {
         // 历史列表
         historyAdapter = new CallHistoryAdapter(log -> {
             Intent i = new Intent(getContext(), DetectionResultActivity.class)
-                .putExtra("phone", log.phone)
-                .putExtra("risk_score", log.risk_score)
+                .putExtra("phone", log.phoneNumber)
+                .putExtra("risk_score", 0)
                 .putExtra("type", "history");
             startActivity(i);
         });

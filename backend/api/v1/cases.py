@@ -92,9 +92,22 @@ async def get_case(
     case = result.scalar_one_or_none()
     if not case:
         return {"code": 404, "message": "案例不存在"}
+
+    # 检查是否已收藏
+    fav_result = await db.execute(
+        select(UserCaseFavorite).where(
+            UserCaseFavorite.user_id == current_user.id,
+            UserCaseFavorite.case_id == case_id
+        )
+    )
+    is_favorited = fav_result.scalar_one_or_none() is not None
+
     case.view_count += 1
     current_user.cases_read += 1
-    return {"code": 200, "data": FraudCaseDetail.model_validate(case).model_dump()}
+
+    data = FraudCaseDetail.model_validate(case).model_dump()
+    data["is_favorited"] = is_favorited
+    return {"code": 200, "data": data}
 
 
 @router.post("/{case_id}/favorite", summary="收藏/取消收藏案例")

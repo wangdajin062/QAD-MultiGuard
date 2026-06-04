@@ -17,12 +17,13 @@ public class TokenManager {
     private static final String SECURE_PREFS = "campus_safety_secure";
     private static final String FALLBACK_PREFS = "campus_safety_fb";
 
-    private static final String KEY_TOKEN       = "auth_token";
-    private static final String KEY_USER_ID     = "user_id";
-    private static final String KEY_NICKNAME    = "nickname";
-    private static final String KEY_PHONE       = "phone";
-    private static final String KEY_FCM_TOKEN   = "fcm_token";
-    private static final String KEY_PROT_SCORE  = "protection_score";
+    private static final String KEY_TOKEN        = "auth_token";
+    private static final String KEY_REFRESH      = "refresh_token";
+    private static final String KEY_USER_ID      = "user_id";
+    private static final String KEY_NICKNAME     = "nickname";
+    private static final String KEY_PHONE        = "phone";
+    private static final String KEY_FCM_TOKEN    = "fcm_token";
+    private static final String KEY_PROT_SCORE   = "protection_score";
 
     private static SharedPreferences getPrefs(Context ctx) {
         try {
@@ -39,9 +40,10 @@ public class TokenManager {
         }
     }
 
-    public static void saveLogin(Context ctx, String token, long uid, String nick, String phone) {
+    public static void saveLogin(Context ctx, String token, String refreshToken, long uid, String nick, String phone) {
         getPrefs(ctx).edit()
             .putString(KEY_TOKEN, token)
+            .putString(KEY_REFRESH, refreshToken == null ? "" : refreshToken)
             .putLong(KEY_USER_ID, uid)
             .putString(KEY_NICKNAME, nick == null ? "" : nick)
             .putString(KEY_PHONE, phone == null ? "" : phone)
@@ -49,9 +51,18 @@ public class TokenManager {
     }
 
     public static String getToken(Context ctx) { return getPrefs(ctx).getString(KEY_TOKEN, null); }
+    public static String getRefreshToken(Context ctx) { return getPrefs(ctx).getString(KEY_REFRESH, null); }
     public static long   getUserId(Context ctx) { return getPrefs(ctx).getLong(KEY_USER_ID, -1); }
     public static String getNickname(Context ctx) { return getPrefs(ctx).getString(KEY_NICKNAME, "用户"); }
     public static String getPhone(Context ctx) { return getPrefs(ctx).getString(KEY_PHONE, ""); }
+
+    /** Called after token refresh — updates access and refresh tokens atomically. */
+    public static void updateTokens(Context ctx, String accessToken, String refreshToken) {
+        getPrefs(ctx).edit()
+            .putString(KEY_TOKEN, accessToken)
+            .putString(KEY_REFRESH, refreshToken == null ? "" : refreshToken)
+            .apply();
+    }
 
     public static boolean isLoggedIn(Context ctx) {
         String t = getToken(ctx);

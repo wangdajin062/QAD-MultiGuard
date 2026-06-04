@@ -62,16 +62,12 @@ public class SmsReceiver extends BroadcastReceiver {
             NotificationHelper.showSmsAlert(ctx, sender, quickScore, hint);
         }
 
-        // 异步上传特征向量（12 维，不含原文）
+        // 异步上传脱敏特征（原文不上传）
         SmsAnalyzeRequest req = new SmsAnalyzeRequest();
-        req.sender          = sender;
-        req.keywords        = f.hitKeywords;
-        req.has_url         = f.hasUrl;
-        req.url_count       = f.urlCount;
-        req.urgency_score   = f.urgencyScore;
-        req.money_mentioned = f.moneyMentioned;
-        req.impersonation   = f.impersonation;
-        req.char_count      = f.charCount;
+        req.sender       = sender;
+        req.keywords     = f.hitKeywords;
+        req.hasUrl       = f.hasUrl;
+        req.contentLength = f.charCount;
 
         ApiClient.getApi().analyzeSms(req).enqueue(new Callback<ApiResponse<SmsAnalyzeResult>>() {
             @Override
@@ -79,10 +75,9 @@ public class SmsReceiver extends BroadcastReceiver {
                                    Response<ApiResponse<SmsAnalyzeResult>> r) {
                 if (!r.isSuccessful() || r.body() == null || r.body().data == null) return;
                 SmsAnalyzeResult sr = r.body().data;
-                // 服务端发现高危而本地未发现：补推通知
                 if ("high".equals(sr.risk_level) && !"high".equals(quickLevel)) {
                     NotificationHelper.showSmsAlert(ctx, sender, sr.risk_score,
-                        sr.explanation != null ? sr.explanation : "后端检测到诈骗风险");
+                        "后端检测到诈骗风险");
                 }
             }
             @Override public void onFailure(Call<ApiResponse<SmsAnalyzeResult>> c, Throwable t) {

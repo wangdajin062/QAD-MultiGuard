@@ -40,7 +40,7 @@ PAPER_FALLBACK = {
 
     # -- fig03: Loss ablation ---------------------------------------------
     "fig03_losses": [
-        {"loss": "Pure KL\n(ours)",      "f1": 0.916, "kl": 0.007, "std": 0.005, "color": "red"},
+        {"loss": "Pure KL\n(ours)",      "f1": 0.916, "kl": 0.005, "std": 0.005, "color": "red"},
         {"loss": "MSE",                  "f1": 0.901, "kl": 0.082, "std": 0.010, "color": "darkgray"},
         {"loss": "Cross\nEntropy",       "f1": 0.844, "kl": 0.311, "std": 0.014, "color": "darkgray"},
         {"loss": "Three-Term",           "f1": 0.879, "kl": 0.124, "std": 0.012, "color": "darkgray"},
@@ -98,8 +98,8 @@ PAPER_FALLBACK = {
     "fig06_archs": [
         {"arch": 'sigmoid\nlinear\n(ours)', "f1": 0.923, "latency": "<1 ms", "params": "5"},
         {"arch": 'softmax\nlinear',          "f1": 0.909, "latency": "<1 ms", "params": "5"},
-        {"arch": 'MM-Transformer\n(2 layers)', "f1": 0.926, "latency": "8.2 ms", "params": "1.2M"},
-        {"arch": 'MM-Transformer\n(4 layers)', "f1": 0.927, "latency": "16.4 ms", "params": "2.4M"},
+        {"arch": 'MM-Transformer\n(2 layers)', "f1": 0.927, "latency": "8.2 ms", "params": "1.2M"},
+        {"arch": 'MM-Transformer\n(4 layers)', "f1": 0.923, "latency": "16.4 ms", "params": "2.4M"},
     ],
 
     # -- fig07: Privacy GLO -----------------------------------------------

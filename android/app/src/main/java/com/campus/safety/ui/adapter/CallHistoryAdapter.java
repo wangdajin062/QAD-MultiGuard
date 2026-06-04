@@ -32,14 +32,14 @@ public class CallHistoryAdapter extends RecyclerView.Adapter<CallHistoryAdapter.
         final ItemCallLogBinding b;
         VH(ItemCallLogBinding bb) { super(bb.getRoot()); b = bb; }
         void bind(CallLog c) {
-            b.tvPhone.setText(Utils.maskPhone(c.phone));
-            b.tvScore.setText(String.valueOf(c.risk_score));
-            b.tvTime.setText(c.checked_at);
-            b.tvRiskLevel.setText("high".equals(c.risk_level) ? "高危" :
-                                  "medium".equals(c.risk_level) ? "中危" : "安全");
+            b.tvPhone.setText(Utils.maskPhone(c.phoneNumber));
+            b.tvScore.setText("N/A");
+            b.tvTime.setText(c.detectedAt);
+            b.tvRiskLevel.setText("high".equals(c.riskLevel) ? "高危" :
+                                  "medium".equals(c.riskLevel) ? "中危" : "安全");
             b.tvRiskLevel.setBackgroundResource(
-                "high".equals(c.risk_level) ? R.drawable.bg_chip_red :
-                "medium".equals(c.risk_level) ? R.drawable.bg_chip_orange : R.drawable.bg_chip_green);
+                "high".equals(c.riskLevel) ? R.drawable.bg_chip_red :
+                "medium".equals(c.riskLevel) ? R.drawable.bg_chip_orange : R.drawable.bg_chip_green);
             b.getRoot().setOnClickListener(v -> onClick.onClick(c));
         }
     }
