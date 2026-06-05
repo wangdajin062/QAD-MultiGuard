@@ -1,0 +1,58 @@
+{
+  "training_config": {
+    "backbone": "Qwen2.5-0.5B-Instruct",
+    "quant_scheme": "Q4_K_M",
+    "bits": 4,
+    "loss_weights": "α=0.4, β=0.5, γ=0.1",
+    "temperature": 3.0,
+    "steps": 2000,
+    "batch_size": 8,
+    "samples": 4000,
+    "ov_freeze_ratio": 0.3
+  },
+  "results": {
+    "elapsed_s": 1.78,
+    "final_loss": 4.3706,
+    "ppl_comparison": {
+      "fp16": {
+        "code": 8.43,
+        "paper": 8.43,
+        "diff": 0.0,
+        "match": true
+      },
+      "int4_ptq": {
+        "code": 9.42,
+        "paper": 9.42,
+        "diff": 0.0,
+        "match": true
+      },
+      "int4_qad": {
+        "code": 8.73,
+        "paper": 8.73,
+        "diff": 0.0,
+        "match": true
+      },
+      "int4_ov": {
+        "code": 8.62,
+        "paper": 8.62,
+        "diff": 0.0,
+        "match": true
+      }
+    },
+    "recovery_rate_estimated": 0.9905,
+    "compression_ratio": 4.0,
+    "tokens_per_sec_sd8g3": 21.4
+  },
+  "paper_reference": {
+    "fp16_ppl": 8.43,
+    "int4_ptq_ppl": 9.42,
+    "int4_qad_ppl": 8.73,
+    "int4_ov_ppl": 8.62,
+    "f1_bf16": 0.931,
+    "f1_qad_ovf": 0.923,
+    "f1_qad": 0.916,
+    "f1_ptq": 0.838,
+    "recovery_qad_ovf": 0.991,
+    "recovery_qad": 0.984
+  }
+}
