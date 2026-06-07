@@ -46,7 +46,7 @@ ax1.set_ylabel("Theoretical speed-up",fontsize=8.5)
 ax1.set_xlim(0.5, 0.95)
 ax1.set_ylim(1.5, 6.5)
 ax1.legend(loc="upper left", fontsize=7.5)
-ax1.set_title("a) Speed-up curve, Leviathan et al.",
+ax1.set_title("a) Speed-up curve ($\\alpha$ vs. $\\gamma$)",
               weight="bold", fontsize=9.5)
 
 # ---- (b) γ sensitivity (measured) at α=0.86 ----

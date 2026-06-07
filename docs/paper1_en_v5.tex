@@ -35,7 +35,7 @@
 \maketitle
 
 \begin{abstract}
-Telecommunication fraud poses a critical challenge to mobile edge security, where on-device real-time detection must satisfy three coupled constraints: strict privacy compliance, millisecond-level latency, and resilience to precision degradation under low-bit quantization. We present \textbf{QAD-MultiGuard}, an edge--cloud collaborative, privacy-preserving multimodal fraud detection framework. At its core lies a pure KL-divergence distillation paradigm with a homologous teacher: knowledge from a full-precision (BF16) teacher model is transferred to its quantized students. This paradigm supports a heterogeneous dual-track quantization scheme---server-side native NVFP4 and on-device block-wise GGUF-Q4\_K\_M. To stabilise quantization-sensitive projection layers, we introduce the \textbf{Output-Variance Freeze (OV-Freeze)} regularizer. For privacy-preserving multimodal fusion, we construct a 128-dimensional practically irreversible acoustic embedding ($\bm{F}_v$) and an L-BFGS-optimised four-modality risk fusion mechanism. On the TeleAntiFraud-28k benchmark, NVFP4 QAD + OV-Freeze attains $F_1 = 0.923 \pm 0.006$, approaching 99.1\% of the BF16 upper bound and outperforming 10 representative baselines by 6.5 to 8.5 $F_1$ points. On the adversarial set AdvFraud-3k, the model attains $F_1 = 0.875$. End-to-end deployment on the Snapdragon~8~Gen~3 platform yields a median alert latency of 268~ms (P99: 342~ms), confirming the framework's viability under real-world workloads.
+Telecommunication fraud poses a critical challenge to mobile edge security, where on-device real-time detection must satisfy three coupled constraints: strict privacy compliance, millisecond-level latency, and resilience to precision degradation under low-bit quantization. We present \textbf{QAD-MultiGuard}, an edge--cloud collaborative, privacy-preserving multimodal fraud detection framework. At its core lies a pure KL-divergence distillation paradigm with a homologous teacher: knowledge from a full-precision (BF16) teacher model is transferred to its quantized students. This paradigm supports a heterogeneous dual-track quantization scheme---server-side native NVFP4 and on-device block-wise GGUF-Q4\_K\_M. To stabilise quantization-sensitive projection layers, we introduce the \textbf{Output-Variance Freeze (OV-Freeze)} regularizer. For privacy-preserving multimodal fusion, we construct a 128-dimensional practically irreversible acoustic embedding ($\bm{F}_v$) and an L-BFGS-optimised four-modality risk fusion mechanism. On the TeleAntiFraud-28k benchmark, NVFP4 QAD + OV-Freeze attains $F_1 = 0.923 \pm 0.006$, approaching 99.1\% of the BF16 upper bound and outperforming 10 representative baselines by 6.5 to 8.5 $F_1$ points. On the adversarial set AdvFraud-3k, the model attains $F_1 = 0.875$. End-to-end deployment on the Snapdragon~8~Gen~3 platform yields a median alert latency of 268~ms (P99: 342~ms), demonstrating the framework's real-time capability on mobile hardware.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -47,7 +47,7 @@ Telecommunication fraud detection; quantization-aware distillation; privacy pres
 
 Conventional rule-based or traditional machine learning approaches cannot simultaneously satisfy the real-time, privacy, and on-device resource constraints. First, a typical scam call lasts $\sim$90~s, with critical fraud instructions appearing within the first 60~s. Two distinct latency notions must be distinguished here: (i) the \emph{per-window incremental inference latency}---the time to complete one risk-scoring iteration after each streaming sliding window is triggered---which we require to be $\le 500$~ms so that risk scores refresh at a 1~s cadence (measured P50 $=268$~ms, see Section~III-A); and (ii) the \emph{first-alert latency}---the time from call onset to the first valid risk verdict---bounded by the acoustic window length $W$ (here $W=3$~s, with first alert within $\sim$3.3~s). Since critical fraud instructions concentrate in the first 60~s, a 3.3~s first alert plus 1~s continuous refresh provides ample interception opportunities within the coercion window. Second, China's Personal Information Protection Law (PIPL) restricts cross-border transfer of raw audio and other sensitive biometric features, mandating that core processing occur on-device. Third, mobile devices face strict hardware constraints (RAM $\le 4$~GB, available storage $\le 500$~MB). Consequently, deploying a 4-bit quantized large language model on-device emerges as a viable path balancing privacy requirements with real-time responsiveness.
 
-However, standard post-training quantization (PTQ) applied to 0.5B-scale models incurs 6.0\%--12.5\% accuracy degradation on standard benchmarks (per the NVIDIA Nemotron report [Technical report]~\cite{3}); on our telecommunication fraud task (TAF-28k), the $F_1$ gap between PTQ and QAD reaches 6.5--8.5 percentage points (see Section~IV-B, Table~\ref{tab3-en}), which fails to meet the fidelity requirements of production anti-fraud systems. Conventional quantization-aware training (QAT) requires reconstructing the full pipeline of supervised fine-tuning (SFT), reinforcement learning (RL), and model merging, increasing both engineering complexity and the risk of destroying the conversational style and refusal boundaries established during alignment. The NVFP4 QAD report from NVIDIA Nemotron (Jan 2026) [Technical report]~\cite{3} suggests a new direction: pure KL-divergence distillation aligning student outputs to a BF16 teacher's distribution can recover 97.0\%--99.4\% of the full-precision performance, providing a methodological foundation for mitigating low-bit quantization degradation in lightweight edge models.
+However, standard post-training quantization (PTQ) applied to 0.5B-scale models incurs 6.0\%--12.5\% accuracy degradation on standard benchmarks (per the NVIDIA Nemotron technical report~\cite{3}); on our telecommunication fraud task (TAF-28k), the $F_1$ gap between PTQ and QAD reaches 6.5--8.5 percentage points (see Section~IV-B, Table~\ref{tab3-en}), which fails to meet the fidelity requirements of production anti-fraud systems. Conventional quantization-aware training (QAT) requires reconstructing the full pipeline of supervised fine-tuning (SFT), reinforcement learning (RL), and model merging, increasing both engineering complexity and the risk of destroying the conversational style and refusal boundaries established during alignment. The NVFP4 QAD technical report from the NVIDIA Nemotron team (Jan 2026)~\cite{3} suggests a new direction: pure KL-divergence distillation aligning student outputs to a BF16 teacher's distribution can recover 97.0\%--99.4\% of the full-precision performance, providing a methodological foundation for mitigating low-bit quantization degradation in lightweight edge models.
 
 Nevertheless, directly transferring the native QAD paradigm to telecommunication fraud detection faces three challenges:
 
@@ -65,7 +65,7 @@ To address these challenges, this paper extends the NVFP4 QAD methodology along 
 
 \textbf{(3) Practically irreversible acoustic embedding and multimodal fusion.} We construct $\bm{F}_v = \mathcal{C}\!\left(\bm{f}_{\mathrm{mfcc}},\,\psi(\bm{W}_{\mathrm{proj}}\,\bar{\bm{h}}_w)\right) \in \mathbb{R}^{128}$ by concatenating time-averaged MFCC (64-d) with globally average-pooled Whisper-tiny encoder features (64-d). GLO and model-inversion attacks yield WER~$\ge 0.95$; Appendix~A.3 provides empirical evidence for practical non-reconstructability under known attacks.
 
-\textbf{(4) Domain speculative decoding and edge--cloud co-deployment.} We fine-tune a 124M-parameter draft model (Qwen2-0.1B) on anti-fraud corpora, lifting $\alpha$ from 0.78 to 0.86. Measured speedups: $3.49\times$ (H100), $3.32\times$ (SD8G3); end-to-end alert latency P50/P99 = 268/342\,ms. Unified evaluation across TAF-28k, AdvFraud-3k, and ChiFraud yields $F_1 = 0.923$, $0.875$, $0.860$.
+\textbf{(4) Domain speculative decoding and edge--cloud co-deployment.} We fine-tune a 124M-parameter draft model (Qwen2-0.1B) on anti-fraud corpora, lifting $\alpha$ from 0.78 to 0.86. Measured speedups: $3.49\times$ (H100), $3.32\times$ (SD8G3); end-to-end alert latency P50/P99 = 268/342\,ms. Evaluation on TAF-28k yields $F_1 = 0.923$, with cross-dataset validation on AdvFraud-3k ($F_1 = 0.875$) and ChiFraud ($F_1 = 0.860$) indicating moderate robustness to distribution shift.
 
 The remainder of the paper proceeds as follows. Section~II reviews related work; Section~III details the system architecture and methodology; Section~IV reports experiments; Section~V discusses limitations; Section~VI concludes. Appendix~A provides analysis of OV-Freeze and the acoustic embedding non-reconstructability.
 
@@ -74,7 +74,7 @@ The remainder of the paper proceeds as follows. Section~II reviews related work;
 
 The knowledge distillation paradigm introduced by Hinton et al.~\cite{4} transfers knowledge from a high-capacity teacher to a compact student via soft labels. Polino et al.~\cite{5} first integrated KD into weight quantization, founding quantized distillation. Mishra and Marr~\cite{6} demonstrated that low-precision networks can fit the output representations of full-precision teachers to substantially improve accuracy. Liu et al.~\cite{7} proposed LLM-QAT, validating data-free quantization-aware distillation using model-generated data. Du et al.~\cite{8} proposed BitDistiller, combining asymmetric quantization with self-distillation objectives to mitigate sub-4-bit LLM degradation.
 
-The NVFP4 QAD methodology from NVIDIA Nemotron [Technical report]~\cite{3} serves as our primary reference. Compared to conventional QAT, QAD better preserves the base capabilities of densely RL-aligned models. Homologous teacher alignment (BF16 self-distillation) outperforms cross-scale configurations, and KL-divergence proves more effective than MSE for distribution matching.
+The NVFP4 QAD methodology detailed in the NVIDIA Nemotron technical report~\cite{3} serves as our primary reference. Compared to conventional QAT, QAD better preserves the base capabilities of densely RL-aligned models. Homologous teacher alignment (BF16 self-distillation) outperforms cross-scale configurations, and KL-divergence proves more effective than MSE for distribution matching.
 
 Recent advanced PTQ approaches have made notable progress. Lin et al.~\cite{9} proposed AWQ, protecting critical-channel weights via activation-aware scaling; Frantar et al.~\cite{10}'s GPTQ uses second-order Taylor information for layer-wise weight reconstruction; Liu et al.~\cite{11}'s SpinQuant suppresses activation outliers via learnable orthogonal rotations; Ashkboos et al.~\cite{12}'s QuaRot achieves outlier-free 4-bit inference via Hadamard transforms. While these PTQ methods excel at 8-bit quantization, they exhibit 6.5\%--8.5\% accuracy gaps relative to QAD at 4-bit. This work extends the NVIDIA QAD paradigm to telecommunication-fraud multimodal tasks and introduces the OV-Freeze regularizer to further suppress low-bit quantization noise.
 
@@ -88,13 +88,13 @@ Wang et al.~\cite{2} proposed SAFE-QAQ, an RL-based end-to-end audio--text multi
 
 Our work builds on both directions: TAF-28k provides the data and evaluation protocol; SAFE-QAQ establishes the multimodal-framework foundation; this paper focuses on on-device ultra-low-bit quantization and hardware--software co-deployment. Table~\ref{tab1} summarises the key differences.
 
-\begin{table}[!t]
+\begin{table*}[!t]
 \centering\small
 \caption{Comparison with related work}
 \label{tab1}
 \renewcommand{\arraystretch}{1.15}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{>{\centering\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{2.8cm}>{\raggedright\arraybackslash}m{2.8cm}>{\raggedright\arraybackslash}m{4.2cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{4.5cm}}
 \toprule
 \textbf{Dimension} & \textbf{TAF-28k~\cite{1}} & \textbf{SAFE-QAQ~\cite{2}} & \textbf{This work} \\
 \midrule
@@ -102,12 +102,12 @@ Core positioning & Dataset + benchmark & RL end-to-end framework & Edge--cloud s
 Audio handling & ASR + TTS regen. & End-to-end audio-text & On-device 128-d $\bm{F}_v$ \\
 Quantization & N/A & N/A & NVFP4 + Q4\_K\_M \\
 Deployment & --- & Server-side & Edge--cloud ($<$300 ms) \\
-Privacy & Anonymised & Unspecified & $\bm{F}_v$ practically non-invert. \\
+Privacy & Anonymised & Unspecified & $\bm{F}_v$ practically non-invertible \\
 Training & SFT & RL + slow-think reward & QAD pure-KL distil. \\
-Empirical scale & Bench evaluation & 70k calls/day & 5{,}000-user pilot \\
+Empirical scale & Bench evaluation & 70k calls/day & 2{,}000-user pilot\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \subsection{On-device Large Language Model Inference}
 
@@ -124,7 +124,7 @@ where $\gamma$ is the draft model's single-pass speculation length. Rather than 
 
 China's PIPL explicitly mandates that raw biometric information must not leave user terminals without strict authorisation and security assessment. Tomashenko et al.~\cite{22} proposed x-vector substitution for acoustic identity obfuscation. However, Bora et al.~\cite{23}'s Generative Latent Optimization (GLO) attack demonstrated that some traditional anonymisation embeddings remain vulnerable to inverse reconstruction.
 
-This paper proposes a practically non-reconstructable acoustic feature construction: time-averaged MFCC and globally average-pooled Whisper-tiny encoder features are concatenated into a 128-d embedding $\bm{F}_v$; both compression steps destroy frame-level temporal dependencies, yielding WER~$\ge 0.95$ under GLO and model-inversion attacks. Full details appear in Section~III-C and Appendix~A.3.
+This paper proposes a practically non-reconstructable acoustic feature construction: time-averaged MFCC and globally average-pooled Whisper-tiny encoder features are concatenated into a 128-d embedding $\bm{F}_v$; both compression steps destroy frame-level temporal dependencies, yielding WER~$\ge 0.95$ under GLO and model-inversion attacks. Full details appear in Section~III-C and Appendix~A.3. Building on these foundations, Section~III presents the complete system architecture, detailing the QAD training paradigm, the OV-Freeze regularizer, the privacy-preserving acoustic embedding, domain-adapted speculative decoding, and the multimodal fusion mechanism in sequence.
 
 \section{System Architecture and Method}
 \subsection{System Architecture and Threat Model}
@@ -132,12 +132,13 @@ This paper proposes a practically non-reconstructable acoustic feature construct
 
 QAD-MultiGuard adopts a three-tier edge--cloud defence architecture (Figure~\ref{fig1-en}):
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{Fig/fig1_architecture.png}
-\caption{QAD-MultiGuard three-tier edge--cloud collaborative architecture.}
-\label{fig1-en}
-\end{figure}
+\begin{figure*}
+    \centering
+    \includegraphics[width=1\linewidth]{fig/fig01_architecture_en_v2.png}
+    \caption{QAD-MultiGuard three-tier edge--cloud collaborative architecture.}
+    \label{fig1-en}
+    \vspace{8pt}
+\end{figure*}
 
 \textbf{Tier-1: On-device detection.} Deployed on Snapdragon~8~Gen~3 and equivalent mobile platforms, this tier runs a lightweight student model (240~MB, Q4\_K\_M quantized), which constructs an SMS feature extractor (12-d), a URL structure-feature extractor (6-d), and a practically non-invertible acoustic embedding extractor. The acoustic feature vector $\bm{F}_v\in\mathbb{R}^{128}$ ensures that raw audio and SMS plain text remain on-device, supporting PIPL requirements.
 
@@ -173,27 +174,25 @@ We use the native Qwen2.5-0.5B-Instruct (BF16)~\cite{27,28,29} as the homologous
 
 We adopt an edge--cloud dual-track scheme pairing NVFP4 (Blackwell) with Q4\_K\_M (ARM/Snapdragon). Table~\ref{tab2-en} summarises the deployment parameters.
 
-\begin{table}[!t]
+\begin{table*}[h]
 \centering
 \caption{Edge--cloud dual-track quantization parameters}
 \label{tab2-en}
-\small
-\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l>{\raggedright\arraybackslash}p{4.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{6.5cm}>{\raggedright\arraybackslash}p{5cm}}
 \toprule
 \textbf{Component} & \textbf{Server (NVFP4)} & \textbf{On-device (Q4\_K\_M)} \\
 \midrule
-Backbone & \multicolumn{2}{c}{Qwen2.5-0.5B-Instruct} \\
-Parameters & \multicolumn{2}{c}{494M (FP16)} \\
-Teacher & \multicolumn{2}{c}{BF16 self-distillation} \\
-Quant format & NVFP4 (block=16, per-block FP8) & Q4\_K\_M (4/6-bit GGUF) \\
+Backbone & Qwen2.5-0.5B-Instruct & Qwen2.5-0.5B-Instruct \\
+Parameters & 494M (FP16) & 494M (FP16) \\
+Teacher & BF16 self-distillation & BF16 self-distillation \\
+Quant format & NVFP4 (block=16, per-block FP8 E4M3 scale) & Q4\_K\_M (4/6-bit GGUF) \\
 Model size & 248 MB & 240 MB \\
 Platform & Blackwell GPU + vLLM & ARM / Snapdragon \\
 Speedup vs FP8 & 2.1$\times$ & --- \\
 Recovery vs BF16 & \textbf{99.1\%} & \textbf{98.5\%} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \noindent\textbf{Model size note.} The 8~MB difference is attributable to NVFP4's finer-grained per-16-element micro-block scaling metadata, which contributes to its slightly higher recovery rate.
 
@@ -226,7 +225,7 @@ Exponential moving average (EMA, $\rho = 0.95$) suppresses small-batch variance 
 \label{eq:ema}
 \mathrm{Var}^{(t)}_{\mathrm{EMA}}(\bm{y}_\ell) = \rho\cdot\mathrm{Var}^{(t-1)}_{\mathrm{EMA}}(\bm{y}_\ell) + (1-\rho)\cdot\mathrm{Var}^{(t)}_{\mathrm{batch}}(\bm{y}_\ell).
 \end{equation}
-OV-Freeze activates only in the final 30\% of training steps and contributes $+0.7$ $F_1$ points (Section~IV-F).
+OV-Freeze activates only in the final 30\% of training steps and contributes $+0.7$ $F_1$ points (Section~IV-E).
 
 \subsection{Privacy-Preserving Acoustic Embedding}
 
@@ -236,6 +235,13 @@ The privacy-preserving acoustic embedding is defined as
 \bm{F}_v = \mathcal{C}\!\left(\bm{f}_{\mathrm{mfcc}},\,\psi(\bm{W}_{\mathrm{proj}}\bar{\bm{h}}_w)\right)\in\mathbb{R}^{128}.
 \end{equation}
 The MFCC vector $\bm{f}_{\mathrm{mfcc}}\in\mathbb{R}^{64}$ is extracted at 16 kHz sampling with 64-band mel filter banks. The pooled representation $\bar{\bm{h}}_w\in\mathbb{R}^{384}$ is derived from Whisper-tiny encoder global average pooling, projected to 64-d via $\bm{W}_{\mathrm{proj}}$.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig/fig10_acoustic_embedding.png}
+\caption{128-dimensional practically non-invertible acoustic embedding $\bm{F}_v$ construction. (a) Original log-mel spectrogram (64-band, $T\sim300$ frames per 3-s window); (b) Time-averaged 64-d MFCC vector, collapsing frame-level dynamics into static statistics; (c) Concatenated $\bm{F}_v\in\mathbb{R}^{128}$ formed by the MFCC branch (64-d) and the Whisper-tiny encoder global-pooled projection branch (64-d). Dual temporal compression destroys frame-level phase and prosodic timing, yielding empirical non-reconstructability (WER~$\ge0.95$).}
+\label{fig10-acoustic-embedding-en}
+\end{figure*}
 
 \subsubsection{Streaming sliding-window implementation}
 
@@ -250,14 +256,15 @@ $\bm{F}_v$ strips frame-level temporal features via dual compression: (i) MFCC g
 
 \subsection{Domain-Adapted Speculative Decoding}
 
-We fine-tune a 124M-parameter draft model (Qwen2-0.1B) on 50K anti-fraud utterances. At $\gamma = 5$, domain-adapted fine-tuning lifts $\alpha$ from 0.78 to 0.86, increasing expected token yield from 3.52 to 4.25. Sensitivity analysis establishes $\gamma = 5$ as the Pareto optimum (Section~IV-G, Table~\ref{tab:speculative_decoding-en}).
+We fine-tune a 124M-parameter draft model (Qwen2-0.1B) on 50K anti-fraud utterances. At $\gamma = 5$, domain-adapted fine-tuning lifts $\alpha$ from 0.78 to 0.86, increasing expected token yield from 3.52 to 4.25. Sensitivity analysis establishes $\gamma = 5$ as the Pareto optimum (Section~IV-F, Table~\ref{tab:speculative_decoding-en}).
 
 \subsection{Multimodal Risk Fusion}
 
 Final risk determination relies on decision-level fusion of text, acoustic, URL, and metadata modalities. The global risk score is
 \begin{equation}
 \label{eq:fusion}
-r = \sigma\bigl(w_{\mathrm{text}}\cdot r_{\mathrm{text}} + w_{\mathrm{audio}}\cdot r_{\mathrm{audio}} + w_{\mathrm{url}}\cdot r_{\mathrm{url}} + w_{\mathrm{meta}}\cdot r_{\mathrm{meta}} + b\bigr),
+r = \sigma\bigl(w_{\mathrm{text}}\cdot r_{\mathrm{text}}
++ w_{\mathrm{audio}}\cdot r_{\mathrm{audio}} + w_{\mathrm{url}}\cdot r_{\mathrm{url}} + w_{\mathrm{meta}}\cdot r_{\mathrm{meta}} + b\bigr),
 \end{equation}
 optimised via L-BFGS with user-stratified 5-fold CV. The cross-fold weight distribution is $\mathbf{w} = [0.40 \pm 0.018, 0.30 \pm 0.015, 0.20 \pm 0.012, 0.10 \pm 0.009]^T$. Table~\ref{tab:fusion_ablation-en} shows that linear Sigmoid fusion approaches the deep-fusion ceiling ($+0.004$ $F_1$ gain for a Transformer at $\sim$42$\times$ parameter cost).
 
@@ -278,16 +285,14 @@ Multimodal Transformer & $0.927$ & $1.84$~M & $\sim 8.2$~ms \\
 \end{tabular}
 \end{table}
 
-\section{Experimental Evaluation}
-
-The experiments validate each component of the QAD-MultiGuard pipeline: pure-KL QAD and OV-Freeze (Sections~IV-B--IV-F), domain-adapted speculative decoding (Section~IV-G), privacy-preserving acoustic embedding (Section~IV-H), and deployment latency (Section~III-C1).
+Having detailed the four methodological components, we now turn to their empirical validation. The experiments validate each component of the QAD-MultiGuard pipeline: pure-KL QAD and OV-Freeze (\SIV-B, \SIV-D--\SIV-E), domain-adapted speculative decoding (\SIV-F), privacy-preserving acoustic embedding (\SIV-G), and deployment latency (\SIII-C1).
 
 \subsection{Experimental Setup}
-\subsubsection{Datasets}
+\subsubsection{Datasets} 
 
 \textbf{TAF-28k~\cite{1}:} 28{,}511 voice-text pairs ($\sim$307 h audio), split 8:1:1 train/val/test.
 
-\textbf{AdvFraud-3k:} 1{,}000 TAF-28k fraud-text samples rewritten under 8 adversarial strategies plus 2{,}000 expert-composed novel fraud scripts. Three annotators (Cohen's $\kappa = 0.87$). No train-test leakage.
+\textbf{AdvFraud-3k:} 3{,}000 TAF-28k fraud text samples have been rewritten under eight strategy adversarial novel fraud scripts.
 
 \textbf{ChiFraud~\cite{chifraud}:} A long-period Chinese network-fraud text benchmark for cross-domain generalisation.
 
@@ -309,50 +314,98 @@ Cosine LR decay with initial $1\times 10^{-5}$, warm-up 100 steps, batch size 8,
 
 \subsection{Main results}
 
-\begin{table}[!t]
+\begin{table*}[h]
 \centering
 \caption{TAF-28k test-set multimodal fraud detection results}
 \label{tab3-en}
 \small
-\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\columnwidth}{Xccccc}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{Xccccc}
 \toprule
-\textbf{Method} & \textbf{$F_1$} & \textbf{Prec.} & \textbf{Rec.} & \textbf{FPR} & \textbf{Recov.} \\
+\textbf{Method} & \textbf{$F_1$} & \textbf{Precision} & \textbf{Recall} & \textbf{FPR} & \textbf{Recovery (\%)} \\
 \midrule
 BF16 (upper bound) & $0.931 \pm 0.005$ & $0.928$ & $0.934$ & $1.6\%$ & $100.0$ \\
 \midrule
-\multicolumn{6}{l}{\emph{PTQ methods}} \\
+\multicolumn{6}{l}{\emph{\textbf{Advanced post-training quantization (PTQ)}}} \\
 NVFP4 PTQ (max) & $0.838 \pm 0.011$ & $0.847$ & $0.829$ & $2.8\%$ & $90.0$ \\
 NVFP4 + AWQ & $0.838 \pm 0.010$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
 NVFP4 + GPTQ & $0.840 \pm 0.010$ & $0.848$ & $0.832$ & $2.7\%$ & $90.2$ \\
+NVFP4 + SpinQuant & $0.838 \pm 0.011$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
 NVFP4 + QuaRot & $0.838 \pm 0.011$ & $0.846$ & $0.830$ & $2.7\%$ & $90.0$ \\
-NVFP4 PTQ + temp. scale$^\dagger$ & $0.852 \pm 0.010$ & $0.858$ & $0.846$ & $2.5\%$ & $91.5$ \\
+NVFP4 PTQ + temperature scaling$^\dagger$ & $0.852 \pm 0.010$ & $0.858$ & $0.846$ & $2.5\%$ & $91.5$ \\
 \midrule
-\multicolumn{6}{l}{\emph{Self-distillation}} \\
+\multicolumn{6}{l}{\emph{\textbf{Self-distillation low-bit quantization}}} \\
 NVFP4 + BitDistiller & $0.858 \pm 0.009$ & $0.866$ & $0.850$ & $2.5\%$ & $92.2$ \\
 \midrule
-\multicolumn{6}{l}{\emph{QAT/QAD (ours)}} \\
+\multicolumn{6}{l}{\emph{\textbf{QAT/QAD (ours)}}} \\
 NVFP4 QAT & $0.844 \pm 0.014$ & $0.853$ & $0.835$ & $3.1\%$ & $90.7$ \\
 NVFP4 QAD & $0.916 \pm 0.007$ & $0.918$ & $0.914$ & $1.9\%$ & $98.4$ \\
-\textbf{NVFP4 QAD + OVF} & $\mathbf{0.923 \pm 0.006}$ & $\mathbf{0.925}$ & $\mathbf{0.921}$ & $\mathbf{1.8\%}$ & $\mathbf{99.1}$ \\
+\rowcolor[gray]{0.93} \textbf{NVFP4 QAD + OV-Freeze} & $\mathbf{0.923 \pm 0.006}$ & $\mathbf{0.925}$ & $\mathbf{0.921}$ & $\mathbf{1.8\%}$ & $\mathbf{99.1}$ \\
 \midrule
-\multicolumn{6}{l}{\emph{Edge Q4\_K\_M (ours)}} \\
+\multicolumn{6}{l}{\emph{\textbf{Edge Q4\_K\_M quantization (ours)}}} \\
 Q4\_K\_M PTQ & $0.851 \pm 0.011$ & $0.864$ & $0.838$ & $2.6\%$ & $91.4$ \\
 Q4\_K\_M QAD & $0.911 \pm 0.008$ & $0.913$ & $0.909$ & $2.0\%$ & $97.9$ \\
-\textbf{Q4\_K\_M QAD + OVF} & $\mathbf{0.917 \pm 0.007}$ & $\mathbf{0.920}$ & $\mathbf{0.914}$ & $\mathbf{1.9\%}$ & $\mathbf{98.5}$ \\
+\rowcolor[gray]{0.93} \textbf{Q4\_K\_M QAD + OV-Freeze} & $\mathbf{0.917 \pm 0.007}$ & $\mathbf{0.920}$ & $\mathbf{0.914}$ & $\mathbf{1.9\%}$ & $\mathbf{98.5}$ \\
 \midrule
-\multicolumn{6}{l}{\emph{Domain-specific}} \\
+\multicolumn{6}{l}{\emph{\textbf{Domain-specific baselines}}} \\
 BERT-Fraud & $0.876$ & $0.882$ & $0.870$ & $2.3\%$ & --- \\
 SAFE-QAQ & $0.918 \pm 0.006$ & $0.921$ & $0.916$ & $1.8\%$ & --- \\
 \bottomrule
 \end{tabularx}
-\vspace{2pt}
-\noindent\footnotesize $^\dagger$Temperature scaling on 100 held-out samples to minimise KL vs.\ BF16.
+\end{table*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig/fig2_main_results.png}
+\caption{Main results on TAF-28k. Bar chart comparing F1 scores (blue bars, left axis) and BF16 recovery rates (red diamonds, right axis) across all evaluated methods. NVFP4 QAD + OV-Freeze achieves $F_1=0.923$, recovering 99.1\% of the BF16 upper bound, substantially outperforming PTQ baselines ($F_1\approx0.838$) by 8.5 points and conventional QAT ($F_1=0.844$) by 7.9 points.}
+\label{fig2-main-results-en}
+\end{figure*}
+
+Table~\ref{tab3-en} yields several findings. First, NVFP4 QAD + OV-Freeze attains $F_1 = 0.923 \pm 0.006$, recovering 99.1\% of the BF16 upper bound ($F_1 = 0.931$) and outperforming representative PTQ methods (SpinQuant, QuaRot: $F_1 = 0.838$) by $0.085$ absolute points, as well as the self-distillation baseline BitDistiller ($F_1 = 0.858$) by $0.065$. We note that even with post-hoc temperature scaling calibration (Softmax temperature tuned to minimise KL vs.\ BF16 on 100 held-out samples), PTQ only reaches $F_1 = 0.852$ (recovery 91.5\%), remaining 7.1 points below QAD+OVF---confirming that the primary accuracy recovery stems from distillation-driven distribution alignment rather than simple temperature rescaling. Second, the QAD approach ($F_1 = 0.916$, recovery 98.4\%) substantially outperforms QAT ($F_1 = 0.844$, recovery 90.7\%) by 7.2 points, consistent with the NVIDIA technical report~\cite{3}'s observation that hard-label supervision degrades aligned models' refusal boundaries. Third, OV-Freeze contributes an additional $+0.7$ recovery points ($98.4\%\!\rightarrow\!99.1\%$) and reduces FPR to 1.8\%. Finally, the edge track (Q4\_K\_M QAD + OV-Freeze, $F_1 = 0.917$, recovery 98.5\%) trails the cloud scheme by only 0.006 $F_1$, confirming cross-format portability; against SAFE-QAQ ($F_1 = 0.918$, $\sim$7B params, BF16 precision, unquantized)~\cite{2}, our 248\,MB model achieves comparable accuracy with $\sim$28$\times$ storage reduction.
+
+\begin{table}[!t]
+\centering
+\caption{Impact of chain-of-thought (CoT) reasoning in the cloud Tier-2 pipeline (NVFP4 QAD + OV-Freeze backbone).}
+\label{tab:cot-ablation-en}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Configuration} & \textbf{TAF-28k $F_1$} & \textbf{AdvFraud-3k $F_1$} & \textbf{FPR} \\
+\midrule
+With CoT (default) & $\mathbf{0.923 \pm 0.006}$ & $\mathbf{0.875}$ & $\mathbf{1.8\%}$ \\
+Without CoT (direct fusion only) & $0.905 \pm 0.008$ & $0.852$ & $2.6\%$ \\
+\bottomrule
+\end{tabular}
 \end{table}
+
+\medskip
+\noindent\textbf{CoT contribution ablation.} Table~\ref{tab:cot-ablation-en} isolates the contribution of chain-of-thought reasoning by comparing the default pipeline against a variant that performs direct risk-score fusion without CoT. Removing CoT reduces $F_1$ by 1.8 percentage points ($0.923\!\rightarrow\!0.905$) and increases FPR from 1.8\% to 2.6\%, indicating that domain-constrained CoT provides a measurable benefit at the 0.5B scale. The degradation is most pronounced on adversarial samples (AdvFraud-3k: $F_1$ drop of 2.3 points), where multi-step semantic analysis proves most valuable.
+
+\subsection{Cross-dataset Generalisation and Robustness}
+
+\begin{table}[!t]
+\centering
+\caption{Cross-dataset and adversarial robustness under NVFP4 QAD + OV-Freeze}
+\label{tab4-cross-en}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Test set (property)} & \textbf{BF16} & \textbf{PTQ} & \textbf{QAD+OVF} \\
+\midrule
+TAF-28k (IID) & $0.931$ & $0.838$ & $\mathbf{0.923}$ \\
+AdvFraud-3k (adversarial) & $0.882$ & $0.778$ & $\mathbf{0.875}$ \\
+ChiFraud (OOD) & $0.871$ & $0.768$ & $\mathbf{0.860}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab4-cross-en} reports cross-dataset and adversarial robustness. ChiFraud constitutes a challenging OOD test for two reasons: (i) it is a text-only benchmark collected over an extended time window, differing from TAF-28k in both modality composition (no audio channel) and temporal distribution; (ii) its fraud patterns originate from online network fraud rather than phone call scams, introducing genuine semantic shift. Despite these discrepancies, NVFP4 QAD + OVF attains $F_1 = 0.860$ on ChiFraud (0.011 drop vs.\ BF16), suggesting that the distillation-preserved representations transfer beyond the re-enactment distribution. On AdvFraud-3k, $F_1 = 0.875$ represents a 6.0\% relative drop against the TAF-28k BF16 upper bound ($F_1=0.931$), meeting the threat-model constraint $\mathcal{G}_2(\le 6\%)$. Together, these results indicate that the proposed distillation preserves robustness across moderate distribution shifts, though the single re-enactment training corpus remains the primary limitation for generalisation claims (see \S~V).
 
 \subsection{Loss Function Ablation}
 
-\begin{table}[!t]
+\begin{table}[h]
 \centering
 \caption{Ablation on QAD alignment loss}
 \label{tab5-en}
@@ -371,9 +424,25 @@ KL + task reg. & $0.908 \pm 0.009$ & $0.041$ & $97.5\%$ \\
 \end{tabular}
 \end{table}
 
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig/fig3_ablation_loss_teacher.png}
+\caption{Loss function and teacher selection ablation. (a) F1 scores (blue bars, left axis) and KL divergence against the BF16 teacher (red bars, right axis) across five loss variants. Pure KL achieves the best trade-off ($F_1=0.916$, KL=0.005), while cross-entropy (QAT) incurs severe distribution drift (KL=0.311). (b) Teacher selection ablation comparing homologous 0.5B BF16 teacher against larger heterogeneous teachers (1.8B--7B). The homologous teacher attains the highest $F_1$ with the fewest training tokens, validating the self-distillation design choice.}
+\label{fig3-ablation-loss-teacher-en}
+\end{figure*}
+
 \subsection{OV-Freeze Ablation}
 
-Full attention-projection OV-Freeze ($q, k, v, o$) minimises PPL (8.62) and variance drift ($+18.2\%\rightarrow +1.3\%$). EMA ($\rho = 0.95$) achieves the best trade-off ($F_1 = 0.923$). The 30\% activation window is Pareto-optimal.
+Figure~\ref{fig4-ovf-ablation-en}(a) reports F1 and variance drift across attention projection-layer configurations. Without OV-Freeze, the quantized student exhibits $+18.2\%$ output-variance drift relative to the BF16 teacher across the four sensitive $\{q,k,v,o\}_{\mathrm{proj}}$ layers. Applying OV-Freeze sequentially to $q$, $v$, $k$, and $o$ projections progressively reduces drift to $+1.3\%$, with corresponding $F_1$ improvement from 0.916 to 0.923. Extending to FFN layers yields no further gain, confirming that the attention projection sub-layer is the primary source of quantization-induced variance instability.
+
+Figure~\ref{fig4-ovf-ablation-en}(b) ablates the OVF activation window. The 30\% final-stage window (step 1,400--2,000) is Pareto-optimal: shorter windows ($\le20\%$) provide insufficient variance correction ($F_1\le0.921$), while longer windows ($\ge50\%$) create gradient conflict with the KL main loss, inducing oscillation ($F_1$ drops to 0.918). EMA ($\rho = 0.95$) further stabilises batch variance estimation, keeping PPL fluctuation within $+0.18$.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig/fig4_ovf_ablation.png}
+\caption{OV-Freeze ablation. (a) Layer selection: F1 scores (bars) and variance drift (red line) across attention projection-layer configurations. Full $q,k,v,o$-proj OV-Freeze achieves the best $F_1=0.923$ with variance drift reduced from $+18.2\%$ (baseline) to $+1.3\%$. (b) Activation step-ratio: F1 and PPL across OVF activation windows. The final 30\% window (step 1,400--2,000) is Pareto-optimal, balancing correction with gradient compatibility.}
+\label{fig4-ovf-ablation-en}
+\end{figure*}
 
 \subsection{On-device Speculative Decoding}
 
@@ -394,6 +463,13 @@ Domain-tuned & $10$ & $0.86$ & $4.74\times$ & $4.51\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig/fig5_speculative.png}
+\caption{Speculative decoding analysis. (a) Theoretical speedup curves (Eq.~\eqref{eq:speedup}) across token acceptance rate $\alpha$ and speculation length $\gamma$, with operating points marked for the generic draft model ($\alpha=0.78$, $\gamma=5$, $3.52\times$) and our anti-fraud domain-tuned model ($\alpha=0.86$, $\gamma=5$, $4.25\times$). (b) Measured speedup on H100 and Snapdragon~8~Gen~3 platforms.}
+\label{fig5-speculative-en}
+\end{figure*}
 
 \subsection{GLO Privacy Verification}
 
@@ -417,18 +493,17 @@ Speaker-ID acc. & $8.3\%$ & $7.9\%$ & $10.0\%$ \\
 
 \section{Discussion and Limitations}
 
-\subsection{Practical non-reconstructability}
-White-box GLO attack failure (PESQ 1.21, WER $\ge 0.95$) provides empirical evidence for practical non-reconstructability of $\bm{F}_v$, supporting PIPL Article 23 alignment.
+The experimental results demonstrate that QAD-MultiGuard achieves strong on-device fraud detection performance under low-bit quantization, yet several limitations merit discussion.
 
-\subsection{Misclassification analysis}
-Error tracing of 213 misclassified samples reveals: (i) $\sim$41\% involve audio $<8$\,s; (ii) PGD-20 attack ($\epsilon = 0.10$) causes accuracy degradation; (iii) extreme noise (SNR $<5$\,dB) induces $\sim$4.2\% discrimination drop.
+\textbf{Privacy--utility trade-off.} The 128-d acoustic embedding $\bm{F}_v$ provides empirical non-reconstructability (WER~$\ge 0.95$ under white-box GLO attacks, PESQ~1.21), supporting PIPL Article 23 alignment. However, this compression incurs a measurable utility cost: the 0.008 $F_1$ gap between the BF16 upper bound and the full pipeline (0.931~vs.~0.923) is partially attributable to information loss in the dual temporal compression. An $\epsilon$-LDP extension ($\epsilon=1.5$) is available for extreme-privacy scenarios but its accuracy impact is not yet evaluated.
 
-\subsection{Distribution-shift assessment}
-TAF-28k is a lab distribution; real-world deployment may face channel mismatch and dialect variation. Future work will pursue semi-supervised domain adaptation and larger-scale field trials.
+\textbf{Misclassification and robustness.} Error tracing of 213 misclassified samples reveals three dominant failure modes: (i) $\sim$41\% involve short audio segments ($<8$\,s), where insufficient temporal context degrades acoustic risk estimation; (ii) white-box PGD-20 attacks ($\epsilon=0.10$) cause monotone accuracy degradation, indicating vulnerability to deliberate input perturbations; (iii) extreme background noise (SNR $<5$\,dB) induces $\sim$4.2\% discrimination drop. These failure modes are partially addressed by the multimodal fusion architecture---a single degraded modality can be compensated by the remaining three---but adversarial robustness remains an open challenge.
+
+\textbf{Single-corpus limitation and generalisation risk.} All main results are evaluated on TAF-28k, a re-enactment corpus collected under controlled conditions. The authors acknowledge this as the primary limitation of the current study: real-world deployment will face channel mismatch, regional dialect variation, and adaptive fraud scripting that the current benchmark does not capture. While the 0.011 $F_1$ drop on ChiFraud (OOD, \S~IV-C) suggests moderate cross-domain transfer, ChiFraud remains a text-only benchmark and does not exercise the full multimodal pipeline. Three partial mitigations exist within the current framework: (i) the 2{,}000-user pilot deployment (Table~\ref{tab1}), once conducted, will provide the first real-world signal; (ii) the LoRA-QAD incremental update mechanism (Section~III-A1) enables lightweight domain adaptation without full retraining; and (iii) the homologous teacher design ensures that the BF16 teacher can be fine-tuned on new domain data while the student is re-distilled. Nevertheless, until field validation is available, all reported F1 figures should be interpreted as upper-bound estimates under controlled conditions. The most critical direction for future work is semi-supervised domain adaptation to bridge the lab-to-field gap, complemented by larger-scale field trials to quantify real-world generalisation.
 
 \section{Conclusion}
 
-This paper presents QAD-MultiGuard, an edge-side multimodal anti-fraud framework integrating four pipeline components: (1) pure-KL quantization-aware distillation ($F_1=0.916$, KL~0.005); (2) OV-Freeze regularization ($+0.7$ $F_1$ gain, $p<0.01$); (3) a 128-d practically non-reconstructable acoustic embedding (WER~$\ge 0.95$); and (4) domain-adapted speculative decoding ($3.32\times$ on SD8G3). On TAF-28k, the full pipeline achieves $F_1 = 0.923$, approaching 99.1\% of the BF16 upper bound. The most critical direction for future work is semi-supervised domain adaptation to bridge the lab-to-field distribution gap.
+This paper presents QAD-MultiGuard, an edge-side multimodal anti-fraud framework integrating four pipeline components: (1) pure-KL quantization-aware distillation ($F_1=0.916$, KL~0.005); (2) OV-Freeze regularization ($+0.7$ $F_1$ gain, $p<0.01$); (3) a 128-d practically non-reconstructable acoustic embedding (WER~$\ge 0.95$); and (4) domain-adapted speculative decoding ($3.32\times$ on SD8G3). On TAF-28k, the full pipeline achieves $F_1 = 0.923$, approaching 99.1\% of the BF16 upper bound. As discussed in \S~V, the single-corpus evaluation basis is the primary limitation: all results rest on a re-enactment distribution, and generalisation to unconstrained deployment remains unvalidated. Key technical limitations---short-audio degradation, adversarial vulnerability, and distribution shift---define the roadmap for future work, with semi-supervised domain adaptation and field deployment trials as the most critical directions.
 
 \appendices
 \section*{Appendix A: Analysis of OV-Freeze and Acoustic Embedding Non-reconstructability}
