@@ -17,6 +17,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEX_FILE = PROJECT_ROOT / "docs" / "paper1_en_v6.tex"
 OUTPUT_FILE = PROJECT_ROOT / "docs" / "ch.v6.docx"
 
+if not TEX_FILE.exists():
+    print(f"Error: LaTeX source not found at {TEX_FILE}")
+    print("Please place the paper .tex file in docs/ before running this script.")
+    sys.exit(1)
+
 # ── LaTeX command stripping ──────────────────────────────
 def strip_latex(text: str) -> str:
     """Remove LaTeX commands and return plain-ish text."""

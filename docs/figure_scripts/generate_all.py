@@ -20,6 +20,7 @@ SCRIPTS = [
     ("Figure 5", "fig5_loss_teacher_ablation.py"),
     ("Figure 6", "fig6_ovf_ablation.py"),
     ("Figure 7", "fig7_speculative_decoding.py"),
+    ("Figure 8", "fig8_revision_ablations.py"),
 ]
 
 if __name__ == "__main__":
@@ -31,4 +32,4 @@ if __name__ == "__main__":
     for label, script in SCRIPTS:
         print(f"[{label}] {script}")
         runpy.run_path(script, run_name="__main__")
-    print("\nAll 7 figures regenerated.")
+    print("\nAll 8 figures regenerated.")
