@@ -1,0 +1,97 @@
+# ═══════════════════════════════════════════════════════════════
+# QAD-MultiGuard v5.0 — Git 忽略规则
+# ═══════════════════════════════════════════════════════════════
+
+# ── Python ───────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+*.pytest_cache/
+
+# ── Jupyter ──────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── 环境变量 ─────────────────────
+.env
+.env.local
+*.env.local
+
+# ── IDE ──────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+*.code-workspace
+
+# ── OS ───────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+
+# ── Android ──────────────────────
+android/.gradle/
+android/build/
+android/local.properties
+*.apk
+*.aab
+*.keystore
+
+# ── ML 模型（大文件，不提交 Git）──
+*.gguf
+*.bin
+*.pkl
+*.parquet
+*.pt
+*.pth
+ml/models/
+
+# ── Docker ───────────────────────
+docker-data/
+
+# ── 数据缓存 ─────────────────────
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# ── 临时文件 ─────────────────────
+tmp/
+temp/
+*.tmp
+.claude/*
+
+# ── 论文/图片生成产物 ────────────
+figures_scripts/output/
+figures_scripts/*.png
+docs/QAD-IEEE/
+docs/QAD_MultiGuard_latex/
+docs/*.drawio
+docs/*.json
+qad_multiguard/
+
+# ── 本地 DOCX 文档（仅本地保留）──
+docs/*.docx
+
+# ── 研究脚本 (已移除) ────────────
+scripts/SAFF-QAQ.py
+scripts/SafeData-QAQ.py
+scripts/cases_data.json
+*.pdf
+
+# LaTeX compilation artifacts
+docs/*.aux
+docs/*.bbl
+docs/*.blg
+docs/*.spl
+docs/*.out
+docs/*.toc
+docs/*.lot
+docs/*.lof
