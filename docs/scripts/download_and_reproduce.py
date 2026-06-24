@@ -139,7 +139,7 @@ def step5_update_paper_data(results):
         content = fig_data_path.read_text(encoding="utf-8")
 
         # Update the GBM metadata baseline to reflect actual measurements
-        # (BERT-Fraud 行在 PAPER_FALLBACK 中)
+        # (BERT-Fraud in PAPER_FALLBACK)
         old = ('("BERT-Fraud [14]",          0.876, 0.000, "darkgray"),')
         new = (f'("GBM-Multimodal (Field Test)",      {results["f1"]:.3f}, 0.010, "darkgray"),\n'
                f'    ("BERT-Fraud [14]",          0.876, 0.000, "darkgray"),')
@@ -152,7 +152,7 @@ def step5_update_paper_data(results):
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
     report = {
         "timestamp": datetime.now().isoformat(),
-        "audio_source": "TAF-28k HF Bucket (wangdajin062/TeleAntiFraud-bucket)",
+        "audio_source": "TAF-28k HF Bucket",
         "feature_dim": 158,
         "model": "GradientBoostingClassifier",
         "evaluation": results,
@@ -182,7 +182,7 @@ def main():
     if not args.skip_download:
         zip_path = step1_download_audio()
         if zip_path is None:
-            logger.error("下载失败，请手动下载后重试")
+            logger.error("Download failed. Please download the file manually and try again.")
             return
     else:
         zip_path = REPO_ROOT / "data" / "TAF28k" / "audio.zip"
